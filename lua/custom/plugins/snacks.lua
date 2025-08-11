@@ -9,7 +9,7 @@ return {
 	},
 	keys = {
 		{
-			'<leader>g',
+			'<leader>git',
 			function()
 				Snacks.lazygit()
 				-- ---@param opts? snacks.lazygit.Config

@@ -29,11 +29,11 @@ return {
 				:find()
 		end
 
-		vim.keymap.set('n', '<leader>hw', function()
+		vim.keymap.set('n', '<leader>hq', function()
 			harpoon:list():prepend()
 		end)
 
-		vim.keymap.set('n', '<leader>hq', function()
+		vim.keymap.set('n', '<leader>hw', function()
 			harpoon:list():add()
 		end)
 
@@ -63,6 +63,10 @@ return {
 
 		vim.keymap.set('n', '<leader>hp', function()
 			harpoon:list():next()
+		end)
+
+		vim.keymap.set('n', '<leader>hc', function()
+			harpoon:list().clear(harpoon:list())
 		end)
 	end,
 }

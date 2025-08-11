@@ -23,6 +23,10 @@ return {
 				options = { try_as_border = true },
 			}
 
+			-- require('mini.completion').setup {}
+			require('mini.icons').setup {}
+			require('mini.snippets').setup {}
+
 			-- Simple and easy statusline.
 			--  You could remove this setup call if you don't like it,
 			--  and try some other statusline plugin
