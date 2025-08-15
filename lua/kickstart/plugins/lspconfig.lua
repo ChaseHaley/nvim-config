@@ -1,3 +1,7 @@
+if vim.g.vscode then
+	return {}
+end
+
 -- LSP Plugins
 return {
 	{

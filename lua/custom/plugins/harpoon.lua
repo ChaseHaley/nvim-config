@@ -29,44 +29,48 @@ return {
 				:find()
 		end
 
-		vim.keymap.set('n', '<leader>hq', function()
+		vim.keymap.set('n', '<leader>ho', function()
 			harpoon:list():prepend()
-		end)
+		end, { desc = 'Prepend current buffer' })
 
-		vim.keymap.set('n', '<leader>hw', function()
+		vim.keymap.set('n', '<leader>hp', function()
 			harpoon:list():add()
-		end)
+		end, { desc = 'Append current buffer' })
 
 		vim.keymap.set('n', '<leader>hh', function()
 			toggle_telescope(harpoon:list())
-		end)
+		end, { desc = 'View all files' })
 
 		vim.keymap.set('n', '<leader>ha', function()
 			harpoon:list():select(1)
-		end)
+		end, { desc = 'Go to file 1' })
 
 		vim.keymap.set('n', '<leader>hs', function()
 			harpoon:list():select(2)
-		end)
+		end, { desc = 'Go to file 2' })
 
 		vim.keymap.set('n', '<leader>hd', function()
 			harpoon:list():select(3)
-		end)
+		end, { desc = 'Go to file 3' })
 
 		vim.keymap.set('n', '<leader>hf', function()
 			harpoon:list():select(4)
-		end)
+		end, { desc = 'Go to file 4' })
 
-		vim.keymap.set('n', '<leader>ho', function()
+		vim.keymap.set('n', '<leader>hq', function()
 			harpoon:list():prev()
-		end)
+		end, { desc = 'Go to previous file' })
 
-		vim.keymap.set('n', '<leader>hp', function()
+		vim.keymap.set('n', '<leader>hw', function()
 			harpoon:list():next()
-		end)
+		end, { desc = 'Go to next file' })
 
 		vim.keymap.set('n', '<leader>hc', function()
-			harpoon:list().clear(harpoon:list())
-		end)
+			harpoon:list():clear()
+		end, { desc = 'Clear list' })
+
+		vim.keymap.set('n', '<leader>hr', function()
+			harpoon:list():remove()
+		end, { desc = 'Remove current buffer' })
 	end,
 }

@@ -1,3 +1,7 @@
+if vim.g.vscode then
+	return {}
+end
+
 return {
 	{ -- Collection of various small independent plugins/modules
 		'echasnovski/mini.nvim',
@@ -17,17 +21,19 @@ return {
 			-- - sr)'  - [S]urround [R]eplace [)] [']
 			require('mini.surround').setup()
 
-			require('mini.indentscope').setup {
-				-- symbol = '│',
-				symbol = '┃',
-				options = { try_as_border = true },
-			}
+			-- require('mini.indentscope').setup {
+			-- 	-- symbol = '│',
+			-- 	symbol = '┃',
+			-- 	options = { try_as_border = true },
+			-- }
 
 			-- require('mini.completion').setup {}
 			require('mini.icons').setup {}
-			require('mini.snippets').setup {}
+			-- require('mini.snippets').setup {}
 
 			require('mini.move').setup {}
+
+			require('mini.pairs').setup {}
 
 			-- Simple and easy statusline.
 			--  You could remove this setup call if you don't like it,

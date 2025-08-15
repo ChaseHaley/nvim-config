@@ -1,3 +1,7 @@
+if (vim.g.vscode) then
+	return {}
+end
+
 -- NOTE: Plugins can specify dependencies.
 --
 -- The dependencies are proper plugin specifications as well - anything
@@ -62,7 +66,10 @@ return {
 				-- },
 				-- pickers = {}
 				defaults = {
-					file_ignore_patterns = { '%__virtual.cs$', '%cshtml__virtual.html$' },
+					file_ignore_patterns = {
+						'%__virtual.cs$',
+						'%cshtml__virtual.html$',
+					},
 				},
 				extensions = {
 					['ui-select'] = {

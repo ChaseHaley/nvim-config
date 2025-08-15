@@ -80,10 +80,15 @@ vim.o.confirm = true
 -- Tab settings
 -- This option, when enabled, causes Neovim to insert spaces instead of actual tab characters when you press the Tab key. To use tabs, you must disable it.
 vim.o.expandtab = false
-local tabSize = 3
+local tabSize = 4
 -- This defines the visual width of a tab character. While it doesn't directly control whether tabs or spaces are used for indentation, it's crucial for consistent display.
 vim.o.tabstop = tabSize
 -- This option controls the number of spaces (or tab characters, if noexpandtab is set) used for auto-indentation and the >> and << commands.
 vim.o.shiftwidth = tabSize
 -- This option makes the Tab key behave as if tabs were set to a different value, allowing you to insert or delete a specific number of spaces or tabs with the Tab and Backspace keys.
 vim.o.softtabstop = tabSize
+
+-- vim.o.spell = true
+-- vim.o.spelllang = 'en_us'
+-- vim.o.spelloptions = 'camel'
+-- vim.o.spellsuggest = 'best'

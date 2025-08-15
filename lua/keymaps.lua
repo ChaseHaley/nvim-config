@@ -40,6 +40,9 @@ vim.keymap.set('n', '<C-S-k>', '<C-w>K', { desc = 'Move window to the upper' })
 -- vim: ts=2 sts=2 sw=2 et
 vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle)
 
+vim.keymap.set('v', '<', '<gv')
+vim.keymap.set('v', '>', '>gv')
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
@@ -53,3 +56,12 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 		vim.hl.on_yank()
 	end,
 })
+
+-- vim.api.nvim_create_autocmd('FileType', {
+-- 	desc = 'Better indentation for TS',
+-- 	group = vim.api.nvim_create_augroup('custom-ts-indent', { clear = true }),
+-- 	pattern = 'typescript',
+-- 	callback = function()
+-- 		vim.o.shiftwidth = 2
+-- 	end,
+-- })

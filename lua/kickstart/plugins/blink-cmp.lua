@@ -1,3 +1,7 @@
+if vim.g.vscode then
+	return {}
+end
+
 return {
 	{ -- Autocompletion
 		'saghen/blink.cmp',
@@ -58,6 +62,7 @@ return {
 				--
 				-- See :h blink-cmp-config-keymap for defining your own keymap
 				preset = 'default',
+				['<C-j>'] = { 'show', 'show_documentation', 'hide_documentation' },
 
 				-- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
 				--    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
@@ -67,22 +72,62 @@ return {
 				-- 'mono' (default) for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
 				-- Adjusts spacing to ensure icons are aligned
 				nerd_font_variant = 'mono',
+				-- Blink does not expose its default kind icons so you must copy them all (or set your custom ones) and add Copilot
+				kind_icons = {
+					-- Copilot = '',
+					Text = '󰉿',
+					Method = '󰊕',
+					Function = '󰊕',
+					Constructor = '󰒓',
+
+					Field = '󰜢',
+					Variable = '󰆦',
+					Property = '󰖷',
+
+					Class = '󱡠',
+					Interface = '󱡠',
+					Struct = '󱡠',
+					Module = '󰅩',
+
+					Unit = '󰪚',
+					Value = '󰦨',
+					Enum = '󰦨',
+					EnumMember = '󰦨',
+
+					Keyword = '󰻾',
+					Constant = '󰏿',
+
+					Snippet = '󱄽',
+					Color = '󰏘',
+					File = '󰈔',
+					Reference = '󰬲',
+					Folder = '󰉋',
+					Event = '󱐋',
+					Operator = '󰪚',
+					TypeParameter = '󰬛',
+				},
 			},
 
 			completion = {
 				-- By default, you may press `<c-space>` to show the documentation.
 				-- Optionally, set `auto_show = true` to show the documentation after a delay.
-				documentation = { auto_show = true, auto_show_delay_ms = 500 },
+				documentation = { auto_show = false, auto_show_delay_ms = 500 },
 			},
 
 			sources = {
-				default = { 'lsp', 'path', 'snippets', 'lazydev' },
+				default = { 'lsp', 'path', 'snippets', 'lazydev' }, -- 'copilot'
 				providers = {
 					lsp = {
 						min_keyword_length = 0,
-						max_items = 100,
-						score_offset = 100,
+						-- score_offset = 100,
 					},
+					-- copilot = {
+					-- 	name = 'copilot',
+					-- 	module = 'blink-cmp-copilot',
+					-- 	min_keyword_length = 0,
+					-- 	score_offset = 100,
+					-- 	async = true,
+					-- },
 					lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
 				},
 			},

@@ -1,5 +1,9 @@
+if vim.g.vscode then
+	return {}
+end
+
 return {
-	{ -- Autoformat
+	{
 		'stevearc/conform.nvim',
 		event = { 'BufWritePre' },
 		cmd = { 'ConformInfo' },
@@ -15,29 +19,23 @@ return {
 		},
 		opts = {
 			notify_on_error = false,
-			format_on_save = function(bufnr)
-				-- Disable "format_on_save lsp_fallback" for languages that don't
-				-- have a well standardized coding style. You can add additional
-				-- languages here or re-enable it for the disabled ones.
-				local disable_filetypes = { c = true, cpp = true }
-				if disable_filetypes[vim.bo[bufnr].filetype] then
-					return nil
-				else
-					return {
-						timeout_ms = 500,
-						lsp_format = 'fallback',
-					}
-				end
-			end,
 			formatters_by_ft = {
 				lua = { 'stylua' },
 				javascript = { 'eslint_d' },
 				typescript = { 'eslint_d' },
-				-- Conform can also run multiple formatters sequentially
-				-- python = { "isort", "black" },
-				--
-				-- You can use 'stop_after_first' to run the first available formatter from the list
-				-- javascript = { "prettierd", "prettier", stop_after_first = true },
+				css = { 'prettierd' },
+				scss = { 'prettierd' },
+			},
+
+			formatters = {
+				prettierd = {
+					args = { '--stdin-from-filename', '$FILENAME' },
+					inherit = true,
+					append_args = { '--use-tabs', '--tab-width', '4' },
+					--      command = 'prettierd',
+					-- args = { vim.api.nvim_buf_get_name(0), '--use-tabs', '--tab-width', '4' },
+					--      stdin = true
+				},
 			},
 		},
 	},
