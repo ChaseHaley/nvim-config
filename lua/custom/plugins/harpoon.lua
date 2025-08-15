@@ -12,21 +12,98 @@ return {
 		-- Enable telescope support
 		local conf = require('telescope.config').values
 		local function toggle_telescope(harpoon_files)
-			local file_paths = {}
-			for _, item in ipairs(harpoon_files.items) do
-				table.insert(file_paths, item.value)
+			local finder = function()
+				local paths = {}
+				for _, item in ipairs(harpoon_files.items) do
+					table.insert(paths, item.value)
+				end
+
+				return require('telescope.finders').new_table {
+					results = paths,
+				}
 			end
 
 			require('telescope.pickers')
 				.new({}, {
 					prompt_title = 'Harpoon',
-					finder = require('telescope.finders').new_table {
-						results = file_paths,
+					finder = finder(),
+					previewer = false,
+					sorter = require('telescope.config').values.generic_sorter {},
+					layout_config = {
+						height = 0.4,
+						width = 0.5,
+						prompt_position = 'top',
+						preview_cutoff = 120,
 					},
-					previewer = conf.file_previewer {},
-					sorter = conf.generic_sorter {},
+					attach_mappings = function(prompt_bufnr, map)
+						map('i', '<C-d>', function()
+							local state = require 'telescope.actions.state'
+							local selected_entry = state.get_selected_entry()
+							local current_picker = state.get_current_picker(prompt_bufnr)
+
+							table.remove(harpoon_files.items, selected_entry.index)
+							current_picker:refresh(finder())
+							vim.defer_fn(function()
+								current_picker:move_selection(0 - selected_entry.index + 2)
+							end, 10)
+						end)
+
+						local function swap_entries(delta)
+							local state = require 'telescope.actions.state'
+							local sel = state.get_selected_entry()
+							if not sel or sel.index == nil then
+								return
+							end
+							local idx = sel.index
+							local target = idx + delta
+							if target < 1 then
+								target = #harpoon_files.items
+							elseif target > #harpoon_files.items then
+								target = 1
+							end
+
+							-- swap in the items list
+							harpoon_files.items[idx], harpoon_files.items[target] = harpoon_files.items[target], harpoon_files.items[idx]
+
+							-- refresh finder
+							local picker = state.get_current_picker(prompt_bufnr)
+							picker:refresh(finder(), { reset_prompt = false })
+							vim.defer_fn(function()
+								picker:move_selection(0 - target + 1)
+							end, 10)
+						end
+
+						map('i', '<C-k>', function()
+							swap_entries(1)
+						end)
+						map('i', '<C-j>', function()
+							swap_entries(-1)
+						end)
+
+						return true
+					end,
 				})
 				:find()
+
+			-- require('telescope.pickers')
+			-- 	.new({}, {
+			-- 		prompt_title = 'Harpoon',
+			-- 		finder = finder(),
+			-- 		previewer = conf.file_previewer {},
+			-- 		sorter = conf.generic_sorter {},
+			-- 		attach_mappings = function(prompt, bufnr, map)
+			-- 			map('i', '<C-d>', function()
+			-- 				local state = require 'telescope.actions.state'
+			-- 				local selected_entry = state.get_selected_etrny()
+			-- 				local current_picker = state.get_current_picker(prompt_bufnr)
+			--
+			-- 				table.remove(harpoon_files.items, selected_entry.index)
+			-- 				current_picker:refresh(finder())
+			-- 			end)
+			-- 			return true
+			-- 		end,
+			-- 	})
+			-- 	:find()
 		end
 
 		vim.keymap.set('n', '<leader>ho', function()
