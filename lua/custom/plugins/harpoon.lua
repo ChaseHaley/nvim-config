@@ -73,10 +73,10 @@ return {
 							end, 10)
 						end
 
-						map('i', '<C-k>', function()
+						map('i', '<M-k>', function()
 							swap_entries(1)
 						end)
-						map('i', '<C-j>', function()
+						map('i', '<M-j>', function()
 							swap_entries(-1)
 						end)
 

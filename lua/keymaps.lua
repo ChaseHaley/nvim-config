@@ -12,7 +12,7 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
 --
--- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
+-- NOTE: This won't work in all terminal emulators/Tmux/etc. Try your own mapping
 -- or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
@@ -57,11 +57,10 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 	end,
 })
 
--- vim.api.nvim_create_autocmd('FileType', {
--- 	desc = 'Better indentation for TS',
--- 	group = vim.api.nvim_create_augroup('custom-ts-indent', { clear = true }),
--- 	pattern = 'typescript',
--- 	callback = function()
--- 		vim.o.shiftwidth = 2
--- 	end,
--- })
+vim.api.nvim_create_autocmd('FileType', {
+	pattern = 'rust',
+	group = vim.api.nvim_create_augroup('rust-disable-single-quote', { clear = true }),
+	callback = function()
+		MiniPairs.unmap('i', "'", "''")
+	end,
+})
