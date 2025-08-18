@@ -94,6 +94,7 @@ vim.g.maplocalleader = ' '
 vim.g.have_nerd_font = true
 
 -- [[ Initialize global utilities ]]
+-- test
 require 'utilities'
 
 -- [[ Setting options ]]
