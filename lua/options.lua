@@ -75,8 +75,6 @@ vim.o.scrolloff = 10
 -- See `:help 'confirm'`
 vim.o.confirm = true
 
--- vim: ts=2 sts=2 sw=2 et
-
 -- Tab settings
 -- This option, when enabled, causes Neovim to insert spaces instead of actual tab characters when you press the Tab key. To use tabs, you must disable it.
 vim.o.expandtab = false
@@ -88,7 +86,35 @@ vim.o.shiftwidth = tabSize
 -- This option makes the Tab key behave as if tabs were set to a different value, allowing you to insert or delete a specific number of spaces or tabs with the Tab and Backspace keys.
 vim.o.softtabstop = tabSize
 
+-- Ensure specific filetypes use tabs
+vim.api.nvim_create_autocmd('FileType', {
+	pattern = { 'css', 'scss', 'sass', 'javascript', 'typescript', 'html', 'vue', 'jsx', 'tsx' },
+	callback = function()
+		vim.bo.expandtab = false
+		vim.bo.tabstop = 4
+		vim.bo.shiftwidth = 4
+		vim.bo.softtabstop = 4
+	end,
+})
+
 -- vim.o.spell = true
 -- vim.o.spelllang = 'en_us'
 -- vim.o.spelloptions = 'camel'
 -- vim.o.spellsuggest = 'best'
+
+vim.o.conceallevel = 1
+
+--- @type string
+PreviousValidBuffer = ''
+-- vim.api.nvim_set_hl(0, 'MiniStatuslineFilename', { fg = '#ffcc00', bold = true })
+local base_statusline_hl = vim.api.nvim_get_hl(0, { name = "MiniStatuslineFilename" })
+vim.api.nvim_create_autocmd('BufEnter', {
+	callback = function()
+		local file = vim.fn.expand '%:t'
+		if string.len(file) > 0 and file ~= PreviousValidBuffer then
+			PreviousValidBuffer = file
+			vim.api.nvim_set_hl(0, 'MiniStatuslineFilename', { fg = '#ffcc00', bold = true })
+			vim.defer_fn(function() vim.api.nvim_set_hl(0, "MiniStatuslineFilename", base_statusline_hl) end, 5000)
+		end
+	end,
+})

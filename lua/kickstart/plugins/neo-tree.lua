@@ -26,27 +26,27 @@ return {
 			},
 		},
 	},
-	config = function()
-		if not Is_Windows() then
-			local events = require 'neo-tree.events'
-			require('neo-tree').setup {
-				-- event_handlers = {
-				-- 	{
-				-- 		event = events.NEO_TREE_BUFFER_ENTER,
-				-- 		handler = function()
-				-- 			vim.opt_local.cursorline = false
-				-- 			vim.wo.winhighlight = 'CursorLine:Normal,CursorLineNr:LineNr'
-				-- 		end,
-				-- 	},
-				-- },
-				filesystem = {
-					window = {
-						mappings = {
-							['\\'] = 'close_window',
-						},
-					},
-				},
-			}
-		end
-	end,
+	-- config = function()
+	-- 	if not Is_Windows() then
+	-- 		local events = require 'neo-tree.events'
+	-- 		require('neo-tree').setup {
+	-- 			event_handlers = {
+	-- 				{
+	-- 					event = events.NEO_TREE_BUFFER_ENTER,
+	-- 					handler = function()
+	-- 						vim.opt_local.cursorline = false
+	-- 						vim.wo.winhighlight = 'CursorLine:Normal,CursorLineNr:LineNr'
+	-- 					end,
+	-- 				},
+	-- 			},
+	-- 			filesystem = {
+	-- 				window = {
+	-- 					mappings = {
+	-- 						['\\'] = 'close_window',
+	-- 					},
+	-- 				},
+	-- 			},
+	-- 		}
+	-- 	end
+	-- end,
 }

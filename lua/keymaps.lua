@@ -38,8 +38,6 @@ vim.keymap.set('n', '<C-S-j>', '<C-w>J', { desc = 'Move window to the lower' })
 vim.keymap.set('n', '<C-S-k>', '<C-w>K', { desc = 'Move window to the upper' })
 
 -- vim: ts=2 sts=2 sw=2 et
-vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle)
-
 vim.keymap.set('v', '<', '<gv')
 vim.keymap.set('v', '>', '>gv')
 

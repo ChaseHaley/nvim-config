@@ -27,16 +27,10 @@ return {
 				.new({}, {
 					prompt_title = 'Harpoon',
 					finder = finder(),
-					previewer = false,
-					sorter = require('telescope.config').values.generic_sorter {},
-					layout_config = {
-						height = 0.4,
-						width = 0.5,
-						prompt_position = 'top',
-						preview_cutoff = 120,
-					},
+					previewer = conf.file_previewer({}),
+					sorter = conf.generic_sorter {},
 					attach_mappings = function(prompt_bufnr, map)
-						map('i', '<C-d>', function()
+						map('i', '<M-d>', function()
 							local state = require 'telescope.actions.state'
 							local selected_entry = state.get_selected_entry()
 							local current_picker = state.get_current_picker(prompt_bufnr)

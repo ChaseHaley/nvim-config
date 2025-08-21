@@ -1,4 +1,4 @@
-if vim.g.vscode then
+if Is_Windows() or vim.g.vscode then
 	return {}
 end
 

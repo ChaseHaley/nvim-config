@@ -15,7 +15,9 @@ return {
 	-- },
 	---@module 'roslyn.config'
 	---@type RoslynNvimConfig
-	opts = {},
+	opts = {
+		filewatching = 'roslyn'
+	},
 	-- config = function()
 	-- 	-- Use one of the methods in the Integration section to compose the command.
 	-- 	local cmd = {}

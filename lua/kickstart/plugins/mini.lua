@@ -50,6 +50,39 @@ return {
 				return '%2l:%-2v'
 			end
 
+			---@diagnostic disable-next-line: duplicate-set-field
+			statusline.section_filename = function(args)
+				-- In terminal always use plain name
+				-- if vim.bo.buftype == 'terminal' then
+				-- 	return '%t'
+					return '%f%m%r'
+			end
+
+			-- vim.api.nvim_set_hl(0, 'StatuslineFileName', { fg = '#7aa2f7', bold = true })
+			-- ---@diagnostic disable-next-line: duplicate-set-field
+			-- statusline.section_filename = function()
+			-- 	local bufname = vim.fn.expand '%:~:.'
+			-- 	local tail = vim.fn.fnamemodify(bufname, ':t')
+			-- 	local path = vim.fn.fnamemodify(bufname, ':h')
+			-- 	if path == '.' then
+			-- 		path = ''
+			-- 	end
+			--
+			-- 	local modified = vim.bo.modified and '[+]' or ''
+			-- 	local readonly = (vim.bo.readonly or not vim.bo.modifiable) and '[RO]' or ''
+			--
+			-- 	local pathChar = '/'
+			-- 	if Is_Windows() then
+			-- 		pathChar = '\\'
+			-- 	end
+			-- 	return statusline.combine_groups {
+			-- 		{ hl = 'MiniStatuslineFilename', strings = { path ~= '' and (path .. pathChar) or '' } },
+			-- 		{ hl = 'StatuslineFileName', strings = { tail } }, -- highlight basename
+			-- 		{ hl = 'MiniStatuslineFilename', strings = { modified .. readonly } },
+			-- 	}
+			-- 	-- return '%f%m%r'
+			-- end
+
 			-- ... and there is more!
 			--  Check out: https://github.com/echasnovski/mini.nvim
 		end,

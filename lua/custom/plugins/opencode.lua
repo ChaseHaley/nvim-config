@@ -1,3 +1,7 @@
+if Is_Windows() then
+	return {}
+end
+
 return {
 	'NickvanDyke/opencode.nvim',
 	dependencies = { 'folke/snacks.nvim' },
