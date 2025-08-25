@@ -9,6 +9,11 @@ vim.o.number = true
 --  Experiment for yourself to see if you like it!
 vim.o.relativenumber = true
 
+-- Disable text wrapping
+-- Generally speaking, if text is wrapping then the line is too long
+-- or I'm working in too small of an editor and this can be manually enabled for that session
+vim.o.wrap = false
+
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.o.mouse = 'a'
 

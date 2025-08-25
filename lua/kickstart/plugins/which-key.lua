@@ -73,6 +73,7 @@ return {
 				{ '<leader>grug', group = '[Grug]' },
 				{ '<leader>grugf', group = 'Current [f]ile' },
 				{ '<leader>o', group = '[O]pencode' },
+				{ '<leader>j', group = '[J]oin or split node' },
 			},
 		},
 	},

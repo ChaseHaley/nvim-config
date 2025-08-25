@@ -17,16 +17,23 @@ return {
 
 		-- see below for full list of optional dependencies 👇
 	},
-	opts = {
-		ui = { enabled = false }, -- use render-markdown instead
-		workspaces = {
-			{
-				name = 'main',
-				path = 'C:/Dev/Extras/Obsidian/Main Vault/',
+	opts = {},
+	config = function()
+		local main_vault_name = '~/Main/Obsidian Vaults/Git Lite'
+		if Is_Windows() then
+			main_vault_name = 'C:/Dev/Extras/Obsidian/Main Vault/'
+		end
+		require('obsidian').setup {
+			ui = { enabled = false }, -- use render-markdown instead
+			workspaces = {
+				{
+					name = 'main',
+					path = main_vault_name,
+				},
 			},
-		},
-		completion = { blink = true },
-		disable_frontmatter = true,
-		picker = { name = 'telescope.nvim' }
-	},
+			completion = { blink = true },
+			disable_frontmatter = true,
+			picker = { name = 'telescope.nvim' },
+		}
+	end,
 }

@@ -32,9 +32,6 @@ return {
 					args = { '--stdin-from-filename', '$FILENAME' },
 					inherit = true,
 					append_args = { '--use-tabs', '--tab-width', '4' },
-					--      command = 'prettierd',
-					-- args = { vim.api.nvim_buf_get_name(0), '--use-tabs', '--tab-width', '4' },
-					--      stdin = true
 				},
 			},
 		},
