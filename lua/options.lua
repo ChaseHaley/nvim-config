@@ -119,6 +119,9 @@ vim.api.nvim_create_autocmd('BufEnter', {
 		if string.len(file) > 0 and file ~= PreviousValidBuffer then
 			PreviousValidBuffer = file
 			vim.api.nvim_set_hl(0, 'MiniStatuslineFilename', { fg = '#ffcc00', bold = true })
+
+			-- Disabling diagnostic since it seems to work fine despite the warning
+			---@diagnostic disable-next-line: param-type-mismatch
 			vim.defer_fn(function() vim.api.nvim_set_hl(0, "MiniStatuslineFilename", base_statusline_hl) end, 5000)
 		end
 	end,

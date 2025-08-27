@@ -1,4 +1,4 @@
-if vim.g.vscode then
+if 1==1 or vim.g.vscode then
 	return {}
 end
 

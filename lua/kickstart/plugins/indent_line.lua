@@ -6,7 +6,7 @@ return {
 	{ -- Add indentation guides even on blank lines
 		'lukas-reineke/indent-blankline.nvim',
 		dependencies = {
-			'nvim-treesitter/nvim-treesitter',
+			{ 'nvim-treesitter/nvim-treesitter', branch = 'master' },
 			'https://gitlab.com/HiPhish/rainbow-delimiters.nvim',
 		},
 		-- Enable `lukas-reineke/indent-blankline.nvim`

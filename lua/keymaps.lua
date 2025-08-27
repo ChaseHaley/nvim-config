@@ -41,6 +41,10 @@ vim.keymap.set('n', '<C-S-k>', '<C-w>K', { desc = 'Move window to the upper' })
 vim.keymap.set('v', '<', '<gv')
 vim.keymap.set('v', '>', '>gv')
 
+vim.keymap.set('n', 'mm', '%', { desc = 'Goto [M]atching Pair' })
+vim.keymap.set('n', 'M', 'v%', { desc = 'Select [M]atching Pair' })
+vim.keymap.set('o', 'm', '%', { desc = '[M]atching Pair Operator' })
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 

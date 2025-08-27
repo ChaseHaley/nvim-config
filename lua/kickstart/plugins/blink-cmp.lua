@@ -35,6 +35,13 @@ return {
 				opts = {},
 			},
 			'folke/lazydev.nvim',
+			{
+				'fang2hou/blink-copilot',
+				opts = {
+					max_completions = 1, -- Global default for max completions
+					max_attempts = 2, -- Global default for max attempts
+				},
+			},
 		},
 		--- @module 'blink.cmp'
 		--- @type blink.cmp.Config
@@ -62,7 +69,24 @@ return {
 				--
 				-- See :h blink-cmp-config-keymap for defining your own keymap
 				preset = 'default',
+				-- preset = 'super-tab',
 				['<C-j>'] = { 'show', 'show_documentation', 'hide_documentation' },
+				-- ['<Tab>'] = {
+        ['C-y'] = {
+					function(cmp)
+						if vim.b[vim.api.nvim_get_current_buf()].nes_state then
+							cmp.hide()
+							return (require('copilot-lsp.nes').apply_pending_nes() and require('copilot-lsp.nes').walk_cursor_end_edit())
+						end
+						if cmp.snippet_active() then
+							return cmp.accept()
+						else
+							return cmp.select_and_accept()
+						end
+					end,
+					'snippet_forward',
+					'fallback',
+				},
 
 				-- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
 				--    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
@@ -115,19 +139,18 @@ return {
 			},
 
 			sources = {
-				default = { 'lsp', 'path', 'snippets', 'lazydev' }, -- 'copilot'
+				default = { 'lsp', 'copilot', 'path', 'snippets', 'lazydev' },
 				providers = {
 					lsp = {
 						min_keyword_length = 0,
 						-- score_offset = 100,
 					},
-					-- copilot = {
-					-- 	name = 'copilot',
-					-- 	module = 'blink-cmp-copilot',
-					-- 	min_keyword_length = 0,
-					-- 	score_offset = 100,
-					-- 	async = true,
-					-- },
+					copilot = {
+						name = 'copilot',
+						module = 'blink-copilot',
+						score_offset = 100,
+						async = true,
+					},
 					lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
 				},
 			},

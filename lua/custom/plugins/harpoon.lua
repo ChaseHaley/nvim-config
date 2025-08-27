@@ -140,8 +140,8 @@ return {
 			harpoon:list():clear()
 		end, { desc = 'Clear list' })
 
-		vim.keymap.set('n', '<leader>hr', function()
-			harpoon:list():remove()
-		end, { desc = 'Remove current buffer' })
+		-- vim.keymap.set('n', '<leader>hr', function()
+		-- 	harpoon:list():remove()
+		-- end, { desc = 'Remove current buffer' })
 	end,
 }
