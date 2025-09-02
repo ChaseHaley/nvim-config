@@ -35,13 +35,13 @@ return {
 				opts = {},
 			},
 			'folke/lazydev.nvim',
-			{
-				'fang2hou/blink-copilot',
-				opts = {
-					max_completions = 1, -- Global default for max completions
-					max_attempts = 2, -- Global default for max attempts
-				},
-			},
+			-- {
+			-- 	'fang2hou/blink-copilot',
+			-- 	opts = {
+			-- 		max_completions = 1, -- Global default for max completions
+			-- 		max_attempts = 2, -- Global default for max attempts
+			-- 	},
+			-- },
 		},
 		--- @module 'blink.cmp'
 		--- @type blink.cmp.Config
@@ -139,18 +139,18 @@ return {
 			},
 
 			sources = {
-				default = { 'lsp', 'copilot', 'path', 'snippets', 'lazydev' },
+				default = { 'lsp', --[[ 'copilot', ]] 'path', 'snippets', 'lazydev' },
 				providers = {
 					lsp = {
 						min_keyword_length = 0,
 						-- score_offset = 100,
 					},
-					copilot = {
-						name = 'copilot',
-						module = 'blink-copilot',
-						score_offset = 100,
-						async = true,
-					},
+					-- copilot = {
+					-- 	name = 'copilot',
+					-- 	module = 'blink-copilot',
+					-- 	score_offset = 100,
+					-- 	async = true,
+					-- },
 					lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
 				},
 			},
