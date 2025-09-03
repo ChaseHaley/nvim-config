@@ -107,12 +107,14 @@ vim.api.nvim_create_autocmd('FileType', {
 -- vim.o.spelloptions = 'camel'
 -- vim.o.spellsuggest = 'best'
 
+vim.o.foldmethod = 'indent'
+vim.o.foldlevel = 99
 vim.o.conceallevel = 1
 
 --- @type string
 PreviousValidBuffer = ''
 -- vim.api.nvim_set_hl(0, 'MiniStatuslineFilename', { fg = '#ffcc00', bold = true })
-local base_statusline_hl = vim.api.nvim_get_hl(0, { name = "MiniStatuslineFilename" })
+local base_statusline_hl = vim.api.nvim_get_hl(0, { name = 'MiniStatuslineFilename' })
 vim.api.nvim_create_autocmd('BufEnter', {
 	callback = function()
 		local file = vim.fn.expand '%:t'
@@ -122,7 +124,9 @@ vim.api.nvim_create_autocmd('BufEnter', {
 
 			-- Disabling diagnostic since it seems to work fine despite the warning
 			---@diagnostic disable-next-line: param-type-mismatch
-			vim.defer_fn(function() vim.api.nvim_set_hl(0, "MiniStatuslineFilename", base_statusline_hl) end, 5000)
+			vim.defer_fn(function()
+				vim.api.nvim_set_hl(0, 'MiniStatuslineFilename', base_statusline_hl)
+			end, 5000)
 		end
 	end,
 })
