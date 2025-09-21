@@ -102,14 +102,17 @@ vim.api.nvim_create_autocmd('FileType', {
 	end,
 })
 
--- vim.o.spell = true
--- vim.o.spelllang = 'en_us'
--- vim.o.spelloptions = 'camel'
--- vim.o.spellsuggest = 'best'
+vim.o.spell = true
+vim.o.spelllang = 'en_us'
+vim.o.spelloptions = 'camel'
+vim.o.spellsuggest = 'best'
 
-vim.o.foldmethod = 'indent'
-vim.o.foldlevel = 99
+-- vim.o.foldmethod = 'indent'
+vim.o.foldmethod = "marker"
+vim.o.foldmarker = "#region,#endregion"
 vim.o.conceallevel = 1
+vim.o.foldlevel = 99
+
 
 --- @type string
 PreviousValidBuffer = ''

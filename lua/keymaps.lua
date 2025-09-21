@@ -46,6 +46,7 @@ vim.keymap.set('n', 'M', 'v%', { desc = 'Select [M]atching Pair' })
 vim.keymap.set('o', 'm', '%', { desc = '[M]atching Pair Operator' })
 
 vim.keymap.set('x', '<leader>p', '"_dP')
+vim.keymap.set('n', '<leader>gq', '<Cmd>tabc<CR>')
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`

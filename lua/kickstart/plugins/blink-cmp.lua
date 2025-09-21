@@ -72,7 +72,7 @@ return {
 				-- preset = 'super-tab',
 				['<C-j>'] = { 'show', 'show_documentation', 'hide_documentation' },
 				-- ['<Tab>'] = {
-        ['C-y'] = {
+				['C-y'] = {
 					function(cmp)
 						if vim.b[vim.api.nvim_get_current_buf()].nes_state then
 							cmp.hide()
@@ -139,7 +139,12 @@ return {
 			},
 
 			sources = {
-				default = { 'lsp', --[[ 'copilot', ]] 'path', 'snippets', 'lazydev' },
+				default = {
+					'lsp', --[[ 'copilot', ]]
+					'path',
+					'snippets',
+					'lazydev',
+				},
 				providers = {
 					lsp = {
 						min_keyword_length = 0,

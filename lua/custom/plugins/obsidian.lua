@@ -1,7 +1,7 @@
 return {
 	'epwalsh/obsidian.nvim',
 	version = '*', -- recommended, use latest release instead of latest commit
-	lazy = true,
+	event = "VeryLazy",
 	ft = 'markdown',
 	-- Replace the above line with this if you only want to load obsidian.nvim for markdown files in your vault:
 	-- event = {
@@ -16,6 +16,8 @@ return {
 		'nvim-lua/plenary.nvim',
 
 		-- see below for full list of optional dependencies 👇
+		'saghen/blink.cmp',
+		'nvim-telescope/telescope.nvim',
 	},
 	opts = {},
 	config = function()
@@ -29,11 +31,17 @@ return {
 				{
 					name = 'main',
 					path = main_vault_name,
+					strict = true
 				},
 			},
-			completion = { blink = true },
+			completion = {
+				nvim_cmp = false,
+				blink = true,
+			},
 			disable_frontmatter = true,
-			picker = { name = 'telescope.nvim' },
+			picker = {
+				name = 'telescope.nvim',
+			},
 		}
 	end,
 }

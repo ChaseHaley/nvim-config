@@ -69,6 +69,7 @@ return {
 				{ '<leader>t', group = '[T]oggle' },
 				{ '<leader>g', group = '[G]eneral' },
 				{ '<leader>gh', group = 'Git [h]unk', mode = { 'n', 'v' } },
+        { '<leader>gi', group = 'G[i]t' },
 				{ '<leader>h', group = '[H]arpoon' },
 				{ '<leader>grug', group = '[Grug]' },
 				{ '<leader>grugf', group = 'Current [f]ile' },
