@@ -204,6 +204,53 @@ return {
 				},
 			}
 
+			-- Windows undercurl fallback: override highlight groups to use underline instead of undercurl
+			if Is_Windows() then
+				vim.api.nvim_create_autocmd('ColorScheme', {
+					group = vim.api.nvim_create_augroup('windows-undercurl-fallback', { clear = true }),
+					callback = function()
+						-- Get original diagnostic colors to preserve text color
+						local error_hl = vim.api.nvim_get_hl(0, { name = 'DiagnosticError', link = false })
+						local warn_hl = vim.api.nvim_get_hl(0, { name = 'DiagnosticWarn', link = false })
+						local info_hl = vim.api.nvim_get_hl(0, { name = 'DiagnosticInfo', link = false })
+						local hint_hl = vim.api.nvim_get_hl(0, { name = 'DiagnosticHint', link = false })
+
+						-- Override diagnostic underline groups preserving original text colors
+						vim.api.nvim_set_hl(0, 'DiagnosticUnderlineError', { 
+							underline = true, 
+							fg = error_hl.fg,
+							sp = error_hl.fg or '#f38ba8'
+						})
+						vim.api.nvim_set_hl(0, 'DiagnosticUnderlineWarn', { 
+							underline = true, 
+							fg = warn_hl.fg,
+							sp = warn_hl.fg or '#f9e2af'
+						})
+						vim.api.nvim_set_hl(0, 'DiagnosticUnderlineInfo', { 
+							underline = true, 
+							fg = info_hl.fg,
+							sp = info_hl.fg or '#89b4fa'
+						})
+						vim.api.nvim_set_hl(0, 'DiagnosticUnderlineHint', { 
+							underline = true, 
+							fg = hint_hl.fg,
+							sp = hint_hl.fg or '#a6e3a1'
+						})
+
+						-- Override spell checking underline groups (these typically don't have base colors)
+						vim.api.nvim_set_hl(0, 'SpellBad', { underline = true, sp = '#f38ba8' })
+						vim.api.nvim_set_hl(0, 'SpellCap', { underline = true, sp = '#89b4fa' })
+						vim.api.nvim_set_hl(0, 'SpellLocal', { underline = true, sp = '#94e2d5' })
+						vim.api.nvim_set_hl(0, 'SpellRare', { underline = true, sp = '#cba6f7' })
+					end,
+				})
+
+				-- Apply overrides immediately for current colorscheme
+				vim.schedule(function()
+					vim.cmd('doautocmd ColorScheme')
+				end)
+			end
+
 			-- LSP servers and clients are able to communicate to each other what features they support.
 			--  By default, Neovim doesn't support everything that is in the LSP specification.
 			--  When you add blink.cmp, luasnip, etc. Neovim now has *more* capabilities.

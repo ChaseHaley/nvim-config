@@ -65,7 +65,11 @@ return {
 				--     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
 				--   },
 				-- },
-				-- pickers = {}
+				pickers = {
+          find_files = {
+            hidden = true
+          }
+        },
 				defaults = {
 					file_ignore_patterns = {
 						'%__virtual.cs$',
@@ -77,19 +81,19 @@ return {
 						require('telescope.themes').get_dropdown(),
 					},
 					undo = {
-            side_by_side = true,
-            layout_strategy = 'horizontal',
-            layout_config = {
-              preview_width = 0.8,
-            },
+						side_by_side = true,
+						layout_strategy = 'horizontal',
+						layout_config = {
+							preview_width = 0.8,
+						},
 						mappings = {
 							i = {
-                ['<CR>'] = require('telescope-undo.actions').restore,
+								['<CR>'] = require('telescope-undo.actions').restore,
 								['<C-y>'] = require('telescope-undo.actions').yank_additions,
 								['<C-d>'] = require('telescope-undo.actions').yank_deletions,
 							},
 							n = {
-                ['<CR>'] = require('telescope-undo.actions').restore,
+								['<CR>'] = require('telescope-undo.actions').restore,
 								['<C-c>'] = require('telescope-undo.actions').yank_additions,
 								['<C-d>'] = require('telescope-undo.actions').yank_deletions,
 							},
@@ -112,10 +116,13 @@ return {
 			vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
 			vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
 			vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
+			vim.keymap.set('n', '<leader>s;', builtin.spell_suggest, { desc = '[S]earch Spell Suggestions' })
 			vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
 			vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
-      vim.keymap.set('n', '<leader>u', function() vim.cmd('Telescope undo') end, { desc = '[U]ndo History' })
-      vim.keymap.set('n', '<leader>sm', builtin.marks, { desc = '[S]earch [M]arks' })
+			vim.keymap.set('n', '<leader>u', function()
+				vim.cmd 'Telescope undo'
+			end, { desc = '[U]ndo History' })
+			vim.keymap.set('n', '<leader>sm', builtin.marks, { desc = '[S]earch [M]arks' })
 			-- Slightly advanced example of overriding default behavior and theme
 			vim.keymap.set('n', '<leader>/', function()
 				-- You can pass additional configuration to Telescope to change the theme, layout, etc.
@@ -138,6 +145,9 @@ return {
 			vim.keymap.set('n', '<leader>sn', function()
 				builtin.find_files { cwd = vim.fn.stdpath 'config' }
 			end, { desc = '[S]earch [N]eovim files' })
+
+      vim.keymap.set('n', '<leader>sx', builtin.git_status, { desc = 'Search git status' })
+      vim.keymap.set('n', '<leader>so', '<Cmd>ObsidianQuickSwitch<CR>', { desc = '[S]earch [O]bsidian notes' })
 		end,
 	},
 }

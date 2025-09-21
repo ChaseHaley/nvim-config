@@ -38,7 +38,7 @@ return {
 							table.remove(harpoon_files.items, selected_entry.index)
 							current_picker:refresh(finder())
 							vim.defer_fn(function()
-								current_picker:move_selection(0 - selected_entry.index + 2)
+								current_picker:move_selection(0 - selected_entry.index + 1)
 							end, 10)
 						end)
 
