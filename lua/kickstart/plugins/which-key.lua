@@ -76,6 +76,7 @@ return {
 				{ '<leader>o', group = '[O]pencode' },
 				{ '<leader>j', group = '[J]oin or split node' },
 				{ '<leader>n', group = '[N]o neck pain' },
+				{ '<leader>c', group = '[C]laude Code' },
 			},
 		},
 	},
