@@ -163,6 +163,38 @@ return {
 						})
 					end
 
+					vim.api.nvim_create_autocmd({ 'FileType' }, {
+						pattern = 'razor',
+						callback = function()
+							vim.lsp.start {
+								cmd = { 'emmet-language-server', '--stdio' },
+								root_dir = vim.fs.dirname(vim.fs.find({ '.git' }, { upward = true })[1]),
+								-- Read more about this options in the [vscode docs](https://code.visualstudio.com/docs/editor/emmet#_emmet-configuration).
+								-- **Note:** only the options listed in the table are supported.
+								init_options = {
+									---@type table<string, string>
+									includeLanguages = {},
+									--- @type string[]
+									excludeLanguages = {},
+									--- @type string[]
+									extensionsPath = {},
+									--- @type table<string, any> [Emmet Docs](https://docs.emmet.io/customization/preferences/)
+									preferences = {},
+									--- @type boolean Defaults to `true`
+									showAbbreviationSuggestions = true,
+									--- @type "always" | "never" Defaults to `"always"`
+									showExpandedAbbreviation = 'always',
+									--- @type boolean Defaults to `false`
+									showSuggestionsAsSnippets = false,
+									--- @type table<string, any> [Emmet Docs](https://docs.emmet.io/customization/syntax-profiles/)
+									syntaxProfiles = {},
+									--- @type table<string, string> [Emmet Docs](https://docs.emmet.io/customization/snippets/#variables)
+									variables = {},
+								},
+							}
+						end,
+					})
+
 					-- The following code creates a keymap to toggle inlay hints in your
 					-- code, if the language server you are using supports them
 					--
@@ -216,25 +248,25 @@ return {
 						local hint_hl = vim.api.nvim_get_hl(0, { name = 'DiagnosticHint', link = false })
 
 						-- Override diagnostic underline groups preserving original text colors
-						vim.api.nvim_set_hl(0, 'DiagnosticUnderlineError', { 
-							underline = true, 
+						vim.api.nvim_set_hl(0, 'DiagnosticUnderlineError', {
+							underline = true,
 							fg = error_hl.fg,
-							sp = error_hl.fg or '#f38ba8'
+							sp = error_hl.fg or '#f38ba8',
 						})
-						vim.api.nvim_set_hl(0, 'DiagnosticUnderlineWarn', { 
-							underline = true, 
+						vim.api.nvim_set_hl(0, 'DiagnosticUnderlineWarn', {
+							underline = true,
 							fg = warn_hl.fg,
-							sp = warn_hl.fg or '#f9e2af'
+							sp = warn_hl.fg or '#f9e2af',
 						})
-						vim.api.nvim_set_hl(0, 'DiagnosticUnderlineInfo', { 
-							underline = true, 
+						vim.api.nvim_set_hl(0, 'DiagnosticUnderlineInfo', {
+							underline = true,
 							fg = info_hl.fg,
-							sp = info_hl.fg or '#89b4fa'
+							sp = info_hl.fg or '#89b4fa',
 						})
-						vim.api.nvim_set_hl(0, 'DiagnosticUnderlineHint', { 
-							underline = true, 
+						vim.api.nvim_set_hl(0, 'DiagnosticUnderlineHint', {
+							underline = true,
 							fg = hint_hl.fg,
-							sp = hint_hl.fg or '#a6e3a1'
+							sp = hint_hl.fg or '#a6e3a1',
 						})
 
 						-- Override spell checking underline groups (these typically don't have base colors)
@@ -247,7 +279,7 @@ return {
 
 				-- Apply overrides immediately for current colorscheme
 				vim.schedule(function()
-					vim.cmd('doautocmd ColorScheme')
+					vim.cmd 'doautocmd ColorScheme'
 				end)
 			end
 

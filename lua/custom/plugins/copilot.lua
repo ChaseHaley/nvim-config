@@ -51,7 +51,7 @@ return {
 				keymap = {
 					accept_and_goto = "<leader>l",
 					accept = false,
-					dismiss = "<Esc>",
+					dismiss = "<M-n>",
 				}
 			},
 			filetypes = {
@@ -93,6 +93,9 @@ return {
 			},
 			server_opts_overrides = {},
 		},
+		init = function ()
+			vim.cmd('Copilot disable')
+		end
 	},
 	-- {
 	-- 	'giuxtaposition/blink-cmp-copilot',
