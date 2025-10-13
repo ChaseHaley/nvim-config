@@ -91,6 +91,9 @@ vim.o.shiftwidth = tabSize
 -- This option makes the Tab key behave as if tabs were set to a different value, allowing you to insert or delete a specific number of spaces or tabs with the Tab and Backspace keys.
 vim.o.softtabstop = tabSize
 
+vim.o.autoindent = true;
+vim.o.smartindent = true;
+
 -- Ensure specific filetypes use tabs
 vim.api.nvim_create_autocmd('FileType', {
 	pattern = { 'css', 'scss', 'sass', 'javascript', 'typescript', 'html', 'vue', 'jsx', 'tsx' },

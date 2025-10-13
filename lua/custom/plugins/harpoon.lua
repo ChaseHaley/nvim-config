@@ -128,6 +128,22 @@ return {
 			harpoon:list():select(4)
 		end, { desc = 'Go to file 4' })
 
+		vim.keymap.set('n', '<leader>hja', function()
+			harpoon:list():select(5)
+		end, { desc = 'Go to file 5' })
+
+		vim.keymap.set('n', '<leader>hjs', function()
+			harpoon:list():select(6)
+		end, { desc = 'Go to file 6' })
+
+		vim.keymap.set('n', '<leader>hjd', function()
+			harpoon:list():select(7)
+		end, { desc = 'Go to file 7' })
+
+		vim.keymap.set('n', '<leader>hjf', function()
+			harpoon:list():select(8)
+		end, { desc = 'Go to file 8' })
+
 		vim.keymap.set('n', '<leader>hq', function()
 			harpoon:list():prev()
 		end, { desc = 'Go to previous file' })
