@@ -105,6 +105,14 @@ vim.api.nvim_create_autocmd('FileType', {
 	end,
 })
 
+-- Disable concealing for JSON files to always show quotes
+vim.api.nvim_create_autocmd('FileType', {
+	pattern = { 'json', 'jsonc' },
+	callback = function()
+		vim.opt_local.conceallevel = 0
+	end,
+})
+
 vim.o.spell = true
 vim.o.spelllang = 'en_us'
 vim.o.spelloptions = 'camel'
