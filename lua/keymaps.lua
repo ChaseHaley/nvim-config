@@ -41,12 +41,13 @@ vim.keymap.set('n', '<C-S-k>', '<C-w>K', { desc = 'Move window to the upper' })
 vim.keymap.set('v', '<', '<gv')
 vim.keymap.set('v', '>', '>gv')
 
-vim.keymap.set('n', 'mm', '%', { desc = 'Goto [M]atching Pair' })
-vim.keymap.set('n', 'M', 'v%', { desc = 'Select [M]atching Pair' })
-vim.keymap.set('o', 'm', '%', { desc = '[M]atching Pair Operator' })
+vim.keymap.set('x', '<leader>zp', '"_dP', { desc = 'Put and keep registry' })
+vim.keymap.set('n', '<leader>zq', '<Cmd>tabc<CR>', { desc = 'Close tab' })
 
-vim.keymap.set('x', '<leader>p', '"_dP')
-vim.keymap.set('n', '<leader>gq', '<Cmd>tabc<CR>')
+-- Enters 3 empty lines below the cursor and sets cursor to the middle line
+vim.keymap.set('n', '<leader>zo', 'o<Esc>o<Esc>O', { desc = 'Begin new block below' })
+-- Enters 3 empty lines above the cursor and sets cursor to the middle line
+vim.keymap.set('n', '<leader>zO', 'O<Esc>O<Esc>o', { desc = 'Begin new block above' })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
