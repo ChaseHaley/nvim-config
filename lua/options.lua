@@ -3,6 +3,9 @@
 -- NOTE: You can change these options as you wish!
 --  For more options, you can see `:help option-list`
 
+vim.opt.exrc  = true              -- load .nvim.lua / .nvimrc / .exrc from cwd
+vim.opt.secure = true             -- restrict dangerous commands in local configs
+
 -- Make line numbers default
 vim.o.number = true
 -- You can also add relative line numbers, to help with jumping.

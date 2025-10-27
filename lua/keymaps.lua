@@ -45,28 +45,7 @@ vim.keymap.set('x', '<leader>zp', '"_dP', { desc = 'Put and keep registry' })
 vim.keymap.set('n', '<leader>zq', '<Cmd>tabc<CR>', { desc = 'Close tab' })
 
 -- Enters 3 empty lines below the cursor and sets cursor to the middle line
-vim.keymap.set('n', '<leader>zo', 'o<Esc>o<Esc>O', { desc = 'Begin new block below' })
+vim.keymap.set('n', '<leader>zo', 'o<CR><CR><Esc>k', { desc = 'Begin new block below' })
+
 -- Enters 3 empty lines above the cursor and sets cursor to the middle line
-vim.keymap.set('n', '<leader>zO', 'O<Esc>O<Esc>o', { desc = 'Begin new block above' })
-
--- [[ Basic Autocommands ]]
---  See `:help lua-guide-autocommands`
-
--- Highlight when yanking (copying) text
---  Try it with `yap` in normal mode
---  See `:help vim.hl.on_yank()`
-vim.api.nvim_create_autocmd('TextYankPost', {
-	desc = 'Highlight when yanking (copying) text',
-	group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
-	callback = function()
-		vim.hl.on_yank()
-	end,
-})
-
-vim.api.nvim_create_autocmd('FileType', {
-	pattern = 'rust',
-	group = vim.api.nvim_create_augroup('rust-disable-single-quote', { clear = true }),
-	callback = function()
-		MiniPairs.unmap('i', "'", "''")
-	end,
-})
+vim.keymap.set('n', '<leader>zO', 'O<CR><CR><Esc>k', { desc = 'Begin new block above' })

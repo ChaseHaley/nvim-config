@@ -25,6 +25,7 @@ return {
 				typescript = { 'eslint_d' },
 				css = { 'prettierd' },
 				scss = { 'prettierd' },
+				cpp = { 'clang-format' },
 			},
 
 			formatters = {
