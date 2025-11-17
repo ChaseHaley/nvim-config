@@ -3,13 +3,14 @@ return {
 	branch = 'harpoon2',
 	dependencies = {
 		'nvim-lua/plenary.nvim',
-		'nvim-telescope/telescope.nvim',
+		'nvim-telescope/telescope.nvim', -- NOTE: Telescope used here for gap-filling only (advanced harpoon management)
 	},
 	config = function()
 		local harpoon = require 'harpoon'
 		harpoon:setup()
 
-		-- Enable telescope support
+		-- Enable telescope support for advanced harpoon list management
+		-- NOTE: This is one of the few places where Telescope is still used to fill gaps in Snacks.picker functionality
 		local conf = require('telescope.config').values
 		local function toggle_telescope(harpoon_files)
 			local finder = function()
@@ -30,6 +31,7 @@ return {
 					previewer = conf.file_previewer({}),
 					sorter = conf.generic_sorter {},
 					attach_mappings = function(prompt_bufnr, map)
+						-- Delete entry with Alt+d
 						map('i', '<M-d>', function()
 							local state = require 'telescope.actions.state'
 							local selected_entry = state.get_selected_entry()
@@ -42,6 +44,7 @@ return {
 							end, 10)
 						end)
 
+						-- Move entries up/down with Alt+j/k
 						local function swap_entries(delta)
 							local state = require 'telescope.actions.state'
 							local sel = state.get_selected_entry()
@@ -78,26 +81,6 @@ return {
 					end,
 				})
 				:find()
-
-			-- require('telescope.pickers')
-			-- 	.new({}, {
-			-- 		prompt_title = 'Harpoon',
-			-- 		finder = finder(),
-			-- 		previewer = conf.file_previewer {},
-			-- 		sorter = conf.generic_sorter {},
-			-- 		attach_mappings = function(prompt, bufnr, map)
-			-- 			map('i', '<C-d>', function()
-			-- 				local state = require 'telescope.actions.state'
-			-- 				local selected_entry = state.get_selected_etrny()
-			-- 				local current_picker = state.get_current_picker(prompt_bufnr)
-			--
-			-- 				table.remove(harpoon_files.items, selected_entry.index)
-			-- 				current_picker:refresh(finder())
-			-- 			end)
-			-- 			return true
-			-- 		end,
-			-- 	})
-			-- 	:find()
 		end
 
 		vim.keymap.set('n', '<leader>ho', function()

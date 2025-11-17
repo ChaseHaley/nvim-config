@@ -17,9 +17,25 @@ This is a Neovim configuration based on kickstart-modular.nvim, a fork of kickst
 - **lua/lazy-plugins.lua**: Plugin configuration loader
 
 ### Plugin Organization
-- **lua/kickstart/plugins/**: Core kickstart plugins (gitsigns, telescope, lspconfig, etc.)
+- **lua/kickstart/plugins/**: Core kickstart plugins (gitsigns, lspconfig, conform, etc.)
 - **lua/custom/plugins/**: Custom plugin configurations organized as individual files
 - Plugin loading uses `{ import = 'custom.plugins' }` to automatically load all files in the custom plugins directory
+
+### Picker/Fuzzy Finder Architecture
+**IMPORTANT**: This configuration uses a dual-picker approach:
+
+- **Primary Picker: Snacks.picker** (lua/custom/plugins/snacks.lua)
+  - Used for ALL standard fuzzy finding operations
+  - File finding, grep, LSP symbols, diagnostics, buffers, marks, help, keymaps, etc.
+  - All `<leader>s*` keymaps use Snacks.picker
+  - LSP goto keymaps (`grr`, `grd`, `gri`, `grt`) use Snacks.picker
+
+- **Gap-Filling Picker: Telescope** (lua/kickstart/plugins/telescope.nvim)
+  - Kept installed but lazy-loaded for specific use cases only
+  - Used ONLY where Snacks.picker lacks functionality
+  - Current gap-filling use: Harpoon list management (reordering/deleting with custom in-picker keymaps)
+  - DO NOT use Telescope for standard file/grep/LSP operations
+  - If adding new Telescope usage, document it as a gap-filling case with a NOTE comment
 
 ### Key Custom Plugins
 - **copilot.lua**: GitHub Copilot integration with custom filetypes (typescript, cs, xml, csv only)
@@ -40,7 +56,7 @@ This is a Neovim configuration based on kickstart-modular.nvim, a fork of kickst
   - Single quotes preferred
   - No call parentheses
 
-### File Conventions  
+### File Conventions
 - **Tab Settings**: Uses actual tabs (not spaces) with 4-space tab width
 - **Indentation**: 4-space indentation for most files
 - **Auto-formatting**: Web files (css, scss, js, ts, html, vue, jsx, tsx) use tabs with 4-space width
