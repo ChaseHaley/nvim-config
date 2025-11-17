@@ -16,6 +16,7 @@ return {
 		--- @module 'copilot'
 		--- @type CopilotConfig
 		opts = {
+			disable_limit_reached_message = false,
 			panel = {
 				enabled = true,
 				auto_refresh = false,
@@ -47,6 +48,7 @@ return {
 				},
 			},
 			nes = {
+				auto_trigger = true,
 				enabled = true,
 				keymap = {
 					accept_and_goto = "<leader>l",
