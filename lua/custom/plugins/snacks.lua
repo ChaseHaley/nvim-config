@@ -62,7 +62,7 @@ return {
 		{
 			'<leader>sf',
 			function()
-				require('snacks').picker.files()
+				require('snacks').picker.smart()
 			end,
 			desc = '[S]earch [F]iles',
 		},
@@ -74,11 +74,18 @@ return {
 			desc = '[S]earch [I]gnored [F]iles',
 		},
 		{
-			'<leader>st',
+			'<leader>sp',
 			function()
-				require('snacks').picker.select()
+				require('snacks').picker.pickers()
 			end,
-			desc = '[S]earch [T]elescope',
+			desc = '[S]earch [P]ickers',
+		},
+		{
+			'<leader>su',
+			function()
+				require('snacks').picker.undo()
+			end,
+			desc = '[S]earch [U]ndo',
 		},
 		{
 			'<leader>sw',
@@ -107,7 +114,7 @@ return {
 			function()
 				require('snacks').picker.diagnostics { severity = vim.diagnostic.severity.WARN }
 			end,
-			desc = '[S]earch [D]iagnostic [W]arnings+',
+			desc = '[S]earch [D]iagnostic [W]arnings',
 		},
 		{
 			'<leader>sdd',
@@ -169,6 +176,13 @@ return {
 			'<leader>sx',
 			function()
 				require('snacks').picker.git_status()
+			end,
+			desc = 'Search git status',
+		},
+		{
+			'<leader>s;',
+			function()
+				require('snacks').picker.spelling()
 			end,
 			desc = 'Search git status',
 		},

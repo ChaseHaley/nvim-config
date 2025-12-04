@@ -147,3 +147,25 @@ vim.api.nvim_create_autocmd('BufEnter', {
 		end
 	end,
 })
+
+
+
+-- Use PowerShell for :make, :! etc.
+vim.opt.shell = "pwsh"  -- or "powershell"
+vim.opt.shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command"
+vim.opt.shellquote = ""
+vim.opt.shellxquote = ""
+
+-- >>> The important part: write to the temp file path Neovim gives (%s)
+vim.opt.shellpipe  = '2>&1 | Tee-Object -FilePath "%s"'
+vim.opt.shellredir = '2>&1 | Out-File -FilePath "%s" -Encoding UTF8'
+
+-- TypeScript project build
+vim.opt.makeprg = "tsc -p tsconfig.json --noEmit --pretty false"
+
+-- Parse: path\file.ts(12,34): error TS1234: Message
+vim.opt.errorformat = table.concat({
+  "%E%f(%l\\,%c): error %m",
+  "%W%f(%l\\,%c): warning %m",
+  "%-G%.%#"
+}, ",")
