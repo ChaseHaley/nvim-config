@@ -21,6 +21,17 @@ return {
 
 				return require('telescope.finders').new_table {
 					results = paths,
+					entry_maker = function(entry)
+						-- Custom entry maker to handle both absolute and relative paths
+						-- This prevents Telescope from misinterpreting Windows drive letters (C:, D:, etc.)
+						-- as line/column indicators
+						return {
+							value = entry,
+							display = entry,
+							ordinal = entry,
+							path = entry,
+						}
+					end,
 				}
 			end
 
