@@ -49,3 +49,6 @@ vim.keymap.set('n', '<leader>zo', 'o<CR><CR><Esc>k', { desc = 'Begin new block b
 
 -- Enters 3 empty lines above the cursor and sets cursor to the middle line
 vim.keymap.set('n', '<leader>zO', 'O<CR><CR><Esc>k', { desc = 'Begin new block above' })
+
+vim.keymap.set('x', '<leader>z/', '<C-\\><C-n>`</\\%V', { desc = 'Search forward within visual selection' })
+vim.keymap.set('x', '<leader>z?', '<C-\\><C-n>`>?\\%V', { desc = 'Search backward within visual selection' })
