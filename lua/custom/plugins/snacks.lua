@@ -67,13 +67,6 @@ return {
 			desc = '[S]earch [F]iles',
 		},
 		{
-			'<leader>sif',
-			function()
-				require('snacks').picker.files { hidden = true, no_ignore = true }
-			end,
-			desc = '[S]earch [I]gnored [F]iles',
-		},
-		{
 			'<leader>sp',
 			function()
 				require('snacks').picker.pickers()

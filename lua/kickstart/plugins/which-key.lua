@@ -66,6 +66,7 @@ return {
 			spec = {
 				{ '<leader>s', group = '[S]earch' },
 				{ '<leader>ss', group = '[S]earch [S]ymbols' },
+				{ '<leader>sd', group = '[S]earch [D]iagnostics' },
 				{ '<leader>t', group = '[T]oggle' },
 				{ '<leader>g', group = '[G]eneral' },
 				{ '<leader>gh', group = 'Git [h]unk', mode = { 'n', 'v' } },
