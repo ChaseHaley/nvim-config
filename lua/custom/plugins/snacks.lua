@@ -19,6 +19,9 @@ return {
 			layout = {
 				preset = 'default'
 			},
+			db = {
+				sqlite3_path = vim.fn.getenv('LIBSQLITE');
+			}
 		},
 		quickfile = { enabled = false },
 		scope = { enabled = false },
