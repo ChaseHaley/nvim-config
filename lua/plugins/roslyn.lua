@@ -1,5 +1,8 @@
 vim.pack.add({ gh("seblyng/roslyn.nvim") })
-require("roslyn").setup({
+
+--- @module "roslyn.config"
+--- @type RoslynNvimConfig
+local opts = {
 	-- "auto" | "roslyn" | "off"
 	--
 	-- - "auto": Does nothing for filewatching, leaving everything as default
@@ -35,7 +38,7 @@ require("roslyn").setup({
 	-- Whether or not to look for solution files in the child of the (root).
 	-- Set this to true if you have some projects that are not a child of the
 	-- directory with the solution file
-	broad_search = false,
+	broad_search = true,
 
 	-- Whether or not to lock the solution target after the first attach.
 	-- This will always attach to the target in `vim.g.roslyn_nvim_selected_solution`.
@@ -44,4 +47,6 @@ require("roslyn").setup({
 
 	-- If the plugin should silence notifications about initialization
 	silent = false,
-})
+}
+
+require("roslyn").setup(opts)
