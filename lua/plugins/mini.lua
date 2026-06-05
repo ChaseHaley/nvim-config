@@ -2,10 +2,10 @@ vim.pack.add({ gh("echasnovski/mini.nvim") })
 require("mini.ai").setup({
 	n_lines = 500,
 	-- NOTE: Avoid conflicts with the built-in incremental selection mappings on Neovim>=0.12 (see `:help treesitter-incremental-selection`)
-	mappings = {
-		around_next = "aa",
-		inside_next = "ii",
-	},
+	-- mappings = {
+	-- 	around_next = "aa",
+	-- 	inside_next = "ii",
+	-- },
 })
 require("mini.surround").setup({})
 require("mini.icons").setup({})

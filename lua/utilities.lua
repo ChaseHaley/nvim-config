@@ -3,5 +3,5 @@ function gh(repo)
 end
 
 function cb(repo)
-	return "https://codeberg.com/" .. repo
+	return "https://codeberg.org/" .. repo
 end

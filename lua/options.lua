@@ -3,8 +3,8 @@
 -- NOTE: You can change these options as you wish!
 --  For more options, you can see `:help option-list`
 
-vim.opt.exrc  = true              -- load .nvim.lua / .nvimrc / .exrc from cwd
-vim.opt.secure = true             -- restrict dangerous commands in local configs
+vim.opt.exrc = true -- load .nvim.lua / .nvimrc / .exrc from cwd
+vim.opt.secure = true -- restrict dangerous commands in local configs
 
 -- Make line numbers default
 vim.o.number = true
@@ -18,7 +18,7 @@ vim.o.relativenumber = true
 vim.o.wrap = false
 
 -- Enable mouse mode, can be useful for resizing splits for example!
-vim.o.mouse = 'a'
+vim.o.mouse = "a"
 
 -- Don't show the mode, since it's already in the status line
 vim.o.showmode = false
@@ -28,7 +28,7 @@ vim.o.showmode = false
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
 vim.schedule(function()
-	vim.o.clipboard = 'unnamedplus'
+	vim.o.clipboard = "unnamedplus"
 end)
 
 -- Enable break indent
@@ -42,7 +42,7 @@ vim.o.ignorecase = true
 vim.o.smartcase = true
 
 -- Keep signcolumn on by default
-vim.o.signcolumn = 'yes'
+vim.o.signcolumn = "yes"
 
 -- Decrease update time
 vim.o.updatetime = 250
@@ -70,7 +70,7 @@ vim.o.list = false
 -- }
 
 -- Preview substitutions live, as you type!
-vim.o.inccommand = 'split'
+vim.o.inccommand = "split"
 
 -- Show which line your cursor is on
 vim.o.cursorline = true
@@ -95,12 +95,12 @@ vim.o.shiftwidth = tabSize
 -- This option makes the Tab key behave as if tabs were set to a different value, allowing you to insert or delete a specific number of spaces or tabs with the Tab and Backspace keys.
 vim.o.softtabstop = tabSize
 
-vim.o.autoindent = true;
-vim.o.smartindent = true;
+vim.o.autoindent = true
+vim.o.smartindent = true
 
 -- Ensure specific filetypes use tabs
-vim.api.nvim_create_autocmd('FileType', {
-	pattern = { 'css', 'scss', 'sass', 'javascript', 'typescript', 'html', 'vue', 'jsx', 'tsx' },
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = { "css", "scss", "sass", "javascript", "typescript", "html", "vue", "jsx", "tsx" },
 	callback = function()
 		vim.bo.expandtab = false
 		vim.bo.tabstop = 4
@@ -110,17 +110,17 @@ vim.api.nvim_create_autocmd('FileType', {
 })
 
 -- Disable concealing for JSON files to always show quotes
-vim.api.nvim_create_autocmd('FileType', {
-	pattern = { 'json', 'jsonc' },
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = { "json", "jsonc" },
 	callback = function()
 		vim.opt_local.conceallevel = 0
 	end,
 })
 
 vim.o.spell = true
-vim.o.spelllang = 'en_us'
-vim.o.spelloptions = 'camel'
-vim.o.spellsuggest = 'best'
+vim.o.spelllang = "en_us"
+vim.o.spelloptions = "camel"
+vim.o.spellsuggest = "best"
 
 -- vim.o.foldmethod = 'indent'
 vim.o.foldmethod = "marker"
@@ -128,37 +128,34 @@ vim.o.foldmarker = "#region,#endregion"
 vim.o.conceallevel = 1
 vim.o.foldlevel = 99
 
-
 --- @type string
-PreviousValidBuffer = ''
+PreviousValidBuffer = ""
 -- vim.api.nvim_set_hl(0, 'MiniStatuslineFilename', { fg = '#ffcc00', bold = true })
-local base_statusline_hl = vim.api.nvim_get_hl(0, { name = 'MiniStatuslineFilename' })
-vim.api.nvim_create_autocmd('BufEnter', {
+local base_statusline_hl = vim.api.nvim_get_hl(0, { name = "MiniStatuslineFilename" })
+vim.api.nvim_create_autocmd("BufEnter", {
 	callback = function()
-		local file = vim.fn.expand '%:t'
+		local file = vim.fn.expand("%:t")
 		if string.len(file) > 0 and file ~= PreviousValidBuffer then
 			PreviousValidBuffer = file
-			vim.api.nvim_set_hl(0, 'MiniStatuslineFilename', { fg = '#ffcc00', bold = true })
+			vim.api.nvim_set_hl(0, "MiniStatuslineFilename", { fg = "#ffcc00", bold = true })
 
 			-- Disabling diagnostic since it seems to work fine despite the warning
 			---@diagnostic disable-next-line: param-type-mismatch
 			vim.defer_fn(function()
-				vim.api.nvim_set_hl(0, 'MiniStatuslineFilename', base_statusline_hl)
+				vim.api.nvim_set_hl(0, "MiniStatuslineFilename", base_statusline_hl)
 			end, 5000)
 		end
 	end,
 })
 
-
-
 -- Use PowerShell for :make, :! etc.
-vim.opt.shell = "pwsh"  -- or "powershell"
+vim.opt.shell = "pwsh" -- or "powershell"
 vim.opt.shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command"
 vim.opt.shellquote = ""
 vim.opt.shellxquote = ""
 
 -- >>> The important part: write to the temp file path Neovim gives (%s)
-vim.opt.shellpipe  = '2>&1 | Tee-Object -FilePath "%s"'
+vim.opt.shellpipe = '2>&1 | Tee-Object -FilePath "%s"'
 vim.opt.shellredir = '2>&1 | Out-File -FilePath "%s" -Encoding UTF8'
 
 -- TypeScript project build
@@ -166,7 +163,31 @@ vim.opt.makeprg = "tsc -p tsconfig.json --noEmit --pretty false"
 
 -- Parse: path\file.ts(12,34): error TS1234: Message
 vim.opt.errorformat = table.concat({
-  "%E%f(%l\\,%c): error %m",
-  "%W%f(%l\\,%c): warning %m",
-  "%-G%.%#"
+	"%E%f(%l\\,%c): error %m",
+	"%W%f(%l\\,%c): warning %m",
+	"%-G%.%#",
 }, ",")
+
+-- Diagnostic Config & Keymaps
+--  See `:help vim.diagnostic.Opts`
+vim.diagnostic.config({
+	update_in_insert = false,
+	severity_sort = true,
+	float = { border = "rounded", source = "if_many" },
+	underline = { severity = { min = vim.diagnostic.severity.WARN } },
+
+	-- Can switch between these as you prefer
+	virtual_text = true, -- Text shows up at the end of the line
+	virtual_lines = false, -- Text shows up underneath the line, with virtual lines
+
+	-- Auto open the float, so you can easily read the errors when jumping with `[d` and `]d`
+	jump = {
+		on_jump = function(_, bufnr)
+			vim.diagnostic.open_float({
+				bufnr = bufnr,
+				scope = "cursor",
+				focus = false,
+			})
+		end,
+	},
+})
