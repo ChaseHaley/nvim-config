@@ -80,6 +80,20 @@ local function commit_link(plugin, rev)
 	return ("[%s](%s)"):format(short, url)
 end
 
+local function plugin_link(plugin)
+	local name = plugin_name(plugin)
+	local url = web_url(plugin)
+	if not url then
+		return name
+	end
+
+	return ("[%s](%s)"):format(name, url)
+end
+
+local function plugin_label(item)
+	return plugin_link(item.plugin) .. string.rep(" ", math.max(1, 28 - #item.name))
+end
+
 local function target_ref(branch)
 	return inspect_ref .. "/" .. branch
 end
@@ -102,6 +116,70 @@ local function display_target(target)
 	return display
 end
 
+local function unique_candidates(candidates)
+	local seen = {}
+	local unique = {}
+	for _, candidate in ipairs(candidates) do
+		if not seen[candidate] then
+			seen[candidate] = true
+			unique[#unique + 1] = candidate
+		end
+	end
+
+	return unique
+end
+
+local function parse_semver(value)
+	local version_text = value:gsub("^v", "")
+	local ok, parsed = pcall(vim.version.parse, version_text)
+	if ok then
+		return parsed
+	end
+end
+
+local function version_range_has(range, version)
+	local ok, has = pcall(function()
+		return range:has(version)
+	end)
+
+	return ok and has
+end
+
+local function branch_semver(branch)
+	local major, minor, patch = branch:match("^v?(%d+)%.(%d+)%.(%d+)$")
+	if major then
+		return vim.version.parse(("%s.%s.%s"):format(major, minor, patch))
+	end
+
+	major, minor = branch:match("^v?(%d+)%.(%d+)$")
+	if major then
+		return vim.version.parse(("%s.%s.0"):format(major, minor))
+	end
+
+	major = branch:match("^v?(%d+)$")
+	if major then
+		return vim.version.parse(("%s.0.0"):format(major))
+	end
+end
+
+local function blocked_version_branch(plugin, range, latest_allowed_version)
+	local blocked
+	if type(plugin.branches) ~= "table" then
+		return nil
+	end
+
+	for _, branch in ipairs(plugin.branches) do
+		local parsed = branch_semver(branch)
+		if parsed and not version_range_has(range, parsed) and (not latest_allowed_version or latest_allowed_version < parsed) then
+			if not blocked or blocked.version < parsed then
+				blocked = { label = branch .. " branch", version = parsed }
+			end
+		end
+	end
+
+	return blocked
+end
+
 local function fetched_tags(plugin)
 	local result = vim.system({
 		"git",
@@ -119,46 +197,80 @@ local function fetched_tags(plugin)
 	return vim.split(trim(result.stdout), "\n", { plain = true })
 end
 
-local function version_range_target(plugin)
+local function version_range_info(plugin)
 	local version = plugin.spec.version
 	if type(version) ~= "table" or type(version.has) ~= "function" then
 		return nil
 	end
 
-	local best_tag
-	local best_version
-	for _, tag in ipairs(fetched_tags(plugin)) do
-		local version_text = tag:gsub("^v", "")
-		local ok, parsed = pcall(vim.version.parse, version_text)
-		if ok and parsed then
-			local has_ok, has = pcall(function()
-				return version:has(parsed)
-			end)
+	local latest_allowed_tag
+	local latest_allowed_version
+	local latest_tag
+	local latest_version
 
-			if has_ok and has and (not best_version or best_version < parsed) then
-				best_tag = tag
-				best_version = parsed
+	for _, tag in ipairs(fetched_tags(plugin)) do
+		local parsed = parse_semver(tag)
+		if parsed then
+			if not latest_version or latest_version < parsed then
+				latest_tag = tag
+				latest_version = parsed
+			end
+
+			if version_range_has(version, parsed) and (not latest_allowed_version or latest_allowed_version < parsed) then
+				latest_allowed_tag = tag
+				latest_allowed_version = parsed
 			end
 		end
 	end
 
-	return best_tag and tag_ref(best_tag) or nil
+	local blocked
+	if latest_version and latest_tag and not version_range_has(version, latest_version) then
+		blocked = { label = "tag " .. latest_tag, version = latest_version }
+	end
+
+	local branch_blocked = blocked_version_branch(plugin, version, latest_allowed_version)
+	if branch_blocked and (not blocked or blocked.version < branch_blocked.version) then
+		blocked = branch_blocked
+	end
+
+	local info = {
+		restricted = true,
+		version_label = tostring(version),
+		latest_allowed = latest_allowed_tag,
+		blocked_label = blocked and blocked.label or nil,
+	}
+
+	if not latest_allowed_tag then
+		return info, "no tag matching version " .. tostring(version)
+	end
+
+	info.target = tag_ref(latest_allowed_tag)
+	info.target_label = "tag " .. latest_allowed_tag
+	return info
 end
 
-local function target_candidates(plugin)
+local function string_version_candidates(version)
 	local candidates = {}
-	local version = plugin.spec.version
-	local range_target = version_range_target(plugin)
+	candidates[#candidates + 1] = target_ref(version)
+	candidates[#candidates + 1] = tag_ref(version)
+	candidates[#candidates + 1] = version
+	return unique_candidates(candidates)
+end
 
-	if range_target then
-		candidates[#candidates + 1] = range_target
+local function string_version_label(version, target)
+	if target:find("^" .. vim.pesc(inspect_tag_ref) .. "/") then
+		return "tag " .. version
 	end
 
-	if type(version) == "string" and version ~= "" then
-		candidates[#candidates + 1] = target_ref(version)
-		candidates[#candidates + 1] = version
+	if target:find("^" .. vim.pesc(inspect_ref) .. "/") then
+		return "branch " .. version
 	end
 
+	return "revision " .. version
+end
+
+local function default_target_candidates(plugin)
+	local candidates = {}
 	candidates[#candidates + 1] = "@{u}"
 	candidates[#candidates + 1] = target_ref("HEAD")
 
@@ -171,16 +283,7 @@ local function target_candidates(plugin)
 	candidates[#candidates + 1] = target_ref("main")
 	candidates[#candidates + 1] = target_ref("master")
 
-	local seen = {}
-	local unique = {}
-	for _, candidate in ipairs(candidates) do
-		if not seen[candidate] then
-			seen[candidate] = true
-			unique[#unique + 1] = candidate
-		end
-	end
-
-	return unique
+	return unique_candidates(candidates)
 end
 
 local function fetch_plugin(plugin, cb)
@@ -277,26 +380,59 @@ local function sorted_results()
 end
 
 local function line_for(item)
+	local function summary(include_default)
+		local target_info = item.target_info
+		if not target_info then
+			return include_default and display_target(item.target) or ""
+		end
+
+		if target_info.restricted then
+			local parts = { "restricted " .. target_info.version_label }
+			if target_info.latest_allowed then
+				parts[#parts + 1] = "target " .. target_info.latest_allowed
+			elseif target_info.target_label then
+				parts[#parts + 1] = "target " .. target_info.target_label
+			end
+
+			if target_info.blocked_label then
+				parts[#parts + 1] = "newer " .. target_info.blocked_label .. " outside range"
+			end
+
+			return table.concat(parts, "; ")
+		end
+
+		if target_info.explicit then
+			return "version " .. target_info.target_label
+		end
+
+		return include_default and target_info.target_label or ""
+	end
+
 	if item.status == "checking" then
-		return ("%-28s checking"):format(item.name)
+		return plugin_label(item) .. "checking"
 	end
 
 	if item.status == "current" then
-		return ("%-28s current  %s"):format(item.name, commit_link(item.plugin, item.current))
+		local detail = summary(false)
+		if detail ~= "" then
+			return ("%scurrent  %s  %s"):format(plugin_label(item), commit_link(item.plugin, item.current), detail)
+		end
+
+		return ("%scurrent  %s"):format(plugin_label(item), commit_link(item.plugin, item.current))
 	end
 
 	if item.status == "behind" then
-		return ("%-28s %3d %-7s  %s -> %s  %s"):format(
-			item.name,
+		return ("%s%3d %-7s  %s -> %s  %s"):format(
+			plugin_label(item),
 			item.count,
 			commit_word(item.count),
 			commit_link(item.plugin, item.current),
 			commit_link(item.plugin, item.latest),
-			display_target(item.target)
+			summary(true)
 		)
 	end
 
-	return ("%-28s error    %s"):format(item.name, item.error or "unknown error")
+	return ("%serror    %s"):format(plugin_label(item), item.error or "unknown error")
 end
 
 local function render_check_buffer()
@@ -307,7 +443,7 @@ local function render_check_buffer()
 	local lines = {
 		"vim.pack updates",
 		"",
-		"<CR> log   gx open link   r refresh   q close",
+		"<CR> log   u update selected   r refresh   q close",
 		"",
 	}
 
@@ -360,6 +496,58 @@ local function resolve_target(plugin, candidates, index, cb)
 	end)
 end
 
+local function resolve_update_target(plugin, cb)
+	local version = plugin.spec.version
+
+	if type(version) == "table" and type(version.has) == "function" then
+		local target_info, err = version_range_info(plugin)
+		if not target_info or not target_info.target then
+			cb(nil, err or "could not resolve version range")
+			return
+		end
+
+		resolve_target(plugin, { target_info.target }, 1, function(target)
+			if not target then
+				cb(nil, "could not resolve " .. target_info.target_label)
+				return
+			end
+
+			target_info.target = target
+			cb(target_info)
+		end)
+		return
+	end
+
+	if type(version) == "string" and version ~= "" then
+		resolve_target(plugin, string_version_candidates(version), 1, function(target)
+			if not target then
+				cb(nil, "could not resolve version " .. version)
+				return
+			end
+
+			cb({
+				explicit = true,
+				version_label = version,
+				target = target,
+				target_label = string_version_label(version, target),
+			})
+		end)
+		return
+	end
+
+	resolve_target(plugin, default_target_candidates(plugin), 1, function(target)
+		if not target then
+			cb(nil, "could not resolve update target")
+			return
+		end
+
+		cb({
+			target = target,
+			target_label = display_target(target),
+		})
+	end)
+end
+
 local function inspect_plugin(plugin)
 	local name = plugin_name(plugin)
 	results[name] = {
@@ -381,12 +569,13 @@ local function inspect_plugin(plugin)
 			return
 		end
 
-		resolve_target(plugin, target_candidates(plugin), 1, function(target)
-			if not target then
-				set_error(plugin, "could not resolve update target")
+		resolve_update_target(plugin, function(target_info, err)
+			if not target_info then
+				set_error(plugin, err or "could not resolve update target")
 				return
 			end
 
+			local target = target_info.target
 			git(plugin.path, { "rev-list", "--count", "HEAD.." .. target }, function(count_result)
 				if count_result.code ~= 0 then
 					set_error(plugin, trim(count_result.stderr) ~= "" and trim(count_result.stderr) or "could not count commits")
@@ -402,6 +591,7 @@ local function inspect_plugin(plugin)
 						current = plugin.rev,
 						latest = latest,
 						target = target,
+						target_info = target_info,
 						count = count,
 						status = count > 0 and "behind" or "current",
 					}
@@ -446,6 +636,7 @@ function M.check()
 
 	vim.keymap.set("n", "q", "<Cmd>close<CR>", { buffer = check_buf, nowait = true, desc = "Close pack updates" })
 	vim.keymap.set("n", "r", M.check, { buffer = check_buf, nowait = true, desc = "Refresh pack updates" })
+	vim.keymap.set("n", "u", M.update_selected, { buffer = check_buf, nowait = true, desc = "Update selected plugin" })
 	map_open_url(check_buf)
 	vim.keymap.set("n", "<CR>", function()
 		local item = item_under_cursor()
@@ -472,7 +663,23 @@ function M.log(name)
 		return
 	end
 
-	local function open_log(target)
+	local function log_target_label(target, target_info)
+		if not target_info then
+			return display_target(target)
+		end
+
+		if target_info.restricted then
+			return target_info.target_label .. " (restricted " .. target_info.version_label .. ")"
+		end
+
+		if target_info.explicit then
+			return "version " .. target_info.target_label
+		end
+
+		return target_info.target_label
+	end
+
+	local function open_log(target, target_info)
 		git(plugin.path, { "log", "--format=%H%x09%s", "HEAD.." .. target }, function(result)
 			if result.code ~= 0 then
 				vim.notify(trim(result.stderr) ~= "" and trim(result.stderr) or "Could not read plugin log", vim.log.levels.ERROR)
@@ -496,7 +703,7 @@ function M.log(name)
 			end
 
 			table.insert(lines, 1, "")
-			table.insert(lines, 1, ("%s: HEAD..%s"):format(plugin_name(plugin), display_target(target)))
+			table.insert(lines, 1, ("%s: HEAD..%s"):format(plugin_link(plugin), log_target_label(target, target_info)))
 
 			local buf = scratch_buffer(("vim.pack log: %s"):format(plugin_name(plugin)), "markdown")
 			vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
@@ -507,7 +714,7 @@ function M.log(name)
 	end
 
 	if item and item.target then
-		open_log(item.target)
+		open_log(item.target, item.target_info)
 		return
 	end
 
@@ -517,15 +724,25 @@ function M.log(name)
 			return
 		end
 
-		resolve_target(plugin, target_candidates(plugin), 1, function(target)
-			if not target then
-				vim.notify("Could not resolve update target", vim.log.levels.ERROR)
+		resolve_update_target(plugin, function(target_info, err)
+			if not target_info then
+				vim.notify(err or "Could not resolve update target", vim.log.levels.ERROR)
 				return
 			end
 
-			open_log(target)
+			open_log(target_info.target, target_info)
 		end)
 	end)
+end
+
+function M.update_selected()
+	local item = item_under_cursor()
+	if not item then
+		vim.notify("No plugin selected", vim.log.levels.WARN)
+		return
+	end
+
+	vim.pack.update({ item.name }, { target = "version" })
 end
 
 function M.setup()
