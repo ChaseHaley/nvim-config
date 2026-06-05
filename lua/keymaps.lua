@@ -42,7 +42,7 @@ vim.keymap.set('x', '<leader>z/', '<C-\\><C-n>`</\\%V', { desc = 'Search forward
 vim.keymap.set('x', '<leader>z?', '<C-\\><C-n>`>?\\%V', { desc = 'Search backward within visual selection' })
 
 vim.keymap.set('n', '<leader>zv', function()
-	if vim.g.devenv_path ~= nil then
+	if vim.fn.getenv("DEVENV_PATH") ~= vim.NIL and vim.fn.getenv("DEVENV_PATH") ~= nil then
 		local file = vim.fn.expand '%:p'
 		if file == '' then
 			vim.notify('No file in current buffer')
@@ -50,12 +50,12 @@ vim.keymap.set('n', '<leader>zv', function()
 		end
 
 		vim.fn.jobstart({
-			vim.g.devenv_path,
+			vim.fn.getenv("DEVENV_PATH"),
 			'/Edit',
 			file,
 		}, { detach = true })
 	else
-		vim.notify('vim.g.devenv_path is not set')
+		vim.notify('DEVENV_PATH environment variable is not set')
 	end
 
 end, { desc = 'Open file in Visual Studio' })
