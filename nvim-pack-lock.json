@@ -174,6 +174,10 @@
     "winshift.nvim": {
       "rev": "37468ed6f385dfb50402368669766504c0e15583",
       "src": "https://github.com/sindrets/winshift.nvim"
+    },
+    "zen-mode.nvim": {
+      "rev": "8564ce6d29ec7554eb9df578efa882d33b3c23a7",
+      "src": "https://github.com/folke/zen-mode.nvim"
     }
   }
 }
