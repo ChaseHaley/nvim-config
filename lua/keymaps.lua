@@ -29,7 +29,7 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 vim.keymap.set('v', '<', '<gv')
 vim.keymap.set('v', '>', '>gv')
 
-vim.keymap.set('x', '<leader>zp', '"_dP', { desc = 'Put and keep registry' })
+vim.keymap.set({ 'x', 'n' }, '<leader>zp', '"_dP', { desc = 'Put and keep registry' })
 vim.keymap.set('n', '<leader>zq', '<Cmd>tabc<CR>', { desc = 'Close tab' })
 
 -- Enters 3 empty lines below the cursor and sets cursor to the middle line
