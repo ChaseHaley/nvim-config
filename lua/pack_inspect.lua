@@ -443,7 +443,7 @@ local function render_check_buffer()
 	local lines = {
 		"vim.pack updates",
 		"",
-		"<CR> log   u update selected   r refresh   q close",
+		"<CR> log   u update selected   x delete   r refresh   q close",
 		"",
 	}
 
@@ -637,6 +637,7 @@ function M.check()
 	vim.keymap.set("n", "q", "<Cmd>close<CR>", { buffer = check_buf, nowait = true, desc = "Close pack updates" })
 	vim.keymap.set("n", "r", M.check, { buffer = check_buf, nowait = true, desc = "Refresh pack updates" })
 	vim.keymap.set("n", "u", M.update_selected, { buffer = check_buf, nowait = true, desc = "Update selected plugin" })
+	vim.keymap.set("n", "x", M.delete_selected, { buffer = check_buf, nowait = true, desc = "Delete selected plugin" })
 	map_open_url(check_buf)
 	vim.keymap.set("n", "<CR>", function()
 		local item = item_under_cursor()
@@ -743,6 +744,18 @@ function M.update_selected()
 	end
 
 	vim.pack.update({ item.name }, { target = "version" })
+end
+
+function M.delete_selected()
+	local item = item_under_cursor()
+	if not item then
+		vim.notify("No plugin selected", vim.log.levels.WARN)
+		return
+	end
+
+	vim.pack.del({ item.name })
+	results[item.name] = nil
+	render_check_buffer()
 end
 
 function M.setup()
