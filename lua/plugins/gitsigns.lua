@@ -37,5 +37,8 @@ require("gitsigns").setup({
 				gitsigns.nav_hunk("prev")
 			end
 		end, { desc = "Jump to previous git [c]hange" })
+
+		map("n", "<leader>ghs", function() gitsigns.stage_hunk() end)
+		map("n", "<leader>ghr", function() gitsigns.reset_hunk() end)
 	end,
 })

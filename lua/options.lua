@@ -128,26 +128,6 @@ vim.o.foldmarker = "#region,#endregion"
 vim.o.conceallevel = 1
 vim.o.foldlevel = 99
 
---- @type string
-PreviousValidBuffer = ""
--- vim.api.nvim_set_hl(0, 'MiniStatuslineFilename', { fg = '#ffcc00', bold = true })
-local base_statusline_hl = vim.api.nvim_get_hl(0, { name = "MiniStatuslineFilename" })
-vim.api.nvim_create_autocmd("BufEnter", {
-	callback = function()
-		local file = vim.fn.expand("%:t")
-		if string.len(file) > 0 and file ~= PreviousValidBuffer then
-			PreviousValidBuffer = file
-			vim.api.nvim_set_hl(0, "MiniStatuslineFilename", { fg = "#ffcc00", bold = true })
-
-			-- Disabling diagnostic since it seems to work fine despite the warning
-			---@diagnostic disable-next-line: param-type-mismatch
-			vim.defer_fn(function()
-				vim.api.nvim_set_hl(0, "MiniStatuslineFilename", base_statusline_hl)
-			end, 5000)
-		end
-	end,
-})
-
 -- Use PowerShell for :make, :! etc.
 vim.opt.shell = "pwsh" -- or "powershell"
 vim.opt.shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command"

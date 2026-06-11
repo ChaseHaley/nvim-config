@@ -42,7 +42,7 @@ local opts = {
 
 		-- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
 		--    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
-		["<C-w>"] = { "fallback", "show_documentation", "hide_documentation", "fallback" },
+		["<C-w>"] = { "show", "show_documentation", "hide_documentation", "fallback" },
 		["<C-e>"] = { "hide", "fallback" },
 		["<C-y>"] = { "select_and_accept", "fallback" },
 

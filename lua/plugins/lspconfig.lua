@@ -154,9 +154,9 @@ local servers = {
 	roslyn = {
 		settings = {
 			["csharp|code_lens"] = {
-				dotnet_enable_references_code_lens = true
-			}
-		}
+				dotnet_enable_references_code_lens = true,
+			},
+		},
 	},
 
 	stylua = {}, -- Used to format Lua code
@@ -181,14 +181,11 @@ local servers = {
 					version = "LuaJIT",
 					path = { "lua/?.lua", "lua/?/init.lua" },
 				},
+				-- NOTE: workspace.library intentionally omitted. lazydev.nvim (see bottom of
+				--  this file) loads lua_ls libraries on demand. Preloading the full runtime
+				--  with nvim_get_runtime_file("", true) indexed 1700+ files and was slow.
 				workspace = {
 					checkThirdParty = false,
-					-- NOTE: this is a lot slower and will cause issues when working on your own configuration.
-					--  See https://github.com/neovim/nvim-lspconfig/issues/3189
-					library = vim.tbl_extend("force", vim.api.nvim_get_runtime_file("", true), {
-						"${3rd}/luv/library",
-						"${3rd}/busted/library",
-					}),
 				},
 			})
 		end,
@@ -253,4 +250,9 @@ end
 -- require("fidget").setup({})
 
 vim.pack.add({ gh("folke/lazydev.nvim") })
-require("lazydev").setup({ library = { { path = "${3rd}/luv/library", words = { "vim%.uv" } } } })
+require("lazydev").setup({
+	library = {
+		{ path = "${3rd}/luv/library", words = { "vim%.uv" } },
+		{ path = "wezterm-types", mods = { "wezterm" } },
+	},
+})

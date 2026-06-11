@@ -3,10 +3,7 @@
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
-vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
-
--- Diagnostic keymaps
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -14,48 +11,70 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 --
 -- NOTE: This won't work in all terminal emulators/Tmux/etc. Try your own mapping
 -- or just use <C-\><C-n> to exit terminal mode
-vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
 --
 --  See `:help wincmd` for a list of all window commands
-vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
-vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
+vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
+vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
+vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
 
 -- vim: ts=2 sts=2 sw=2 et
-vim.keymap.set('v', '<', '<gv')
-vim.keymap.set('v', '>', '>gv')
+vim.keymap.set("v", "<", "<gv")
+vim.keymap.set("v", ">", ">gv")
 
-vim.keymap.set({ 'x', 'n' }, '<leader>zp', '"_dP', { desc = 'Put and keep registry' })
-vim.keymap.set('n', '<leader>zq', '<Cmd>tabc<CR>', { desc = 'Close tab' })
+vim.keymap.set({ "x", "n" }, "<leader>zp", '"_dP', { desc = "Put and keep registry" })
+vim.keymap.set("n", "gq", "<Cmd>tabc<CR>", { desc = "Close tab" })
 
--- Enters 3 empty lines below the cursor and sets cursor to the middle line
-vim.keymap.set('n', '<leader>zo', 'o<CR><CR><Esc>k', { desc = 'Begin new block below' })
+vim.keymap.set("x", "<leader>z/", "<C-\\><C-n>`</\\%V", { desc = "Search forward within visual selection" })
+vim.keymap.set("x", "<leader>z?", "<C-\\><C-n>`>?\\%V", { desc = "Search backward within visual selection" })
 
--- Enters 3 empty lines above the cursor and sets cursor to the middle line
-vim.keymap.set('n', '<leader>zO', 'O<CR><CR><Esc>k', { desc = 'Begin new block above' })
-
-vim.keymap.set('x', '<leader>z/', '<C-\\><C-n>`</\\%V', { desc = 'Search forward within visual selection' })
-vim.keymap.set('x', '<leader>z?', '<C-\\><C-n>`>?\\%V', { desc = 'Search backward within visual selection' })
-
-vim.keymap.set('n', '<leader>zv', function()
-	if vim.fn.getenv("DEVENV_PATH") ~= vim.NIL and vim.fn.getenv("DEVENV_PATH") ~= nil then
-		local file = vim.fn.expand '%:p'
-		if file == '' then
-			vim.notify('No file in current buffer')
-			return
-		end
-
-		vim.fn.jobstart({
-			vim.fn.getenv("DEVENV_PATH"),
-			'/Edit',
-			file,
-		}, { detach = true })
-	else
-		vim.notify('DEVENV_PATH environment variable is not set')
+local function validateExecutable(executable)
+	local valid = true
+	if vim.fn.executable(executable) == 0 then
+		vim.notify(executable .. " not found on PATH")
+		valid = false
 	end
 
-end, { desc = 'Open file in Visual Studio' })
+	return valid
+end
+
+local function getCurrentFile()
+	local file = vim.fn.expand("%:p")
+	if file == "" then
+		vim.notify("No file in current buffer")
+		return nil
+	end
+
+	return file
+end
+
+vim.keymap.set("n", "<leader>zov", function()
+	local executable = "devenv"
+	validateExecutable(executable)
+	local file = getCurrentFile()
+
+	if file ~= nil then
+		vim.system({
+			executable,
+			"/Edit",
+			file,
+		}, { detach = true })
+	end
+end, { desc = "Open file in Visual Studio" })
+
+vim.keymap.set("n", "<leader>zoc", function()
+	local executable = "code"
+	validateExecutable(executable)
+	local file = getCurrentFile()
+
+	if file ~= nil then
+		vim.system({
+			vim.fn.exepath(executable) ~= "" and vim.fn.exepath(executable) or executable,
+			file,
+		}, { detach = true })
+	end
+end, { desc = "Open file in VSCode" })
