@@ -17,6 +17,10 @@
       "rev": "fb77091ab72ec9971aee0562e7081182527aaa6a",
       "src": "https://github.com/anuvyklack/animation.nvim"
     },
+    "arrow.nvim": {
+      "rev": "6e0f726f55f99332dd726a53effd6813786b6d49",
+      "src": "https://github.com/otavioschwanck/arrow.nvim"
+    },
     "blink.cmp": {
       "rev": "78336bc89ee5365633bcf754d93df01678b5c08f",
       "src": "https://github.com/saghen/blink.cmp",
@@ -167,6 +171,10 @@
     "plenary.nvim": {
       "rev": "74b06c6c75e4eeb3108ec01852001636d85a932b",
       "src": "https://github.com/nvim-lua/plenary.nvim"
+    },
+    "quickfiles.nvim": {
+      "rev": "ab525cabfe1a8904daa690824566fafe1dfc1d02",
+      "src": "https://github.com/ChaseHaley/quickfiles.nvim"
     },
     "rainbow-delimiters.nvim": {
       "rev": "a798325b7f36acc62741d1029930a7b96d4dd4bf",

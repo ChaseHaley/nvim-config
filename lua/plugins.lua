@@ -11,16 +11,19 @@ require("plugins/lint")
 require("plugins/mini")
 require("plugins/dap")
 require("plugins/snacks")
+require("plugins/which-key")
 
 -- Themes
 require("plugins/tokyonight")
+
+-- My plugins
+require("plugins/dev")
 
 -- Rest
 require("plugins/oil")
 require("plugins/autopairs")
 require("plugins/guess-indent")
 require("plugins/todo-comments")
-require("plugins/which-key")
 require("plugins/conform")
 require("plugins/bufjump")
 require("plugins/no-neck-pain")
@@ -28,7 +31,8 @@ require("plugins/indent-line")
 require("plugins/gitsigns")
 require("plugins/camelCaseMotion")
 require("plugins/comments")
-require("plugins/grapple")
+-- require("plugins/grapple")
+-- require("plugins/arrow")
 require("plugins/roslyn")
 require("plugins/easy-dotnet")
 require("plugins/csvview")

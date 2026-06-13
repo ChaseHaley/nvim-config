@@ -21,12 +21,6 @@ local nes = require('sidekick.nes');
 
 vim.g.disable_nes = true
 
-local function disableNes()
-	if vim.g.disable_nes == true and nes.enabled == true then
-		nes.enable(false)
-	end
-end
-
 vim.keymap.set("n", "<leader>an", function()
 	if nes.enabled then
 		nes.enable(false)
@@ -34,6 +28,12 @@ vim.keymap.set("n", "<leader>an", function()
 		nes.enable(true)
 	end
 end, { desc = "Toggle NES" })
+
+vim.keymap.set("n", "<leader>au", function()
+	if nes.enabled then
+		nes.update()
+	end
+end, { desc = "Trigger NES" })
 
 -- Goes to or applies next edit suggestion
 vim.keymap.set("n", "<tab>", function()
