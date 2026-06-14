@@ -1,5 +1,5 @@
-vim.pack.add({ gh("jay-babu/mason-nvim-dap.nvim") })
-vim.pack.add({ gh("mfussenegger/nvim-dap") })
+vim.pack.add({ "https://github.com/jay-babu/mason-nvim-dap.nvim" })
+vim.pack.add({ "https://github.com/mfussenegger/nvim-dap" })
 
 require("mason-nvim-dap").setup({
 	-- Makes a best effort to setup the various debuggers with
@@ -79,7 +79,7 @@ end, { desc = "See last session result." })
 
 local use_view = true
 if use_view == true then
-	vim.pack.add({ { src = gh("igorlfs/nvim-dap-view"), version = vim.version.range("1.*") } })
+	vim.pack.add({ { src = "https://github.com/igorlfs/nvim-dap-view", version = vim.version.range("1.*") } })
 	require("dap-view").setup({
 		auto_toggle = true,
 	})
@@ -87,8 +87,8 @@ if use_view == true then
 	vim.keymap.set("n", "<leader>dh", "<cmd>DapViewHover<cr>", { desc = "Debug hover" })
 	vim.keymap.set("n", "<leader>dw", "<cmd>DapViewWatch<cr>", { desc = "Debug watch" })
 else
-	vim.pack.add({ { src = gh("nvim-neotest/nvim-nio") } })
-	vim.pack.add({ { src = gh("rcarriga/nvim-dap-ui") } })
+	vim.pack.add({ { src = "https://github.com/nvim-neotest/nvim-nio" } })
+	vim.pack.add({ { src = "https://github.com/rcarriga/nvim-dap-ui" } })
 
 	local dapui = require("dapui")
 	-- Dap UI setup

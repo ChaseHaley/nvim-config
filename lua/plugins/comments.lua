@@ -1,4 +1,4 @@
-vim.pack.add({ gh("numToStr/Comment.nvim") })
+vim.pack.add({ "https://github.com/numToStr/Comment.nvim" })
 require("comment").setup({
 	---Add a space b/w comment and the line
 	padding = true,

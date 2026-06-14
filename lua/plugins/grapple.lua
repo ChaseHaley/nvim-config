@@ -1,5 +1,4 @@
-vim.pack.add({ gh("nvim-tree/nvim-web-devicons") })
-vim.pack.add({ gh("cbochs/grapple.nvim") })
+vim.pack.add({ "https://github.com/cbochs/grapple.nvim" })
 require("grapple").setup({
 	scope = "git",
 	icons = true,

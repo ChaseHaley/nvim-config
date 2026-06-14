@@ -3,6 +3,8 @@ local M = {}
 local ns = vim.api.nvim_create_namespace("pack_inspect")
 local results = {}
 local check_buf
+local check_line_items = {}
+local selected = {}
 local inspect_ref = "refs/remotes/pack-inspect"
 local inspect_tag_ref = "refs/pack-inspect/tags"
 
@@ -443,29 +445,59 @@ local function render_check_buffer()
 	local lines = {
 		"vim.pack updates",
 		"",
-		"<CR> log   u update selected   x delete   r refresh   q close",
+		"<CR> log   <Tab> select   u update   x delete   r refresh   q close",
 		"",
 	}
 
-	local items = sorted_results()
-	for _, item in ipairs(items) do
-		lines[#lines + 1] = line_for(item)
+	local active_items = {}
+	local inactive_items = {}
+	for _, item in ipairs(sorted_results()) do
+		if item.plugin.active == false then
+			inactive_items[#inactive_items + 1] = item
+		else
+			active_items[#active_items + 1] = item
+		end
+	end
+
+	local line_items = {}
+	local highlights = {}
+
+	local function append_item(item)
+		local mark = selected[item.name] and "> " or "  "
+		lines[#lines + 1] = mark .. line_for(item)
+		line_items[#lines] = item
+		if selected[item.name] then
+			highlights[#lines] = "Visual"
+		else
+			highlights[#lines] = item.status == "behind" and "WarningMsg"
+				or item.status == "error" and "ErrorMsg"
+				or item.status == "current" and "Comment"
+				or "Normal"
+		end
+	end
+
+	for _, item in ipairs(active_items) do
+		append_item(item)
+	end
+
+	if #inactive_items > 0 then
+		lines[#lines + 1] = ""
+		lines[#lines + 1] = "-- inactive --"
+		highlights[#lines] = "Title"
+		for _, item in ipairs(inactive_items) do
+			append_item(item)
+		end
 	end
 
 	vim.bo[check_buf].modifiable = true
 	vim.api.nvim_buf_set_lines(check_buf, 0, -1, false, lines)
 	vim.api.nvim_buf_clear_namespace(check_buf, ns, 0, -1)
 
-	for i, item in ipairs(items) do
-		local line = i + 3
-		local hl = item.status == "behind" and "WarningMsg"
-			or item.status == "error" and "ErrorMsg"
-			or item.status == "current" and "Comment"
-			or "Normal"
-		vim.api.nvim_buf_add_highlight(check_buf, ns, hl, line, 0, -1)
+	for line, hl in pairs(highlights) do
+		vim.api.nvim_buf_add_highlight(check_buf, ns, hl, line - 1, 0, -1)
 	end
 
-	vim.b[check_buf].pack_inspect_items = items
+	check_line_items = line_items
 	vim.bo[check_buf].modifiable = false
 end
 
@@ -612,13 +644,12 @@ end
 
 local function item_under_cursor()
 	local buf = vim.api.nvim_get_current_buf()
-	local items = vim.b[buf].pack_inspect_items
-	if not items then
+	if buf ~= check_buf then
 		return nil
 	end
 
 	local line = vim.api.nvim_win_get_cursor(0)[1]
-	return items[line - 4]
+	return check_line_items[line]
 end
 
 function M.names()
@@ -632,12 +663,14 @@ end
 
 function M.check()
 	results = {}
+	selected = {}
 	check_buf = scratch_buffer("vim.pack updates", "markdown")
 
 	vim.keymap.set("n", "q", "<Cmd>close<CR>", { buffer = check_buf, nowait = true, desc = "Close pack updates" })
 	vim.keymap.set("n", "r", M.check, { buffer = check_buf, nowait = true, desc = "Refresh pack updates" })
 	vim.keymap.set("n", "u", M.update_selected, { buffer = check_buf, nowait = true, desc = "Update selected plugin" })
 	vim.keymap.set("n", "x", M.delete_selected, { buffer = check_buf, nowait = true, desc = "Delete selected plugin" })
+	vim.keymap.set("n", "<Tab>", M.toggle_selected, { buffer = check_buf, nowait = true, desc = "Toggle plugin selection" })
 	map_open_url(check_buf)
 	vim.keymap.set("n", "<CR>", function()
 		local item = item_under_cursor()
@@ -736,25 +769,76 @@ function M.log(name)
 	end)
 end
 
-function M.update_selected()
+function M.toggle_selected()
 	local item = item_under_cursor()
 	if not item then
+		return
+	end
+
+	selected[item.name] = not selected[item.name] or nil
+	render_check_buffer()
+
+	local win = vim.api.nvim_get_current_win()
+	local pos = vim.api.nvim_win_get_cursor(win)
+	local next_line = pos[1] + 1
+	if check_line_items[next_line] then
+		vim.api.nvim_win_set_cursor(win, { next_line, pos[2] })
+	end
+end
+
+local function selected_targets()
+	if next(selected) then
+		local items = {}
+		for name in pairs(selected) do
+			if results[name] then
+				items[#items + 1] = results[name]
+			end
+		end
+		return items
+	end
+
+	local item = item_under_cursor()
+	return item and { item } or {}
+end
+
+local function target_names(items)
+	local names = {}
+	for _, item in ipairs(items) do
+		names[#names + 1] = item.name
+	end
+	return names
+end
+
+function M.update_selected()
+	local items = selected_targets()
+	if #items == 0 then
 		vim.notify("No plugin selected", vim.log.levels.WARN)
 		return
 	end
 
-	vim.pack.update({ item.name }, { target = "version" })
+	vim.pack.update(target_names(items), { target = "version" })
+	selected = {}
+	render_check_buffer()
 end
 
 function M.delete_selected()
-	local item = item_under_cursor()
-	if not item then
+	local items = selected_targets()
+	if #items == 0 then
 		vim.notify("No plugin selected", vim.log.levels.WARN)
 		return
 	end
 
-	vim.pack.del({ item.name })
-	results[item.name] = nil
+	local names = target_names(items)
+	local prompt = ("Delete %d plugin(s)?\n%s"):format(#names, table.concat(names, ", "))
+	if vim.fn.confirm(prompt, "&Yes\n&No", 2) ~= 1 then
+		return
+	end
+
+	vim.pack.del(names)
+	for _, name in ipairs(names) do
+		results[name] = nil
+		selected[name] = nil
+	end
 	render_check_buffer()
 end
 

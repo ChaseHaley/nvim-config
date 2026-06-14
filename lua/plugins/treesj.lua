@@ -1,5 +1,5 @@
 -- Depends on nvim-treesitter/nvim-treesitter
-vim.pack.add({ gh("Wansmer/treesj") })
+vim.pack.add({ "https://github.com/Wansmer/treesj" })
 local csharp = require("treesj_langs_csharp")
 require("treesj").setup({
 	use_default_keymaps = false,

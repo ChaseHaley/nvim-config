@@ -1,4 +1,4 @@
-vim.pack.add({ gh("folke/zen-mode.nvim") })
+vim.pack.add({ "https://github.com/folke/zen-mode.nvim" })
 require("zen-mode").setup({
 	window = {
 		backdrop = 0.95, -- shade the backdrop of the Zen window. Set to 1 to keep the same as Normal

@@ -1,4 +1,4 @@
-vim.pack.add({ gh("folke/snacks.nvim") })
+vim.pack.add({ "https://github.com/folke/snacks.nvim" })
 require("snacks").setup({
 	-- your configuration comes here
 	-- or leave it empty to use the default settings
@@ -13,7 +13,33 @@ require("snacks").setup({
 	picker = {
 		enabled = true,
 		layout = {
-			preset = "default",
+			-- fullscreen = true,
+			reverse = true,
+			layout = {
+				box = "horizontal",
+				backdrop = false,
+				width = 0.8,
+				height = 0.8,
+				border = "none",
+				{
+					box = "vertical",
+					{ win = "list", title = " Results ", title_pos = "center", border = true },
+					{
+						win = "input",
+						height = 1,
+						border = true,
+						title = "{title} {live} {flags}",
+						title_pos = "center",
+					},
+				},
+				{
+					win = "preview",
+					title = "{preview:Preview}",
+					width = 0.5,
+					border = true,
+					title_pos = "center",
+				},
+			},
 		},
 		db = {
 			sqlite3_path = vim.fn.getenv("LIBSQLITE"),

@@ -1,5 +1,5 @@
 -- requires nvim-treesitter/nvim-treesitter and (nvim-tree/nvim-web-devicons or echasnovski/mini.icons)
-vim.pack.add({ gh("MeanderingProgrammer/render-markdown.nvim") })
+vim.pack.add({ "https://github.com/MeanderingProgrammer/render-markdown.nvim" })
 
 --- @module 'render-markdown'
 --- @type render.md.Userconfig

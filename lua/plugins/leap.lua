@@ -1,5 +1,5 @@
-vim.pack.add({ gh("tpope/vim-repeat") })
-vim.pack.add({ cb("andyg/leap.nvim") })
+vim.pack.add({ "https://github.com/tpope/vim-repeat" })
+vim.pack.add({ "https://codeberg.org/andyg/leap.nvim" })
 
 local leap = require("leap")
 leap.setup({})

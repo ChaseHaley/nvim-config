@@ -1,4 +1,4 @@
-vim.pack.add({ gh("echasnovski/mini.nvim") })
+vim.pack.add({ "https://github.com/echasnovski/mini.nvim" })
 require("mini.ai").setup({
 	n_lines = 500,
 	-- NOTE: Avoid conflicts with the built-in incremental selection mappings on Neovim>=0.12 (see `:help treesitter-incremental-selection`)

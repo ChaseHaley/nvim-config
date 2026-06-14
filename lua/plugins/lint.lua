@@ -1,4 +1,4 @@
-vim.pack.add({ gh("mfussenegger/nvim-lint") })
+vim.pack.add({ "https://github.com/mfussenegger/nvim-lint" })
 local lint = require("lint")
 lint.linters_by_ft = {
 	markdown = { "markdownlint" },

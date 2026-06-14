@@ -3,14 +3,17 @@ require("plugins/treesitter")
 require("plugins/treesitter-textobjects")
 require("plugins/treesitter-context")
 
--- Core plugins
+-- Common dependencies
 require("plugins/plenary")
+require("plugins/web-devicons")
+
+-- Core plugins
+require("plugins/mini")
+require("plugins/snacks")
 require("plugins/lspconfig")
 require("plugins/autocomplete")
 require("plugins/lint")
-require("plugins/mini")
 require("plugins/dap")
-require("plugins/snacks")
 require("plugins/which-key")
 
 -- Themes

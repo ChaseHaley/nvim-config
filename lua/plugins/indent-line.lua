@@ -1,7 +1,7 @@
 vim.pack.add({ "https://gitlab.com/HiPhish/rainbow-delimiters.nvim" })
 require("rainbow-delimiters.setup").setup({})
 
-vim.pack.add({ gh("lukas-reineke/indent-blankline.nvim") })
+vim.pack.add({ "https://github.com/lukas-reineke/indent-blankline.nvim" })
 local highlight = {
 	"RainbowRed",
 	"RainbowYellow",

@@ -1,4 +1,4 @@
-vim.pack.add({ gh("y3owk1n/undo-glow.nvim") })
+vim.pack.add({ "https://github.com/y3owk1n/undo-glow.nvim" })
 
 --- @type UndoGlow.Config
 local opts = {

@@ -32,6 +32,12 @@ vim.keymap.set("n", "gq", "<Cmd>tabc<CR>", { desc = "Close tab" })
 vim.keymap.set("x", "<leader>z/", "<C-\\><C-n>`</\\%V", { desc = "Search forward within visual selection" })
 vim.keymap.set("x", "<leader>z?", "<C-\\><C-n>`>?\\%V", { desc = "Search backward within visual selection" })
 
+-- Yank/put with OS clipboard
+vim.keymap.set({ "n", "x" }, "<leader>y", '"+y')
+vim.keymap.set("n", "<leader>Y", '"+Y')
+vim.keymap.set({ "n", "x" }, "<leader>p", '"+p')
+vim.keymap.set({ "n", "x" }, "<leader>P", '"+P')
+
 local function validateExecutable(executable)
 	local valid = true
 	if vim.fn.executable(executable) == 0 then

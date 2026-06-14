@@ -2,7 +2,7 @@
 -- snacks.nvim
 -- nvim-treesitter-textobjects
 -- copilot.lua
-vim.pack.add({ gh("folke/sidekick.nvim") })
+vim.pack.add({ "https://github.com/folke/sidekick.nvim" })
 
 --- @type sidekick.Config
 local opts = {

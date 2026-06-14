@@ -1,1 +1,1 @@
-vim.pack.add({ gh("DrKJeff16/wezterm-types") })
+vim.pack.add({ "https://github.com/DrKJeff16/wezterm-types" })

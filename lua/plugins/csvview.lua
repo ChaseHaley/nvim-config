@@ -1,4 +1,4 @@
-vim.pack.add({ gh("hat0uma/csvview.nvim") })
+vim.pack.add({ "https://github.com/hat0uma/csvview.nvim" })
 
 ---@module "csvview"
 ---@type CsvView.Options

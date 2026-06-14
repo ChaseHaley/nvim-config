@@ -3,14 +3,16 @@
 -- NOTE: You can change these options as you wish!
 --  For more options, you can see `:help option-list`
 
-vim.opt.exrc = true -- load .nvim.lua / .nvimrc / .exrc from cwd
-vim.opt.secure = true -- restrict dangerous commands in local configs
+vim.o.exrc = true -- load .nvim.lua / .nvimrc / .exrc from cwd
+vim.o.secure = true -- restrict dangerous commands in local configs
 
 -- Make line numbers default
 vim.o.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
 vim.o.relativenumber = true
+
+vim.o.swapfile = false
 
 -- Disable text wrapping
 -- Generally speaking, if text is wrapping then the line is too long
@@ -63,7 +65,7 @@ vim.o.splitbelow = true
 --   See `:help lua-options`
 --   and `:help lua-options-guide`
 vim.o.list = false
--- vim.opt.listchars = {
+-- vim.o.listchars = {
 -- 	tab = '» ',
 -- 	trail = '·',
 -- 	nbsp = '␣',
@@ -129,20 +131,20 @@ vim.o.conceallevel = 1
 vim.o.foldlevel = 99
 
 -- Use PowerShell for :make, :! etc.
-vim.opt.shell = "pwsh" -- or "powershell"
-vim.opt.shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command"
-vim.opt.shellquote = ""
-vim.opt.shellxquote = ""
+vim.o.shell = "pwsh" -- or "powershell"
+vim.o.shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command"
+vim.o.shellquote = ""
+vim.o.shellxquote = ""
 
 -- >>> The important part: write to the temp file path Neovim gives (%s)
-vim.opt.shellpipe = '2>&1 | Tee-Object -FilePath "%s"'
-vim.opt.shellredir = '2>&1 | Out-File -FilePath "%s" -Encoding UTF8'
+vim.o.shellpipe = '2>&1 | Tee-Object -FilePath "%s"'
+vim.o.shellredir = '2>&1 | Out-File -FilePath "%s" -Encoding UTF8'
 
 -- TypeScript project build
-vim.opt.makeprg = "tsc -p tsconfig.json --noEmit --pretty false"
+vim.o.makeprg = "tsc -p tsconfig.json --noEmit --pretty false"
 
 -- Parse: path\file.ts(12,34): error TS1234: Message
-vim.opt.errorformat = table.concat({
+vim.o.errorformat = table.concat({
 	"%E%f(%l\\,%c): error %m",
 	"%W%f(%l\\,%c): warning %m",
 	"%-G%.%#",
@@ -173,44 +175,26 @@ vim.diagnostic.config({
 })
 
 require("vim._core.ui2").enable({
-
 	enable = true, -- Whether to enable or disable the UI.
-
 	msg = { -- Options related to the message module.
-
 		---@type string|table<string, 'cmd'|'msg'|'pager'> Default message target
-
 		---or table mapping |ui-messages| kinds, triggers and IDs to a target.
-
 		---Table keys are are matched as a Lua pattern to the message ID. 'default'
-
 		---mapping applies to any omitted kind: { default = 'cmd', progress = 'msg' }.
-
 		targets = "cmd",
-
 		cmd = { -- Options related to messages in the cmdline window.
-
 			-- Maximum height (rows if >=1, or % of 'lines' if <1) of messages expanded
-
 			-- beyond 'cmdheight'; 0.999 for full height.
-
 			height = 0.5,
 		},
-
 		dialog = { -- Options related to dialog window.
-
 			height = 0.5, -- Maximum height.
 		},
-
 		msg = { -- Options related to msg window.
-
 			height = 0.5, -- Maximum height.
-
 			timeout = 4000, -- Time a message is visible in the message window.
 		},
-
 		pager = { -- Options related to message window.
-
 			height = 0.999, -- Maximum height.
 		},
 	},

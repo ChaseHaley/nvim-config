@@ -1,4 +1,4 @@
-vim.pack.add({ gh("shortcuts/no-neck-pain.nvim") })
+vim.pack.add({ "https://github.com/shortcuts/no-neck-pain.nvim" })
 require("no-neck-pain").setup({
 	width = 188,
 	buffers = {

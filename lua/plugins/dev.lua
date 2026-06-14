@@ -1,9 +1,7 @@
 -- vim.pack.add({ { src = "C:/Users/chale/plugins/quickfiles.nvim" } })
--- vim.opt.runtimepath:append("C:/Users/chale/plugins/quickfiles.nvim")
-vim.pack.add({ gh("ChaseHaley/quickfiles.nvim") })
+vim.o.runtimepath:append("C:/Users/chale/plugins/quickfiles.nvim")
+-- vim.pack.add({ "https://github.com/ChaseHaley/quickfiles.nvim" })
 require("quickfiles").setup(
-	---@module "quickfiles"
-	---@type QuickfilesConfig
 	{
 		which_key = {
 			enabled = true,
@@ -31,3 +29,6 @@ end, { desc = "Quickfile clear key" })
 vim.keymap.set("n", "<leader>hp", function()
 	vim.print(require("quickfiles"):list())
 end, { desc = "Quickfile print" })
+vim.keymap.set("n", "<leader>hf", function()
+	vim.print(require("quickfiles"):pick())
+end, { desc = "Quickfile pick" })

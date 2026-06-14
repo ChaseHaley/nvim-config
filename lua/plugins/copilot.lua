@@ -1,9 +1,9 @@
--- vim.pack.add({ gh("copilotlsp-nvim/copilot-lsp") })
+-- vim.pack.add({ "https://github.com/copilotlsp-nvim/copilot-lsp" })
 -- require("copilot-lsp").setup({})
 -- vim.g.copilot_nes_debounce = 500
 -- vim.lsp.enable("copilot_ls")
 
-vim.pack.add({ gh("zbirenbaum/copilot.lua") })
+vim.pack.add({ "https://github.com/zbirenbaum/copilot.lua" })
 --- @type CopilotConfig
 local copilotOpts = {
 	panel = {
