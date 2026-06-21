@@ -156,6 +156,10 @@
       "rev": "74b06c6c75e4eeb3108ec01852001636d85a932b",
       "src": "https://github.com/nvim-lua/plenary.nvim"
     },
+    "pretty_hover": {
+      "rev": "934df974ef6158b100fe910e8556e6c4a66614c2",
+      "src": "https://github.com/Fildo7525/pretty_hover"
+    },
     "quickfiles.nvim": {
       "rev": "ab525cabfe1a8904daa690824566fafe1dfc1d02",
       "src": "https://github.com/ChaseHaley/quickfiles.nvim"

@@ -160,6 +160,11 @@ local servers = {
 	},
 
 	stylua = {}, -- Used to format Lua code
+	html = {},
+	emmet_language_server = {},
+	htmx = {},
+	rust_analyzer = {},
+	bacon_ls = {},
 
 	-- Special Lua Config, as recommended by neovim help docs
 	lua_ls = {

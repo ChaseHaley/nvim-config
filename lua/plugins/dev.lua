@@ -1,6 +1,6 @@
 -- vim.pack.add({ { src = "C:/Users/chale/plugins/quickfiles.nvim" } })
-vim.o.runtimepath:append("C:/Users/chale/plugins/quickfiles.nvim")
--- vim.pack.add({ "https://github.com/ChaseHaley/quickfiles.nvim" })
+-- vim.o.runtimepath:append("C:/Users/chale/plugins/quickfiles.nvim")
+vim.pack.add({ "https://github.com/ChaseHaley/quickfiles.nvim" })
 require("quickfiles").setup(
 	{
 		which_key = {

@@ -23,7 +23,7 @@ require("easy-dotnet").setup(
 			enabled = true,
 		},
 		lsp = {
-			enabled = false, -- Enable builtin roslyn lsp
+			enabled = true, -- Enable builtin roslyn lsp
 			set_fold_expr = false,
 			preload_roslyn = true, -- Start loading roslyn before any buffer is opened
 			roslynator_enabled = true, -- Automatically enable roslynator analyzer
