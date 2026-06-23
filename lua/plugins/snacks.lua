@@ -119,10 +119,10 @@ vim.keymap.set("n", "<leader>sn", function()
 end, { desc = "[S]earch [N]eovim files" })
 vim.keymap.set("n", "<leader>sx", function()
 	require("snacks").picker.git_status()
-end, { desc = "Search git status" })
+end, { desc = "[S]earch git status" })
 vim.keymap.set("n", "<leader>s;", function()
 	require("snacks").picker.spelling()
-end, { desc = "Search git status" })
+end, { desc = "[S]earch spelling" })
 
 -- return {
 -- 	priority = 1000,
