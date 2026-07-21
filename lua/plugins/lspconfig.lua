@@ -47,7 +47,15 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 		-- Rename the variable under your cursor.
 		--  Most Language Servers support renaming across files, etc.
-		map("grn", require("live-rename").rename, "[R]e[n]ame")
+		map("grn", function()
+			if not require("ts-autotag").rename() then
+				require("live-rename").rename()
+			end
+		end, "[R]e[n]ame")
+
+		-- if not require("ts-autotag").rename() then
+		-- 	require("live-rename").rename()
+		-- end
 
 		-- Execute a code action, usually your cursor needs to be on top of an error
 		-- or a suggestion from your LSP for this to activate.
@@ -151,15 +159,23 @@ local servers = {
 	-- But for many setups, the LSP (`ts_ls`) will work just fine
 	-- ts_ls = {},
 
-	roslyn = {
-		settings = {
-			["csharp|code_lens"] = {
-				dotnet_enable_references_code_lens = true,
-			},
-		},
-	},
+	-- roslyn = {
+	-- 	settings = {
+	-- 		["csharp|code_lens"] = {
+	-- 			dotnet_enable_references_code_lens = true,
+	-- 		},
+	-- 	},
+	-- },
 
 	stylua = {}, -- Used to format Lua code
+	tombi = {},
+	cssls = {},
+	jsonls = {
+		filetypes = { "json", "jsonc", "json5" },
+	},
+	emmet_language_server = {
+		filetypes = { "html", "cshtml", "razor" },
+	},
 
 	-- Special Lua Config, as recommended by neovim help docs
 	lua_ls = {

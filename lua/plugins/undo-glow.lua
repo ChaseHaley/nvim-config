@@ -40,7 +40,7 @@ vim.keymap.set("n", "u", function()
 	require("undo-glow").undo()
 end, { desc = "Undo with highlight", noremap = true })
 
-vim.keymap.set("n", "U", function()
+vim.keymap.set("n", "<C-R>", function()
 	require("undo-glow").redo()
 end, { desc = "Redo with highlight", noremap = true })
 

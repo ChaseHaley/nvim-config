@@ -36,30 +36,26 @@ for type, icon in pairs(breakpoint_icons) do
 	vim.fn.sign_define(tp, { text = icon, texthl = hl, numhl = hl })
 end
 
--- dap.defaults.fallback.external_terminal = {
--- 	command = "wt",
--- 	args = { "-w", "0", "nt", "--" },
--- }
+require("dap").defaults.fallback.external_terminal = {
+	command = "wt",
+	args = { "-w", "0", "nt", "--" },
+}
 
 vim.keymap.set("n", "<F5>", function()
 	require("dap").continue()
 end, { desc = "Start/continue" })
 
-vim.keymap.set("n", "<S-F5>", function()
-	require("dap").terminate()
-end, { desc = "Terminate" })
+vim.keymap.set("n", "<F10>", function()
+	require("dap").step_over()
+end, { desc = "Step over" })
 
-vim.keymap.set("n", "<F9>", function()
+vim.keymap.set("n", "<F11>", function()
 	require("dap").step_into()
 end, { desc = "Step into" })
 
-vim.keymap.set("n", "<F10>", function()
+vim.keymap.set("n", "<F12>", function()
 	require("dap").step_out()
 end, { desc = "Step out" })
-
-vim.keymap.set("n", "<F11>", function()
-	require("dap").step_over()
-end, { desc = "Step over" })
 
 vim.keymap.set("n", "<leader>db", function()
 	require("dap").toggle_breakpoint()
@@ -84,8 +80,24 @@ if use_view == true then
 		auto_toggle = true,
 	})
 
-	vim.keymap.set("n", "<leader>dh", "<cmd>DapViewHover<cr>", { desc = "Debug hover" })
+	vim.keymap.set("n", "<leader>dh", "<cmd>DapViewHover!<cr>", { desc = "Debug hover" })
 	vim.keymap.set("n", "<leader>dw", "<cmd>DapViewWatch<cr>", { desc = "Debug watch" })
+	vim.keymap.set("n", "<leader>dt", "<cmd>DapViewToggle<cr>", { desc = "Debug watch" })
+
+	local function focus_dap_view()
+		for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+			local bufnr = vim.api.nvim_win_get_buf(win)
+			local ft = vim.bo[bufnr].filetype
+			if ft == "dap-view" then
+				vim.api.nvim_set_current_win(win)
+				return
+			end
+		end
+
+		vim.notify("No nvim-dap-view window found in current tab", vim.log.levels.WARN)
+	end
+
+	vim.keymap.set("n", "<leader>dv", focus_dap_view, { desc = "Focus nvim-dap-view" })
 else
 	vim.pack.add({ { src = "https://github.com/nvim-neotest/nvim-nio" } })
 	vim.pack.add({ { src = "https://github.com/rcarriga/nvim-dap-ui" } })

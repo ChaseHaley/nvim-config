@@ -39,3 +39,11 @@ vim.api.nvim_create_autocmd("PackChanged", {
 		end
 	end,
 })
+
+vim.api.nvim_create_user_command("LspLog", function()
+	vim.cmd.edit(require("vim.lsp.log").get_filename())
+end, { desc = "Open the Neovim LSP log" })
+
+vim.api.nvim_create_user_command("LspDebug", function()
+	require('vim.lsp.log').set_level(vim.log.levels.DEBUG)
+end, { desc = "Open the Neovim LSP log" })

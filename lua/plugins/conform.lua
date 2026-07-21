@@ -18,6 +18,6 @@ require("conform").setup({
 	},
 })
 
-vim.keymap.set("n", "<S-M-f>", function()
+vim.keymap.set({ "n", "v" }, "<S-M-f>", function()
 	require("conform").format({ async = true, lsp_format = "fallback" })
 end, { desc = "[F]ormat buffer" })

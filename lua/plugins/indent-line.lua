@@ -25,6 +25,44 @@ hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
 end)
 
 vim.g.rainbow_delimiters = { highlight = highlight }
-require("ibl").setup({ scope = { highlight = highlight } })
+
+local function setup()
+	---@type ibl.config
+	local opts = {
+		scope = { highlight = highlight, char = "▎" },
+		-- Indicate when spaces are being used instead of tabs, but keep scope highlights visible regardless of indent
+		indent = {
+			highlight = "RainbowRed",
+			char = "▎", -- space indentation -> visible red bar (warning)
+			tab_char = " ", -- tab indentation -> invisible
+		},
+		exclude = {
+			filetypes = {
+				"fyler-finder"
+			}
+		}
+	}
+
+	require("ibl").setup(opts)
+end
+
+setup()
 
 hooks.register(hooks.type.SCOPE_HIGHLIGHT, hooks.builtin.scope_highlight_from_extmark)
+
+vim.api.nvim_create_user_command("IgnoreSpaces", function ()
+	---@type ibl.config
+	local opts = {
+		exclude = {
+			filetypes = {
+				"fyler-finder"
+			}
+		}
+	}
+
+	require("ibl").setup(opts)
+end, {})
+
+vim.api.nvim_create_user_command("ShowSpaces", function ()
+	setup()
+end, {})

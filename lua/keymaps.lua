@@ -32,6 +32,86 @@ vim.keymap.set("n", "gq", "<Cmd>tabc<CR>", { desc = "Close tab" })
 vim.keymap.set("x", "<leader>z/", "<C-\\><C-n>`</\\%V", { desc = "Search forward within visual selection" })
 vim.keymap.set("x", "<leader>z?", "<C-\\><C-n>`>?\\%V", { desc = "Search backward within visual selection" })
 
+-- Switch to a companion Razor file by target suffix.
+-- Works from any .razor / .razor.cs / .razor.js / .razor.css file.
+local function razor_switch(target)
+	local file = vim.fn.expand("%:p")
+
+	-- Grab everything up to and including ".razor" as the base name.
+	local base = file:match("^(.*%.razor)")
+	if not base then
+		vim.notify("Not a .razor family file", vim.log.levels.WARN)
+		return
+	end
+
+	local dest = base .. target
+	if dest == file then
+		vim.notify("Already editing this file", vim.log.levels.INFO)
+	elseif vim.fn.filereadable(dest) == 1 then
+		vim.cmd.edit(vim.fn.fnameescape(dest))
+	else
+		vim.notify("Companion file not found: " .. vim.fn.fnamemodify(dest, ":t"), vim.log.levels.WARN)
+	end
+end
+
+-- Cycle to the next existing companion Razor file in a fixed order.
+local razor_cycle_order = { "", ".cs", ".js", ".css" }
+local function razor_cycle()
+	local file = vim.fn.expand("%:p")
+
+	local base = file:match("^(.*%.razor)")
+	if not base then
+		vim.notify("Not a .razor family file", vim.log.levels.WARN)
+		return
+	end
+
+	-- Find where the current file sits in the cycle order.
+	local current = file:sub(#base + 1)
+	local start
+	for i, suffix in ipairs(razor_cycle_order) do
+		if suffix == current then
+			start = i
+			break
+		end
+	end
+	if not start then
+		return
+	end
+
+	-- Walk the remaining suffixes cyclically and edit the first one that exists.
+	local count = #razor_cycle_order
+	for offset = 1, count - 1 do
+		local suffix = razor_cycle_order[(start - 1 + offset) % count + 1]
+		local dest = base .. suffix
+		if vim.fn.filereadable(dest) == 1 then
+			vim.cmd.edit(vim.fn.fnameescape(dest))
+			return
+		end
+	end
+end
+
+-- Only register the Razor switch keymaps while editing a .razor family file.
+vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
+	group = vim.api.nvim_create_augroup("razor-switch-keymaps", { clear = true }),
+	pattern = "*.razor*",
+	callback = function(args)
+		local opts = { buffer = args.buf }
+		vim.keymap.set("n", "<leader>rr", function()
+			razor_switch("")
+		end, vim.tbl_extend("force", opts, { desc = "Razor: switch to .razor" }))
+		vim.keymap.set("n", "<leader>rc", function()
+			razor_switch(".cs")
+		end, vim.tbl_extend("force", opts, { desc = "Razor: switch to .razor.cs" }))
+		vim.keymap.set("n", "<leader>rs", function()
+			razor_switch(".css")
+		end, vim.tbl_extend("force", opts, { desc = "Razor: switch to .razor.css" }))
+		vim.keymap.set("n", "<leader>rj", function()
+			razor_switch(".js")
+		end, vim.tbl_extend("force", opts, { desc = "Razor: switch to .razor.js" }))
+		vim.keymap.set("n", "<leader>r<leader>", razor_cycle, vim.tbl_extend("force", opts, { desc = "Razor: cycle companion files" }))
+	end,
+})
+
 -- Yank/put with OS clipboard
 vim.keymap.set({ "n", "x" }, "<leader>y", '"+y')
 vim.keymap.set("n", "<leader>Y", '"+Y')
@@ -84,3 +164,14 @@ vim.keymap.set("n", "<leader>zoc", function()
 		}, { detach = true })
 	end
 end, { desc = "Open file in VSCode" })
+
+vim.keymap.set("n", "<leader>zof", function()
+	local file = vim.api.nvim_buf_get_name(0)
+	if file == "" then
+		vim.notify("Current buffer has no file path", vim.log.levels.WARN)
+		return
+	end
+
+	local dir = vim.fn.fnamemodify(file, ":p:h")
+	vim.ui.open(dir)
+end, { desc = "Open file directory in file manger"})

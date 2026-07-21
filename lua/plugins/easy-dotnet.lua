@@ -18,15 +18,18 @@ require("easy-dotnet").setup(
 			},
 		},
 		-- Optional configuration for external terminals (matches nvim-dap structure)
-		external_terminal = nil,
+		external_terminal = {
+			command = "wt",
+			args = { "-w", "0", "nt", "--" },
+		},
 		projx_lsp = {
 			enabled = true,
 		},
 		lsp = {
-			enabled = false, -- Enable builtin roslyn lsp
+			enabled = true, -- Enable builtin roslyn lsp
 			set_fold_expr = false,
-			preload_roslyn = true, -- Start loading roslyn before any buffer is opened
-			roslynator_enabled = true, -- Automatically enable roslynator analyzer
+			preload_roslyn = false, -- Start loading roslyn before any buffer is opened
+			roslynator_enabled = false, -- Automatically enable roslynator analyzer
 			easy_dotnet_analyzer_enabled = true, -- Enable roslyn analyzer from easy-dotnet-server
 			easy_dotnet_extension_enabled = false, -- Needs to be true for enhanced_rename and create_type_from_usage
 			enhanced_rename = false, -- auto rename file when renaming class
@@ -54,7 +57,7 @@ require("easy-dotnet").setup(
 			--   "netcoredbg" (default) — Samsung netcoredbg
 			--   "dncdbg"               — viewizard/dncdbg (a fork of netcoredbg with a richer set of features)
 			engine = "netcoredbg",
-			console = "integratedTerminal", -- Controls where the target app runs: "integratedTerminal" (Neovim buffer) or "externalTerminal" (OS window)
+			console = "externalTerminal", -- Controls where the target app runs: "integratedTerminal" (Neovim buffer) or "externalTerminal" (OS window)
 			apply_value_converters = true,
 			auto_register_dap = true,
 			mappings = {
@@ -158,3 +161,7 @@ require("easy-dotnet").setup(
 		},
 	}
 )
+
+require("dap").configurations.razor = require("dap").configurations.cs
+require("dap").configurations.css = require("dap").configurations.cs
+require("dap").configurations.js = require("dap").configurations.cs
