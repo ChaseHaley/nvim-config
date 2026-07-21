@@ -1,63 +1,89 @@
--- Treesitter plugins
-require("plugins/treesitter")
-require("plugins/treesitter-textobjects")
-require("plugins/treesitter-context")
+local later = require("later")
 
--- Common dependencies
+-- Loaded up front: anything that affects the first render or must see the
+-- first buffer/VimEnter (colorscheme, statusline, syntax, argv handling).
+require("plugins/treesitter")
 require("plugins/plenary")
 require("plugins/web-devicons")
-
--- Core plugins
 require("plugins/mini")
 require("plugins/snacks")
-require("plugins/lspconfig")
-require("plugins/autocomplete")
-require("plugins/lint")
-require("plugins/dap")
-require("plugins/which-key")
-
--- Themes
 require("plugins/tokyonight")
-
--- My plugins
 require("plugins/dev")
-
--- Rest
 require("plugins/oil")
-require("plugins/autopairs")
 require("plugins/guess-indent")
-require("plugins/todo-comments")
-require("plugins/conform")
-require("plugins/bufjump")
-require("plugins/no-neck-pain")
 require("plugins/indent-line")
-require("plugins/gitsigns")
-require("plugins/camelCaseMotion")
-require("plugins/comments")
--- require("plugins/grapple")
--- require("plugins/arrow")
--- require("plugins/roslyn")
-require("plugins/easy-dotnet")
-require("plugins/lazydotnet")
-require("plugins/csvview")
-require("plugins/diffview")
-require("plugins/leap")
-require("plugins/render-markdown")
-require("plugins/smear-cursor")
-require("plugins/toggleterm")
-require("plugins/treesj")
-require("plugins/undo-glow")
-require("plugins/windows")
-require("plugins/winshift")
-require("plugins/zen-mode")
-require("plugins/typescript-tools")
-require("plugins/copilot")
-require("plugins/sidekick")
-require("plugins/trouble")
-require("plugins/wezterm-types")
-require("plugins/neogit")
+require("plugins/no-neck-pain")
+-- Attaches its LSP through a FileType autocmd, so it must exist before the
+-- first ps1 buffer loads
 require("plugins/powershell")
-require("plugins/vim-matchup")
-require("plugins/nvim-ts-autotag")
-require("plugins/fyler")
-require("plugins/obsidian")
+
+-- Everything else loads right after startup finishes.
+later("plugins/treesitter-textobjects")
+later("plugins/treesitter-context")
+later("plugins/lspconfig")
+later("plugins/autocomplete")
+later("plugins/lint")
+later("plugins/dap")
+later("plugins/which-key")
+later("plugins/autopairs")
+later("plugins/todo-comments")
+later("plugins/conform")
+later("plugins/bufjump")
+later("plugins/gitsigns")
+later("plugins/camelCaseMotion")
+later("plugins/comments")
+-- later("plugins/grapple")
+-- later("plugins/arrow")
+-- later("plugins/roslyn")
+later("plugins/easy-dotnet", { event = "FileType", opts = { pattern = { "cs", "vb", "fsharp", "razor" } } })
+later("plugins/easy-dotnet", {
+	event = { "BufReadPre", "BufNewFile" },
+	opts = { pattern = { "*.sln", "*.slnx", "*.csproj", "*.fsproj" } },
+})
+later("plugins/lazydotnet", { event = "FileType", opts = { pattern = { "cs", "vb", "fsharp", "razor" } } })
+later("plugins/csvview", { event = "FileType", opts = { pattern = { "csv", "tsv" } } })
+later("plugins/diffview")
+later("plugins/leap")
+later("plugins/render-markdown", { event = "FileType", opts = { pattern = "markdown" } })
+later("plugins/smear-cursor")
+later("plugins/toggleterm")
+later("plugins/treesj")
+later("plugins/undo-glow")
+later("plugins/windows")
+later("plugins/winshift")
+later("plugins/zen-mode")
+later("plugins/typescript-tools", {
+	event = "FileType",
+	opts = { pattern = { "typescript", "typescriptreact", "javascript", "javascriptreact" } },
+})
+later("plugins/copilot")
+later("plugins/sidekick")
+later("plugins/trouble")
+later("plugins/wezterm-types", {
+	event = "FileType",
+	opts = {
+		pattern = {
+			"lua"
+		}
+	}
+})
+later("plugins/neogit")
+later("plugins/vim-matchup")
+later("plugins/nvim-ts-autotag", {
+	event = "FileType",
+	opts = {
+		pattern = {
+			"typescript",
+			"javascript",
+			"typescriptreact",
+			"javascriptreact",
+			"xml",
+			"html",
+			"templ",
+			"php",
+			"razor",
+		},
+	},
+})
+later("plugins/fyler")
+later("plugins/obsidian")

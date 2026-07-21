@@ -150,6 +150,9 @@ vim.o.errorformat = table.concat({
 	"%-G%.%#",
 }, ",")
 
+-- Stop logging that python is not found in Claude/checkhealth
+vim.g.loaded_python3_provider = 0
+
 -- Diagnostic Config & Keymaps
 --  See `:help vim.diagnostic.Opts`
 vim.diagnostic.config({
