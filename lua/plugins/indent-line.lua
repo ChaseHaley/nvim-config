@@ -26,6 +26,8 @@ end)
 
 vim.g.rainbow_delimiters = { highlight = highlight }
 
+local spaces_ignored = false
+
 local function setup()
 	---@type ibl.config
 	local opts = {
@@ -61,8 +63,18 @@ vim.api.nvim_create_user_command("IgnoreSpaces", function ()
 	}
 
 	require("ibl").setup(opts)
+	spaces_ignored = true
 end, {})
 
 vim.api.nvim_create_user_command("ShowSpaces", function ()
 	setup()
+	spaces_ignored = false
 end, {})
+
+vim.keymap.set("n", "<leader>ts", function()
+	if not spaces_ignored then
+		vim.cmd.IgnoreSpaces()
+	else
+		vim.cmd.ShowSpaces()
+	end
+end, { desc = "Ignore spaces" })

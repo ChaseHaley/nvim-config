@@ -11,6 +11,7 @@ require("tokyonight").setup(
 				hl.DiagnosticUnderlineWarn = { underline = true, sp = c.warning }
 			end
 
+			hl.LineNr = { fg = c.comment }
 			hl.LineNrAbove = { fg = c.comment }
 			hl.LineNrBelow = { fg = c.comment }
 		end,

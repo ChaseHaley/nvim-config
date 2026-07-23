@@ -32,15 +32,23 @@ vim.keymap.set("n", "gq", "<Cmd>tabc<CR>", { desc = "Close tab" })
 vim.keymap.set("x", "<leader>z/", "<C-\\><C-n>`</\\%V", { desc = "Search forward within visual selection" })
 vim.keymap.set("x", "<leader>z?", "<C-\\><C-n>`>?\\%V", { desc = "Search backward within visual selection" })
 
--- Switch to a companion Razor file by target suffix.
--- Works from any .razor / .razor.cs / .razor.js / .razor.css file.
+vim.keymap.set("n", "<leader>tl", function ()
+	vim.o.relativenumber = not vim.o.relativenumber
+end, { desc = "[T]oggle Relative [L]ine Numbers" })
+
+-- Grab everything up to and including the ".razor" or ".cshtml" extension as the base name.
+local function razor_base(file)
+	return file:match("^(.*%.razor)") or file:match("^(.*%.cshtml)")
+end
+
+-- Switch to a companion Razor/cshtml file by target suffix.
+-- Works from any .razor / .razor.cs / .razor.js / .razor.css / .cshtml / .cshtml.cs file.
 local function razor_switch(target)
 	local file = vim.fn.expand("%:p")
 
-	-- Grab everything up to and including ".razor" as the base name.
-	local base = file:match("^(.*%.razor)")
+	local base = razor_base(file)
 	if not base then
-		vim.notify("Not a .razor family file", vim.log.levels.WARN)
+		vim.notify("Not a .razor/.cshtml family file", vim.log.levels.WARN)
 		return
 	end
 
@@ -54,14 +62,15 @@ local function razor_switch(target)
 	end
 end
 
--- Cycle to the next existing companion Razor file in a fixed order.
+-- Cycle to the next existing companion file in a fixed order.
+-- .cshtml files only ever have "" and ".cs" companions; .js/.css are skipped since they don't exist.
 local razor_cycle_order = { "", ".cs", ".js", ".css" }
 local function razor_cycle()
 	local file = vim.fn.expand("%:p")
 
-	local base = file:match("^(.*%.razor)")
+	local base = razor_base(file)
 	if not base then
-		vim.notify("Not a .razor family file", vim.log.levels.WARN)
+		vim.notify("Not a .razor/.cshtml family file", vim.log.levels.WARN)
 		return
 	end
 
@@ -90,25 +99,25 @@ local function razor_cycle()
 	end
 end
 
--- Only register the Razor switch keymaps while editing a .razor family file.
+-- Only register the Razor switch keymaps while editing a .razor or .cshtml family file.
 vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
 	group = vim.api.nvim_create_augroup("razor-switch-keymaps", { clear = true }),
-	pattern = "*.razor*",
+	pattern = { "*.razor*", "*.cshtml*" },
 	callback = function(args)
 		local opts = { buffer = args.buf }
 		vim.keymap.set("n", "<leader>rr", function()
 			razor_switch("")
-		end, vim.tbl_extend("force", opts, { desc = "Razor: switch to .razor" }))
+		end, vim.tbl_extend("force", opts, { desc = "Razor/cshtml: switch to base file" }))
 		vim.keymap.set("n", "<leader>rc", function()
 			razor_switch(".cs")
-		end, vim.tbl_extend("force", opts, { desc = "Razor: switch to .razor.cs" }))
+		end, vim.tbl_extend("force", opts, { desc = "Razor/cshtml: switch to .cs" }))
 		vim.keymap.set("n", "<leader>rs", function()
 			razor_switch(".css")
 		end, vim.tbl_extend("force", opts, { desc = "Razor: switch to .razor.css" }))
 		vim.keymap.set("n", "<leader>rj", function()
 			razor_switch(".js")
 		end, vim.tbl_extend("force", opts, { desc = "Razor: switch to .razor.js" }))
-		vim.keymap.set("n", "<leader>r<leader>", razor_cycle, vim.tbl_extend("force", opts, { desc = "Razor: cycle companion files" }))
+		vim.keymap.set("n", "<leader>r<leader>", razor_cycle, vim.tbl_extend("force", opts, { desc = "Razor/cshtml: cycle companion files" }))
 	end,
 })
 
