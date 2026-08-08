@@ -2,6 +2,9 @@ vim.pack.add({ "https://github.com/folke/which-key.nvim" })
 require("which-key").setup({
 	preset = "helix",
 	delay = 0,
+	filter = function (mapping)
+		return mapping.desc ~= "diffview_ignore"
+	end,
 	icons = {
 		-- set icon mappings to true if you have a Nerd Font
 		mappings = vim.g.have_nerd_font,

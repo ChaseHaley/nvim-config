@@ -130,6 +130,8 @@ vim.o.foldmarker = "#region,#endregion"
 vim.o.conceallevel = 1
 vim.o.foldlevel = 99
 
+-- vim.opt.diffopt = vim.opt.diffopt + "algorithm:histogram"
+
 -- Use PowerShell for :make, :! etc.
 vim.o.shell = "pwsh" -- or "powershell"
 vim.o.shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command"

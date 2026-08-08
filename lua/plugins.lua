@@ -16,21 +16,25 @@ require("plugins/no-neck-pain")
 -- Attaches its LSP through a FileType autocmd, so it must exist before the
 -- first ps1 buffer loads
 require("plugins/powershell")
+-- Not sure why but lazy fails with this
+require("plugins/camelCaseMotion")
+
+-- Required by DAP
+require("plugins/lspconfig")
+-- Required by easy-dotnet, causes issues if C# file is accessed before this is loaded 
+require("plugins/dap")
 
 -- Everything else loads right after startup finishes.
 later("plugins/treesitter-textobjects")
 later("plugins/treesitter-context")
-later("plugins/lspconfig")
 later("plugins/autocomplete")
 later("plugins/lint")
-later("plugins/dap")
 later("plugins/which-key")
 later("plugins/autopairs")
 later("plugins/todo-comments")
 later("plugins/conform")
 later("plugins/bufjump")
 later("plugins/gitsigns")
-later("plugins/camelCaseMotion")
 later("plugins/comments")
 -- later("plugins/grapple")
 -- later("plugins/arrow")
@@ -43,7 +47,8 @@ later("plugins/easy-dotnet", {
 later("plugins/lazydotnet", { event = "FileType", opts = { pattern = { "cs", "vb", "fsharp", "razor" } } })
 later("plugins/csvview", { event = "FileType", opts = { pattern = { "csv", "tsv" } } })
 later("plugins/diffview")
-later("plugins/leap")
+later("plugins/neogit")
+later("plugins/flash")
 later("plugins/render-markdown", { event = "FileType", opts = { pattern = "markdown" } })
 later("plugins/smear-cursor")
 later("plugins/toggleterm")
@@ -67,7 +72,6 @@ later("plugins/wezterm-types", {
 		}
 	}
 })
-later("plugins/neogit")
 later("plugins/vim-matchup")
 later("plugins/nvim-ts-autotag", {
 	event = "FileType",

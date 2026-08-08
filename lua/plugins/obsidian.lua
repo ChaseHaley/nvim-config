@@ -9,6 +9,7 @@ require("obsidian").setup(
 	---@module 'obsidian'
 	---@type obsidian.config
 	{
+		ui = { enable = false },
 		picker = { name = "snacks.picker" },
 		legacy_commands = false,
 		open = {
@@ -20,6 +21,9 @@ require("obsidian").setup(
 		workspaces = {
 			{ name = "Main", path = "C:\\Users\\chaley\\Obsidian\\Main" },
 		},
+		checkbox = {
+			order = { " ", "x" }
+		}
 	}
 )
 

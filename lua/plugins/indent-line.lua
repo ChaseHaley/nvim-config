@@ -55,11 +55,17 @@ hooks.register(hooks.type.SCOPE_HIGHLIGHT, hooks.builtin.scope_highlight_from_ex
 vim.api.nvim_create_user_command("IgnoreSpaces", function ()
 	---@type ibl.config
 	local opts = {
+		scope = { highlight = highlight, char = "▎" },
+		indent = {
+			highlight = highlight,
+			tab_char = " ",
+			char = " "
+		},
 		exclude = {
 			filetypes = {
 				"fyler-finder"
 			}
-		}
+		},
 	}
 
 	require("ibl").setup(opts)

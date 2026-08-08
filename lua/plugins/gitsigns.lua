@@ -15,14 +15,8 @@ require("gitsigns").setup({
 	on_attach = function(bufnr)
 		local gitsigns = require("gitsigns")
 
-		local function map(mode, l, r, opts)
-			opts = opts or {}
-			opts.buffer = bufnr
-			vim.keymap.set(mode, l, r, opts)
-		end
-
 		-- Navigation
-		map("n", "]c", function()
+		vim.keymap.set("n", "]c", function()
 			if vim.wo.diff then
 				vim.cmd.normal({ "]c", bang = true })
 			else
@@ -30,7 +24,7 @@ require("gitsigns").setup({
 			end
 		end, { desc = "Jump to next git [c]hange" })
 
-		map("n", "[c", function()
+		vim.keymap.set("n", "[c", function()
 			if vim.wo.diff then
 				vim.cmd.normal({ "[c", bang = true })
 			else
@@ -38,7 +32,9 @@ require("gitsigns").setup({
 			end
 		end, { desc = "Jump to previous git [c]hange" })
 
-		map("n", "<leader>ghs", function() gitsigns.stage_hunk() end)
-		map("n", "<leader>ghr", function() gitsigns.reset_hunk() end)
+		vim.keymap.set("n", "<leader>gss", function() gitsigns.stage_hunk() end, { desc = "Stage hunk"})
+		vim.keymap.set("n", "<leader>gsr", function() gitsigns.reset_hunk() end, { desc = "Reset hunk"})
+		vim.keymap.set("n", "<leader>gsb", function() gitsigns.blame() end, { desc = "Blame"})
+		vim.keymap.set("n", "<leader>gsl", function() gitsigns.blame_line() end, { desc = "Blame line"})
 	end,
 })
