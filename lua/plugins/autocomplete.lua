@@ -65,7 +65,7 @@ local opts = {
 		["<C-d>"] = { "scroll_signature_down", "fallback" },
 
 		-- Fixes unexpected behavior of menu opening on <cr>
-		["<cr>"] = { "fallback" }
+		["<cr>"] = { "fallback" },
 	},
 
 	appearance = {
@@ -91,7 +91,12 @@ local opts = {
 			treesitter_highlighting = true,
 			-- Draws the item in the documentation window, by default using an internal treesitter based implementation
 			draw = function(opts)
-				opts.default_implementation()
+				if opts.item and opts.item.documentation and opts.item.documentation.value then
+					local out = require("pretty_hover.parser").parse(opts.item.documentation.value)
+					opts.item.documentation.value = out:string()
+				end
+
+				opts.default_implementation(opts)
 			end,
 			window = {
 				min_width = 10,

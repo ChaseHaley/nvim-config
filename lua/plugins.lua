@@ -91,3 +91,4 @@ later("plugins/nvim-ts-autotag", {
 })
 later("plugins/fyler")
 later("plugins/obsidian")
+later("plugins/pretty_hover")

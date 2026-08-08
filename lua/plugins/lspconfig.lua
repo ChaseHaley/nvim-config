@@ -176,6 +176,12 @@ local servers = {
 	emmet_language_server = {
 		filetypes = { "html", "cshtml", "razor" },
 	},
+	html = {},
+	htmx = {},
+	rust_analyzer = {},
+	bacon_ls = {},
+	jinja_lsp = {},
+	zls = {},
 
 	-- Special Lua Config, as recommended by neovim help docs
 	lua_ls = {
