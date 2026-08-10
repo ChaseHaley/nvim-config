@@ -4,11 +4,11 @@ local later = require("later")
 -- first buffer/VimEnter (colorscheme, statusline, syntax, argv handling).
 require("plugins/treesitter")
 require("plugins/plenary")
-require("plugins/web-devicons")
+-- require("plugins/web-devicons")
 require("plugins/mini")
 require("plugins/snacks")
 require("plugins/tokyonight")
-require("plugins/dev")
+-- require("plugins/dev")
 require("plugins/oil")
 require("plugins/guess-indent")
 require("plugins/indent-line")
@@ -50,7 +50,9 @@ later("plugins/diffview")
 later("plugins/neogit")
 later("plugins/flash")
 later("plugins/render-markdown", { event = "FileType", opts = { pattern = "markdown" } })
-later("plugins/smear-cursor")
+-- if not vim.g.neovide then
+-- 	later("plugins/smear-cursor")
+-- end
 later("plugins/toggleterm")
 later("plugins/treesj")
 later("plugins/undo-glow")
@@ -92,3 +94,9 @@ later("plugins/nvim-ts-autotag", {
 later("plugins/fyler")
 later("plugins/obsidian")
 later("plugins/pretty_hover")
+
+if vim.g.neovide then
+	later("plugins/tabby")
+	later("plugins/scope")
+	later("plugins/resession")
+end

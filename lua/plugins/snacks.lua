@@ -10,7 +10,7 @@ require("snacks").setup({
 	indent = { enabled = false },
 	input = { enabled = false },
 	lazygit = {
-		enabled = true,
+		enabled = false,
 		-- The default "nvim-remote" editPreset emits POSIX shell syntax
 		-- (`[ -z "$NVIM" ] && ...`), which lazygit runs via `cmd /c` on Windows.
 		-- cmd can't parse `[ -z ... ]` (hence `[: missing ']'`) and won't expand
@@ -62,7 +62,8 @@ require("snacks").setup({
 	quickfile = { enabled = false },
 	scope = { enabled = false },
 	scroll = {
-		enabled = true,
+		-- enabled = not vim.g.neovide,
+		enabled = false,
 		animate = {
 			duration = { step = 10, total = 50 },
 			easing = "linear",

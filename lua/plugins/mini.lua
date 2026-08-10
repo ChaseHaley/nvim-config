@@ -9,7 +9,12 @@ require("mini.ai").setup({
 })
 require("mini.surround").setup({})
 require("mini.icons").setup({})
+MiniIcons.mock_nvim_web_devicons()
 require("mini.move").setup({})
+-- require("mini.sessions").setup({})
+-- vim.keymap.set("n", "<leader>sa", function ()
+-- 	MiniSessions.select()
+-- end, { desc = "Search Sessions" })
 -- Simple and easy statusline.
 --  You could remove this setup call if you don't like it,
 --  and try some other statusline plugin

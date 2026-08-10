@@ -155,6 +155,12 @@ vim.o.errorformat = table.concat({
 -- Stop logging that python is not found in Claude/checkhealth
 vim.g.loaded_python3_provider = 0
 
+if (vim.g.neovide) then
+	vim.o.guifont = "CaskaydiaCove NF:h12"
+	vim.g.neovide_scale_factor = 1
+	vim.g.neovide_hide_mouse_when_typing = true
+end
+
 -- Diagnostic Config & Keymaps
 --  See `:help vim.diagnostic.Opts`
 vim.diagnostic.config({
