@@ -107,9 +107,9 @@ vim.keymap.set("n", "<leader>sk", function()
 	require("snacks").picker.keymaps()
 end, { desc = "[S]earch [K]eymaps" })
 
-vim.keymap.set("n", "<leader>sf", function()
+vim.keymap.set("n", "<leader>sF", function()
 	require("snacks").picker.smart({  show_delay = 0 })
-end, { desc = "[S]earch [F]iles" })
+end, { desc = "[S]earch [F]iles (snacks)" })
 
 vim.keymap.set("n", "<leader>sp", function()
 	require("snacks").picker.pickers()
@@ -123,9 +123,9 @@ vim.keymap.set({ "n", "x" }, "<leader>sw", function()
 	require("snacks").picker.grep_word()
 end, { desc = "[S]earch current [W]ord" })
 
-vim.keymap.set("n", "<leader>sg", function()
+vim.keymap.set("n", "<leader>sG", function()
 	require("snacks").picker.grep()
-end, { desc = "[S]earch by [G]rep" })
+end, { desc = "[S]earch by [G]rep (snacks)" })
 
 vim.keymap.set("n", "<leader>sde", function()
 	require("snacks").picker.diagnostics({ severity = vim.diagnostic.severity.ERROR })

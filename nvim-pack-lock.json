@@ -54,6 +54,10 @@
       "rev": "aa9c65fb34ec6f86cf8174eac69a8a217cc7c47e",
       "src": "https://github.com/GustavEikaas/easy-dotnet.nvim"
     },
+    "fff": {
+      "rev": "e6df25388ac98f46aa1385abbd20f7437b071b81",
+      "src": "https://github.com/dmtrKovalenko/fff"
+    },
     "fidget.nvim": {
       "rev": "6f793b2bcd2d35e201c09520f698bb763220908a",
       "src": "https://github.com/j-hui/fidget.nvim"
