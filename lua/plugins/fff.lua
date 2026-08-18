@@ -1,7 +1,7 @@
 vim.pack.add({ "https://github.com/dmtrKovalenko/fff" })
 
 ---@type FffConfig
-opts = {
+local opts = {
 	layout = {
 		border = "rounded",
 	}
