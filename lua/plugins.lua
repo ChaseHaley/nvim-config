@@ -10,8 +10,10 @@ require("plugins/snacks")
 require("plugins/tokyonight")
 -- require("plugins/dev")
 require("plugins/oil")
+-- Guesses the indent from a BufRead autocmd its own plugin/ file registers, so
+-- it must be on the runtimepath before the argv buffers load
 require("plugins/guess-indent")
-require("plugins/indent-line")
+-- Enables itself from a VimEnter autocmd
 require("plugins/no-neck-pain")
 -- Attaches its LSP through a FileType autocmd, so it must exist before the
 -- first ps1 buffer loads
@@ -19,23 +21,22 @@ require("plugins/powershell")
 -- Not sure why but lazy fails with this
 require("plugins/camelCaseMotion")
 
--- Required by DAP
-require("plugins/lspconfig")
--- Required by easy-dotnet, causes issues if C# file is accessed before this is loaded 
-require("plugins/dap")
-
 -- Everything else loads right after startup finishes.
-require("plugins/treesitter-textobjects")
-require("plugins/treesitter-context")
-require("plugins/autocomplete")
-require("plugins/lint")
-require("plugins/which-key")
-require("plugins/autopairs")
--- require("plugins/todo-comments")
-require("plugins/conform")
-require("plugins/bufjump")
-require("plugins/gitsigns")
-require("plugins/comments")
+later("plugins/lspconfig")
+-- Required by easy-dotnet, causes issues if C# file is accessed before this is loaded
+later("plugins/dap")
+later("plugins/treesitter-textobjects")
+later("plugins/treesitter-context")
+later("plugins/autocomplete")
+later("plugins/indent-line")
+later("plugins/lint")
+later("plugins/which-key")
+later("plugins/autopairs")
+-- later("plugins/todo-comments")
+later("plugins/conform")
+later("plugins/bufjump")
+later("plugins/gitsigns")
+later("plugins/comments")
 -- later("plugins/grapple")
 -- later("plugins/arrow")
 -- later("plugins/roslyn")
@@ -46,25 +47,25 @@ later("plugins/easy-dotnet", {
 })
 later("plugins/lazydotnet", { event = "FileType", opts = { pattern = { "cs", "vb", "fsharp", "razor" } } })
 later("plugins/csvview", { event = "FileType", opts = { pattern = { "csv", "tsv" } } })
-require("plugins/diffview")
-require("plugins/neogit")
-require("plugins/flash")
+later("plugins/diffview")
+later("plugins/neogit")
+later("plugins/flash")
 later("plugins/render-markdown", { event = "FileType", opts = { pattern = "markdown" } })
 if not vim.g.neovide then
-	require("plugins/smear-cursor")
+	later("plugins/smear-cursor")
 end
-require("plugins/toggleterm")
-require("plugins/treesj")
-require("plugins/undo-glow")
-require("plugins/windows")
-require("plugins/winshift")
+later("plugins/toggleterm")
+later("plugins/treesj")
+later("plugins/undo-glow")
+later("plugins/windows")
+later("plugins/winshift")
 later("plugins/typescript-tools", {
 	event = "FileType",
 	opts = { pattern = { "typescript", "typescriptreact", "javascript", "javascriptreact" } },
 })
-require("plugins/copilot")
--- require("plugins/sidekick")
-require("plugins/trouble")
+later("plugins/copilot")
+-- later("plugins/sidekick")
+later("plugins/trouble")
 later("plugins/wezterm-types", {
 	event = "FileType",
 	opts = {
@@ -73,7 +74,7 @@ later("plugins/wezterm-types", {
 		}
 	}
 })
-require("plugins/vim-matchup")
+later("plugins/vim-matchup")
 later("plugins/nvim-ts-autotag", {
 	event = "FileType",
 	opts = {
@@ -91,12 +92,12 @@ later("plugins/nvim-ts-autotag", {
 	},
 })
 -- later("plugins/fyler")
-require("plugins/obsidian")
-require("plugins/pretty_hover")
+later("plugins/obsidian")
+later("plugins/pretty_hover")
 
 if vim.g.neovide then
-	require("plugins/tabby")
-	require("plugins/scope")
+	later("plugins/tabby")
+	later("plugins/scope")
 end
-require("plugins/resession")
--- require("plugins/mssql")
+later("plugins/resession")
+-- later("plugins/mssql")

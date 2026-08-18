@@ -7,6 +7,8 @@
 -- A module may be registered with multiple triggers by calling later() again;
 -- whichever fires first loads it (require makes repeat loads a no-op).
 
+local lazyload = require("lazyload")
+
 local queue = {}
 
 local function load(module)
@@ -25,16 +27,7 @@ local function drain()
 	vim.schedule(drain)
 end
 
-if vim.v.vim_did_enter == 1 then
-	vim.schedule(drain)
-else
-	vim.api.nvim_create_autocmd("VimEnter", {
-		once = true,
-		callback = function()
-			vim.schedule(drain)
-		end,
-	})
-end
+lazyload.on_vim_enter(drain)
 
 ---@param module string
 ---@param trigger? { event: vim.api.keyset.events|vim.api.keyset.events[], opts?: vim.api.keyset.create_autocmd }
