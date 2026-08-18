@@ -91,6 +91,7 @@ local opts = {
 			treesitter_highlighting = true,
 			-- Draws the item in the documentation window, by default using an internal treesitter based implementation
 			draw = function(opts)
+				vim.notify(opts.documentation)
 				if opts.item and opts.item.documentation and opts.item.documentation.value then
 					local out = require("pretty_hover.parser").parse(opts.item.documentation.value)
 					opts.item.documentation.value = out:string()

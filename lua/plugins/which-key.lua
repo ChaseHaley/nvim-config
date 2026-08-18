@@ -57,6 +57,7 @@ require("which-key").setup({
 		{ "<leader>c", group = "[C]laude Code" },
 		{ "<leader>z", group = "Custom" },
 		{ "<leader>zo", group = "[O]pen file in..." },
+		{ "<leader>za", group = "Copy [A]gent mention", mode = { "n", "x" } },
 		{ "<leader>x", group = "Trouble" },
 		{ "<leader>d", group = "[D]ap" },
 	},

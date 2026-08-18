@@ -19,7 +19,9 @@ local function suppress_codelens(bufnr)
 	-- autocmd chain has finished.
 	local function off()
 		vim.schedule(function()
-			if not vim.api.nvim_buf_is_valid(bufnr) then return end
+			if not vim.api.nvim_buf_is_valid(bufnr) then
+				return
+			end
 			if vim.lsp.codelens.is_enabled({ bufnr = bufnr }) then
 				codelens_was_enabled[bufnr] = true
 				vim.lsp.codelens.enable(false, { bufnr = bufnr })
@@ -29,7 +31,9 @@ local function suppress_codelens(bufnr)
 
 	off()
 
-	if codelens_guarded[bufnr] then return end
+	if codelens_guarded[bufnr] then
+		return
+	end
 	codelens_guarded[bufnr] = true
 
 	vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
@@ -91,11 +95,21 @@ require("diffview").setup(
 		clean_up_buffers = true,
 		enhanced_diff_hl = true,
 		view = {
-			one_sided_layout = "raw"
+			one_sided_layout = "raw",
 		},
-		diffopt = { algorithm = "histogram" }
+		diffopt = { algorithm = "histogram" },
 	}
 )
 
+local function diffview(cmd)
+	local root = vim.fn.getcwd(-1, vim.fn.tabpagenr()) -- tab-local slot
+	vim.cmd(cmd .. " -C" .. vim.fn.fnameescape(root))
+end
+
 vim.keymap.set("n", "<leader>gdf", "<cmd>DiffviewFileHistory --follow %<CR>")
-vim.keymap.set("n", "<leader>gda", "<cmd>DiffviewOpen<CR>")
+vim.keymap.set("n", "<leader>gdf", function ()
+	diffview("DiffviewFileHistory --follow %")
+end)
+vim.keymap.set("n", "<leader>gda", function ()
+	diffview("DiffviewOpen")
+end)

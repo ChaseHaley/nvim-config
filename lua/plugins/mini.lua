@@ -11,6 +11,11 @@ require("mini.surround").setup({})
 require("mini.icons").setup({})
 MiniIcons.mock_nvim_web_devicons()
 require("mini.move").setup({})
+-- require("mini.animate").setup({
+-- 	cursor = {
+-- 		enable = false,
+-- 	},
+-- })
 -- require("mini.sessions").setup({})
 -- vim.keymap.set("n", "<leader>sa", function ()
 -- 	MiniSessions.select()
@@ -56,6 +61,9 @@ statusline.setup({
 			local easy_dotnet_ok, easy_dotnet = pcall(require, 'easy-dotnet')
 			local startup_project = (easy_dotnet_ok and easy_dotnet.lualine.jobs())
 
+			local mssql_ok, mssql = pcall(require, 'mssql')
+			local mssql_comp = (mssql_ok and mssql.lualine_component)
+
 			return statusline.combine_groups({
 				{ hl = mode_hl, strings = { mode } },
 				{
@@ -72,6 +80,7 @@ statusline.setup({
 				{ hl = "MiniStatuslineFileinfo", strings = { fileinfo } },
 				{ hl = mode_hl, strings = { location } },
 				{ hl = "MiniStatusStartupProject", strings = { startup_project } },
+				{ hl = "MiniStatusMssql", strings = {  mssql_comp } }
 			})
 		end,
 	},

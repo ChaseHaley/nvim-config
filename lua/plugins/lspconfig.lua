@@ -47,10 +47,15 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 		-- Rename the variable under your cursor.
 		--  Most Language Servers support renaming across files, etc.
+		-- ts-autotag loads on a FileType trigger, so it is off the runtimepath in
+		-- buffers whose filetype it does not handle.
 		map("grn", function()
-			if not require("ts-autotag").rename() then
-				require("live-rename").rename()
+			local ok, autotag = pcall(require, "ts-autotag")
+			if ok and autotag.rename() then
+				return
 			end
+
+			require("live-rename").rename()
 		end, "[R]e[n]ame")
 
 		-- if not require("ts-autotag").rename() then
@@ -86,7 +91,11 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		-- Fuzzy find all the symbols in your current document.
 		--  Symbols are things like variables, functions, types, etc.
 		map("<leader>ssd", function()
-			require("snacks").picker.lsp_symbols()
+			require("snacks").picker.lsp_symbols({
+				filter = {
+					default = true
+				}
+			})
 		end, "[D]ocument")
 
 		-- Fuzzy find all the symbols in your current workspace.

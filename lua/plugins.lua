@@ -25,17 +25,17 @@ require("plugins/lspconfig")
 require("plugins/dap")
 
 -- Everything else loads right after startup finishes.
-later("plugins/treesitter-textobjects")
-later("plugins/treesitter-context")
-later("plugins/autocomplete")
-later("plugins/lint")
-later("plugins/which-key")
-later("plugins/autopairs")
-later("plugins/todo-comments")
-later("plugins/conform")
-later("plugins/bufjump")
-later("plugins/gitsigns")
-later("plugins/comments")
+require("plugins/treesitter-textobjects")
+require("plugins/treesitter-context")
+require("plugins/autocomplete")
+require("plugins/lint")
+require("plugins/which-key")
+require("plugins/autopairs")
+-- require("plugins/todo-comments")
+require("plugins/conform")
+require("plugins/bufjump")
+require("plugins/gitsigns")
+require("plugins/comments")
 -- later("plugins/grapple")
 -- later("plugins/arrow")
 -- later("plugins/roslyn")
@@ -46,26 +46,25 @@ later("plugins/easy-dotnet", {
 })
 later("plugins/lazydotnet", { event = "FileType", opts = { pattern = { "cs", "vb", "fsharp", "razor" } } })
 later("plugins/csvview", { event = "FileType", opts = { pattern = { "csv", "tsv" } } })
-later("plugins/diffview")
-later("plugins/neogit")
-later("plugins/flash")
+require("plugins/diffview")
+require("plugins/neogit")
+require("plugins/flash")
 later("plugins/render-markdown", { event = "FileType", opts = { pattern = "markdown" } })
--- if not vim.g.neovide then
--- 	later("plugins/smear-cursor")
--- end
-later("plugins/toggleterm")
-later("plugins/treesj")
-later("plugins/undo-glow")
-later("plugins/windows")
-later("plugins/winshift")
-later("plugins/zen-mode")
+if not vim.g.neovide then
+	require("plugins/smear-cursor")
+end
+require("plugins/toggleterm")
+require("plugins/treesj")
+require("plugins/undo-glow")
+require("plugins/windows")
+require("plugins/winshift")
 later("plugins/typescript-tools", {
 	event = "FileType",
 	opts = { pattern = { "typescript", "typescriptreact", "javascript", "javascriptreact" } },
 })
-later("plugins/copilot")
-later("plugins/sidekick")
-later("plugins/trouble")
+require("plugins/copilot")
+-- require("plugins/sidekick")
+require("plugins/trouble")
 later("plugins/wezterm-types", {
 	event = "FileType",
 	opts = {
@@ -74,7 +73,7 @@ later("plugins/wezterm-types", {
 		}
 	}
 })
-later("plugins/vim-matchup")
+require("plugins/vim-matchup")
 later("plugins/nvim-ts-autotag", {
 	event = "FileType",
 	opts = {
@@ -91,12 +90,13 @@ later("plugins/nvim-ts-autotag", {
 		},
 	},
 })
-later("plugins/fyler")
-later("plugins/obsidian")
-later("plugins/pretty_hover")
+-- later("plugins/fyler")
+require("plugins/obsidian")
+require("plugins/pretty_hover")
 
 if vim.g.neovide then
-	later("plugins/tabby")
-	later("plugins/scope")
-	later("plugins/resession")
+	require("plugins/tabby")
+	require("plugins/scope")
 end
+require("plugins/resession")
+-- require("plugins/mssql")

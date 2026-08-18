@@ -174,6 +174,19 @@ vim.keymap.set("n", "<leader>zoc", function()
 	end
 end, { desc = "Open file in VSCode" })
 
+vim.keymap.set("n", "<leader>zoz", function()
+	local executable = "zed"
+	validateExecutable(executable)
+	local file = getCurrentFile()
+
+	if file ~= nil then
+		vim.system({
+			vim.fn.exepath(executable) ~= "" and vim.fn.exepath(executable) or executable,
+			file,
+		}, { detach = true })
+	end
+end, { desc = "Open file in Zed" })
+
 vim.keymap.set("n", "<leader>zof", function()
 	local file = vim.api.nvim_buf_get_name(0)
 	if file == "" then
@@ -184,3 +197,59 @@ vim.keymap.set("n", "<leader>zof", function()
 	local dir = vim.fn.fnamemodify(file, ":p:h")
 	vim.ui.open(dir)
 end, { desc = "Open file directory in file manger"})
+
+-- Claude Code resolves "@" references against the cwd it was launched in, which is normally
+-- the repository root rather than Neovim's cwd. Absolute paths also resolve, but on Windows
+-- the drive colon makes Claude Code additionally parse the mention as an MCP resource
+-- reference ("C" as the server name), which fails and is discarded.
+local function agent_mention_path(absolute)
+	local file = vim.api.nvim_buf_get_name(0)
+	if file == "" then
+		vim.notify("Current buffer has no file path", vim.log.levels.WARN)
+		return nil
+	end
+
+	if absolute then
+		return vim.fs.normalize(file)
+	end
+
+	local root = vim.fs.root(file, ".git") or vim.fn.getcwd()
+	return vim.fs.relpath(root, file) or vim.fs.normalize(file)
+end
+
+local function copy_agent_mention(absolute, suffix)
+	local path = agent_mention_path(absolute)
+	if not path then
+		return
+	end
+
+	local mention = "@" .. path .. (suffix or "")
+	vim.fn.setreg("+", mention)
+	vim.notify("Copied " .. mention)
+end
+
+-- line("v") gives the far end of the visual selection, or the cursor outside visual mode.
+local function line_suffix()
+	local from, to = vim.fn.line("v"), vim.fn.line(".")
+	if from > to then
+		from, to = to, from
+	end
+
+	return from == to and ("#L%d"):format(from) or ("#L%d-%d"):format(from, to)
+end
+
+vim.keymap.set("n", "<leader>zaf", function()
+	copy_agent_mention(false)
+end, { desc = "Copy [A]gent mention: [F]ile" })
+
+vim.keymap.set("n", "<leader>zaF", function()
+	copy_agent_mention(true)
+end, { desc = "Copy [A]gent mention: [F]ile, absolute" })
+
+vim.keymap.set({ "n", "x" }, "<leader>zal", function()
+	copy_agent_mention(false, line_suffix())
+end, { desc = "Copy [A]gent mention: [L]ines" })
+
+vim.keymap.set({ "n", "x" }, "<leader>zaL", function()
+	copy_agent_mention(true, line_suffix())
+end, { desc = "Copy [A]gent mention: [L]ines, absolute" })
