@@ -4,16 +4,44 @@ local ns = vim.api.nvim_create_namespace("pack_inspect")
 local results = {}
 local check_buf
 local check_line_items = {}
+local log_win
 local selected = {}
 local inspect_ref = "refs/remotes/pack-inspect"
 local inspect_tag_ref = "refs/pack-inspect/tags"
+local check_name = "vim.pack updates"
+local render_queued = false
+local reload_queued = false
+local spawn_queue = {}
+local spawn_running = false
+local has_git
+
+-- vim.system() blocks the main loop for 6-20ms while it spawns, so a burst of
+-- callbacks that each start more git work stalls the editor for hundreds of ms.
+-- Start one process per loop iteration instead; the processes still run together.
+local function pump_spawns()
+	local start = table.remove(spawn_queue, 1)
+	if not start then
+		spawn_running = false
+		return
+	end
+
+	start()
+	vim.defer_fn(pump_spawns, 1)
+end
 
 local function git(cwd, args, cb)
-	vim.system(vim.list_extend({ "git", "-C", cwd }, args), { text = true }, function(result)
-		vim.schedule(function()
-			cb(result)
+	spawn_queue[#spawn_queue + 1] = function()
+		vim.system(vim.list_extend({ "git", "-C", cwd }, args), { text = true }, function(result)
+			vim.schedule(function()
+				cb(result)
+			end)
 		end)
-	end)
+	end
+
+	if not spawn_running then
+		spawn_running = true
+		vim.defer_fn(pump_spawns, 1)
+	end
 end
 
 local function trim(value)
@@ -164,13 +192,10 @@ local function branch_semver(branch)
 	end
 end
 
-local function blocked_version_branch(plugin, range, latest_allowed_version)
+local function blocked_version_branch(branches, range, latest_allowed_version)
 	local blocked
-	if type(plugin.branches) ~= "table" then
-		return nil
-	end
 
-	for _, branch in ipairs(plugin.branches) do
+	for _, branch in ipairs(branches) do
 		local parsed = branch_semver(branch)
 		if parsed and not version_range_has(range, parsed) and (not latest_allowed_version or latest_allowed_version < parsed) then
 			if not blocked or blocked.version < parsed then
@@ -182,35 +207,32 @@ local function blocked_version_branch(plugin, range, latest_allowed_version)
 	return blocked
 end
 
-local function fetched_tags(plugin)
-	local result = vim.system({
-		"git",
-		"-C",
-		plugin.path,
-		"for-each-ref",
-		"--format=%(refname:strip=3)",
-		inspect_tag_ref,
-	}, { text = true }):wait()
-
-	if result.code ~= 0 or trim(result.stdout) == "" then
-		return plugin.tags or {}
-	end
-
-	return vim.split(trim(result.stdout), "\n", { plain = true })
+local function spec_version(plugin)
+	return plugin.spec and plugin.spec.version
 end
 
-local function version_range_info(plugin)
-	local version = plugin.spec.version
-	if type(version) ~= "table" or type(version.has) ~= "function" then
-		return nil
+local function spec_label(plugin)
+	local version = spec_version(plugin)
+	if type(version) == "table" and type(version.has) == "function" then
+		return "version " .. tostring(version)
 	end
+
+	if type(version) == "string" and version ~= "" then
+		return "version " .. version
+	end
+
+	return ""
+end
+
+local function version_range_info(plugin, remote)
+	local version = spec_version(plugin)
 
 	local latest_allowed_tag
 	local latest_allowed_version
 	local latest_tag
 	local latest_version
 
-	for _, tag in ipairs(fetched_tags(plugin)) do
+	for _, tag in ipairs(remote.tags) do
 		local parsed = parse_semver(tag)
 		if parsed then
 			if not latest_version or latest_version < parsed then
@@ -230,7 +252,7 @@ local function version_range_info(plugin)
 		blocked = { label = "tag " .. latest_tag, version = latest_version }
 	end
 
-	local branch_blocked = blocked_version_branch(plugin, version, latest_allowed_version)
+	local branch_blocked = blocked_version_branch(remote.branches, version, latest_allowed_version)
 	if branch_blocked and (not blocked or blocked.version < branch_blocked.version) then
 		blocked = branch_blocked
 	end
@@ -271,15 +293,13 @@ local function string_version_label(version, target)
 	return "revision " .. version
 end
 
-local function default_target_candidates(plugin)
+local function default_target_candidates(remote)
 	local candidates = {}
 	candidates[#candidates + 1] = "@{u}"
 	candidates[#candidates + 1] = target_ref("HEAD")
 
-	if type(plugin.branches) == "table" then
-		for _, branch in ipairs(plugin.branches) do
-			candidates[#candidates + 1] = target_ref(branch)
-		end
+	for _, branch in ipairs(remote.branches) do
+		candidates[#candidates + 1] = target_ref(branch)
 	end
 
 	candidates[#candidates + 1] = target_ref("main")
@@ -304,6 +324,28 @@ local function fetch_plugin(plugin, cb)
 		"+refs/tags/*:" .. inspect_tag_ref .. "/*",
 		"+HEAD:" .. target_ref("HEAD"),
 	}, cb)
+end
+
+local function remote_info(plugin, cb)
+	git(plugin.path, { "for-each-ref", "--format=%(refname)", inspect_tag_ref, inspect_ref }, function(result)
+		local tags = {}
+		local branches = {}
+
+		for _, ref in ipairs(vim.split(trim(result.stdout), "\n", { plain = true })) do
+			local tag = ref:match("^" .. vim.pesc(inspect_tag_ref) .. "/(.+)$")
+			local branch = ref:match("^" .. vim.pesc(inspect_ref) .. "/(.+)$")
+			if tag then
+				tags[#tags + 1] = tag
+			elseif branch then
+				branches[#branches + 1] = branch
+			end
+		end
+
+		cb({
+			tags = #tags > 0 and tags or plugin.tags or {},
+			branches = #branches > 0 and branches or plugin.branches or {},
+		})
+	end)
 end
 
 local function open_url_under_cursor()
@@ -351,24 +393,58 @@ local function map_open_url(buf)
 	vim.keymap.set("n", "gx", open_url_under_cursor, { buffer = buf, nowait = true, desc = "Open URL under cursor" })
 end
 
-local function scratch_buffer(name, filetype)
+local function scratch_buffer(filetype)
 	local buf = vim.api.nvim_create_buf(false, true)
 	vim.bo[buf].buftype = "nofile"
 	vim.bo[buf].bufhidden = "wipe"
 	vim.bo[buf].swapfile = false
 	vim.bo[buf].modifiable = true
 	vim.bo[buf].filetype = filetype or ""
-	vim.api.nvim_buf_set_name(buf, name)
+	return buf
+end
+
+local function set_buf_name(buf, name)
+	for attempt = 1, 9 do
+		local candidate = attempt == 1 and name or ("%s (%d)"):format(name, attempt)
+		if pcall(vim.api.nvim_buf_set_name, buf, candidate) then
+			return
+		end
+	end
+end
+
+local function nofile_buf_named(name)
+	for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+		if vim.bo[buf].buftype == "nofile" and vim.fs.basename(vim.api.nvim_buf_get_name(buf)) == name then
+			return buf
+		end
+	end
+end
+
+local function window_for_buf(buf)
+	for _, win in ipairs(vim.api.nvim_list_wins()) do
+		if vim.api.nvim_win_get_buf(win) == buf then
+			return win
+		end
+	end
+end
+
+local function open_split(buf)
 	vim.cmd("botright split")
 	vim.api.nvim_win_set_buf(0, buf)
-	return buf
+	return vim.api.nvim_get_current_win()
+end
+
+local function open_tab(buf)
+	vim.cmd("$tab split")
+	vim.api.nvim_win_set_buf(0, buf)
+	return vim.api.nvim_get_current_win()
 end
 
 local function sorted_results()
 	local items = vim.tbl_values(results)
 	table.sort(items, function(a, b)
 		if a.status ~= b.status then
-			local order = { behind = 1, current = 2, checking = 3, error = 4 }
+			local order = { behind = 1, ["local"] = 2, checking = 3, current = 4, error = 5 }
 			return (order[a.status] or 99) < (order[b.status] or 99)
 		end
 
@@ -414,6 +490,15 @@ local function line_for(item)
 		return plugin_label(item) .. "checking"
 	end
 
+	if item.status == "local" then
+		local detail = spec_label(item.plugin)
+		if detail ~= "" then
+			return ("%slocal    %s  %s"):format(plugin_label(item), commit_link(item.plugin, item.current), detail)
+		end
+
+		return ("%slocal    %s"):format(plugin_label(item), commit_link(item.plugin, item.current))
+	end
+
 	if item.status == "current" then
 		local detail = summary(false)
 		if detail ~= "" then
@@ -437,17 +522,57 @@ local function line_for(item)
 	return ("%serror    %s"):format(plugin_label(item), item.error or "unknown error")
 end
 
+local function status_counts()
+	local counts = { total = 0 }
+	for _, item in pairs(results) do
+		counts.total = counts.total + 1
+		counts[item.status] = (counts[item.status] or 0) + 1
+	end
+
+	return counts
+end
+
+local function header_lines()
+	local counts = status_counts()
+	local title = ("vim.pack updates  %d plugins"):format(counts.total)
+
+	if (counts.behind or 0) > 0 then
+		title = title .. ("  %d behind"):format(counts.behind)
+	end
+
+	if (counts.error or 0) > 0 then
+		title = title .. ("  %d failed"):format(counts.error)
+	end
+
+	if (counts.checking or 0) > 0 then
+		title = title .. ("  checking %d"):format(counts.checking)
+	end
+
+	return {
+		title,
+		"",
+		"<CR> log   s log in split   <Tab> select   c check   C check all",
+		"u update   x delete   r reload   q close",
+		"",
+	}
+end
+
 local function render_check_buffer()
 	if not check_buf or not vim.api.nvim_buf_is_valid(check_buf) then
 		return
 	end
 
-	local lines = {
-		"vim.pack updates",
-		"",
-		"<CR> log   <Tab> select   u update   x delete   r refresh   q close",
-		"",
-	}
+	local win = window_for_buf(check_buf)
+	local cursor_name
+	local cursor_col = 0
+	if win then
+		local pos = vim.api.nvim_win_get_cursor(win)
+		local current = check_line_items[pos[1]]
+		cursor_name = current and current.name
+		cursor_col = pos[2]
+	end
+
+	local lines = header_lines()
 
 	local active_items = {}
 	local inactive_items = {}
@@ -460,7 +585,7 @@ local function render_check_buffer()
 	end
 
 	local line_items = {}
-	local highlights = {}
+	local highlights = { [1] = "Title", [3] = "Comment", [4] = "Comment" }
 
 	local function append_item(item)
 		local mark = selected[item.name] and "> " or "  "
@@ -499,16 +624,27 @@ local function render_check_buffer()
 
 	check_line_items = line_items
 	vim.bo[check_buf].modifiable = false
+
+	if win and cursor_name then
+		for line, item in pairs(line_items) do
+			if item.name == cursor_name then
+				pcall(vim.api.nvim_win_set_cursor, win, { line, math.min(cursor_col, math.max(0, #lines[line] - 1)) })
+				break
+			end
+		end
+	end
 end
 
-local function set_error(plugin, message)
-	results[plugin_name(plugin)] = {
-		name = plugin_name(plugin),
-		plugin = plugin,
-		status = "error",
-		error = message,
-	}
-	render_check_buffer()
+local function schedule_render()
+	if render_queued then
+		return
+	end
+
+	render_queued = true
+	vim.schedule(function()
+		render_queued = false
+		render_check_buffer()
+	end)
 end
 
 local function resolve_target(plugin, candidates, index, cb)
@@ -520,7 +656,7 @@ local function resolve_target(plugin, candidates, index, cb)
 
 	git(plugin.path, { "rev-parse", "--verify", candidate .. "^{commit}" }, function(result)
 		if result.code == 0 then
-			cb(candidate)
+			cb(candidate, trim(result.stdout))
 			return
 		end
 
@@ -529,117 +665,210 @@ local function resolve_target(plugin, candidates, index, cb)
 end
 
 local function resolve_update_target(plugin, cb)
-	local version = plugin.spec.version
+	remote_info(plugin, function(remote)
+		local version = spec_version(plugin)
 
-	if type(version) == "table" and type(version.has) == "function" then
-		local target_info, err = version_range_info(plugin)
-		if not target_info or not target_info.target then
-			cb(nil, err or "could not resolve version range")
-			return
-		end
-
-		resolve_target(plugin, { target_info.target }, 1, function(target)
-			if not target then
-				cb(nil, "could not resolve " .. target_info.target_label)
+		if type(version) == "table" and type(version.has) == "function" then
+			local target_info, err = version_range_info(plugin, remote)
+			if not target_info or not target_info.target then
+				cb(nil, err or "could not resolve version range")
 				return
 			end
 
-			target_info.target = target
-			cb(target_info)
-		end)
-		return
-	end
+			resolve_target(plugin, { target_info.target }, 1, function(target, sha)
+				if not target then
+					cb(nil, "could not resolve " .. target_info.target_label)
+					return
+				end
 
-	if type(version) == "string" and version ~= "" then
-		resolve_target(plugin, string_version_candidates(version), 1, function(target)
+				target_info.target = target
+				target_info.sha = sha
+				cb(target_info)
+			end)
+			return
+		end
+
+		if type(version) == "string" and version ~= "" then
+			resolve_target(plugin, string_version_candidates(version), 1, function(target, sha)
+				if not target then
+					cb(nil, "could not resolve version " .. version)
+					return
+				end
+
+				cb({
+					explicit = true,
+					version_label = version,
+					target = target,
+					sha = sha,
+					target_label = string_version_label(version, target),
+				})
+			end)
+			return
+		end
+
+		resolve_target(plugin, default_target_candidates(remote), 1, function(target, sha)
 			if not target then
-				cb(nil, "could not resolve version " .. version)
+				cb(nil, "could not resolve update target")
 				return
 			end
 
 			cb({
-				explicit = true,
-				version_label = version,
 				target = target,
-				target_label = string_version_label(version, target),
+				sha = sha,
+				target_label = display_target(target),
 			})
 		end)
-		return
-	end
-
-	resolve_target(plugin, default_target_candidates(plugin), 1, function(target)
-		if not target then
-			cb(nil, "could not resolve update target")
-			return
-		end
-
-		cb({
-			target = target,
-			target_label = display_target(target),
-		})
 	end)
 end
 
-local function inspect_plugin(plugin)
+local function inspect_plugin(plugin, on_result)
 	local name = plugin_name(plugin)
-	results[name] = {
-		name = name,
-		plugin = plugin,
-		current = plugin.rev,
-		status = "checking",
-	}
-	render_check_buffer()
 
-	if vim.fn.executable("git") ~= 1 then
-		set_error(plugin, "git executable not found")
+	local function finish(item)
+		results[name] = item
+		schedule_render()
+		if on_result then
+			on_result(item)
+		end
+	end
+
+	local function fail(message)
+		finish({
+			name = name,
+			plugin = plugin,
+			current = plugin.rev,
+			status = "error",
+			error = message,
+		})
+	end
+
+	if has_git == nil then
+		has_git = vim.fn.executable("git") == 1
+	end
+
+	if not has_git then
+		fail("git executable not found")
 		return
 	end
 
 	fetch_plugin(plugin, function(fetch_result)
 		if fetch_result.code ~= 0 then
-			set_error(plugin, trim(fetch_result.stderr) ~= "" and trim(fetch_result.stderr) or "git fetch failed")
+			fail(trim(fetch_result.stderr) ~= "" and trim(fetch_result.stderr) or "git fetch failed")
 			return
 		end
 
 		resolve_update_target(plugin, function(target_info, err)
 			if not target_info then
-				set_error(plugin, err or "could not resolve update target")
+				fail(err or "could not resolve update target")
 				return
 			end
 
 			local target = target_info.target
 			git(plugin.path, { "rev-list", "--count", "HEAD.." .. target }, function(count_result)
 				if count_result.code ~= 0 then
-					set_error(plugin, trim(count_result.stderr) ~= "" and trim(count_result.stderr) or "could not count commits")
+					fail(trim(count_result.stderr) ~= "" and trim(count_result.stderr) or "could not count commits")
 					return
 				end
 
 				local count = tonumber(trim(count_result.stdout)) or 0
-				git(plugin.path, { "rev-parse", target }, function(rev_result)
-					local latest = rev_result.code == 0 and trim(rev_result.stdout) or ""
-					results[name] = {
-						name = name,
-						plugin = plugin,
-						current = plugin.rev,
-						latest = latest,
-						target = target,
-						target_info = target_info,
-						count = count,
-						status = count > 0 and "behind" or "current",
-					}
-					render_check_buffer()
-				end)
+				finish({
+					name = name,
+					plugin = plugin,
+					current = plugin.rev,
+					latest = target_info.sha,
+					target = target,
+					target_info = target_info,
+					count = count,
+					status = count > 0 and "behind" or "current",
+				})
 			end)
 		end)
 	end)
 end
 
+local function check_items(items, on_result)
+	for _, item in ipairs(items) do
+		item.status = "checking"
+	end
+
+	render_check_buffer()
+
+	for _, item in ipairs(items) do
+		inspect_plugin(item.plugin, on_result)
+	end
+end
+
+local function installed_plugins()
+	return vim.pack.get(nil, { info = false })
+end
+
 local function plugin_by_name(name)
-	for _, plugin in ipairs(vim.pack.get()) do
+	for _, plugin in ipairs(installed_plugins()) do
 		if plugin_name(plugin) == name then
 			return plugin
 		end
 	end
+end
+
+local function reloaded_item(plugin, previous)
+	local name = plugin_name(plugin)
+
+	if not previous or previous.status == "local" then
+		return nil
+	end
+
+	if previous.current == plugin.rev then
+		previous.plugin = plugin
+		return previous
+	end
+
+	if previous.latest and previous.latest == plugin.rev then
+		return {
+			name = name,
+			plugin = plugin,
+			current = plugin.rev,
+			latest = plugin.rev,
+			target = previous.target,
+			target_info = previous.target_info,
+			count = 0,
+			status = "current",
+		}
+	end
+end
+
+local function load_plugins()
+	local items = {}
+	for _, plugin in ipairs(installed_plugins()) do
+		local name = plugin_name(plugin)
+		items[name] = reloaded_item(plugin, results[name])
+			or {
+				name = name,
+				plugin = plugin,
+				current = plugin.rev,
+				status = "local",
+			}
+	end
+
+	for name in pairs(selected) do
+		if not items[name] then
+			selected[name] = nil
+		end
+	end
+
+	results = items
+end
+
+local function schedule_reload()
+	if reload_queued then
+		return
+	end
+
+	reload_queued = true
+	vim.schedule(function()
+		reload_queued = false
+		load_plugins()
+		render_check_buffer()
+	end)
 end
 
 local function item_under_cursor()
@@ -652,44 +881,171 @@ local function item_under_cursor()
 	return check_line_items[line]
 end
 
+local function reusable_log_win()
+	if not log_win or not vim.api.nvim_win_is_valid(log_win) then
+		return nil
+	end
+
+	if vim.api.nvim_win_get_tabpage(log_win) ~= vim.api.nvim_get_current_tabpage() then
+		return nil
+	end
+
+	if vim.api.nvim_win_get_buf(log_win) == check_buf then
+		return nil
+	end
+
+	return log_win
+end
+
+local function show_log(plugin, lines, split)
+	local buf = scratch_buffer("markdown")
+	vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+	vim.bo[buf].modifiable = false
+
+	local win = not split and reusable_log_win()
+	if win then
+		vim.api.nvim_win_set_buf(win, buf)
+		vim.api.nvim_set_current_win(win)
+	else
+		log_win = open_split(buf)
+	end
+
+	set_buf_name(buf, ("vim.pack log: %s"):format(plugin_name(plugin)))
+	vim.keymap.set("n", "q", "<Cmd>close<CR>", { buffer = buf, nowait = true, desc = "Close pack log" })
+	map_open_url(buf)
+end
+
+local function map_check_keys(buf)
+	local function map(lhs, rhs, desc)
+		vim.keymap.set("n", lhs, rhs, { buffer = buf, nowait = true, desc = desc })
+	end
+
+	local function log_under_cursor(split)
+		return function()
+			local item = item_under_cursor()
+			if item then
+				M.log(item.name, { split = split })
+			end
+		end
+	end
+
+	map("q", function()
+		if #vim.api.nvim_list_wins() > 1 then
+			vim.cmd("close")
+		end
+	end, "Close pack updates")
+	map("r", function()
+		M.reload()
+	end, "Reload installed plugins")
+	map("c", function()
+		M.check_selected()
+	end, "Check selected plugins for updates")
+	map("C", function()
+		M.check_all()
+	end, "Check every plugin for updates")
+	map("u", function()
+		M.update_selected()
+	end, "Update selected plugin")
+	map("x", function()
+		M.delete_selected()
+	end, "Delete selected plugin")
+	map("<Tab>", function()
+		M.toggle_selected()
+	end, "Toggle plugin selection")
+	map("<CR>", log_under_cursor(false), "Show plugin update log")
+	map("s", log_under_cursor(true), "Show plugin update log in a new split")
+	map_open_url(buf)
+end
+
+local function open_check_window()
+	if not check_buf or not vim.api.nvim_buf_is_valid(check_buf) then
+		check_buf = nofile_buf_named(check_name)
+		if not check_buf then
+			check_buf = scratch_buffer("markdown")
+			set_buf_name(check_buf, check_name)
+		end
+
+		vim.bo[check_buf].bufhidden = "hide"
+		map_check_keys(check_buf)
+	end
+
+	local win = window_for_buf(check_buf)
+	if win then
+		vim.api.nvim_set_current_win(win)
+		return
+	end
+
+	open_tab(check_buf)
+end
+
+local function selected_targets()
+	if next(selected) then
+		local items = {}
+		for name in pairs(selected) do
+			if results[name] then
+				items[#items + 1] = results[name]
+			end
+		end
+		return items
+	end
+
+	local item = item_under_cursor()
+	return item and { item } or {}
+end
+
+local function target_names(items)
+	local names = {}
+	for _, item in ipairs(items) do
+		names[#names + 1] = item.name
+	end
+	return names
+end
+
 function M.names()
 	local names = {}
-	for _, plugin in ipairs(vim.pack.get()) do
+	for _, plugin in ipairs(installed_plugins()) do
 		names[#names + 1] = plugin_name(plugin)
 	end
 	table.sort(names)
 	return names
 end
 
-function M.check()
-	results = {}
-	selected = {}
-	check_buf = scratch_buffer("vim.pack updates", "markdown")
-
-	vim.keymap.set("n", "q", "<Cmd>close<CR>", { buffer = check_buf, nowait = true, desc = "Close pack updates" })
-	vim.keymap.set("n", "r", M.check, { buffer = check_buf, nowait = true, desc = "Refresh pack updates" })
-	vim.keymap.set("n", "u", M.update_selected, { buffer = check_buf, nowait = true, desc = "Update selected plugin" })
-	vim.keymap.set("n", "x", M.delete_selected, { buffer = check_buf, nowait = true, desc = "Delete selected plugin" })
-	vim.keymap.set("n", "<Tab>", M.toggle_selected, { buffer = check_buf, nowait = true, desc = "Toggle plugin selection" })
-	map_open_url(check_buf)
-	vim.keymap.set("n", "<CR>", function()
-		local item = item_under_cursor()
-		if item then
-			M.log(item.name)
-		end
-	end, { buffer = check_buf, nowait = true, desc = "Show plugin update log" })
-
+function M.check(opts)
+	opts = opts or {}
+	load_plugins()
+	open_check_window()
 	render_check_buffer()
 
-	for _, plugin in ipairs(vim.pack.get()) do
-		inspect_plugin(plugin)
+	if opts.fetch then
+		M.check_all()
 	end
 end
 
-function M.log(name)
+function M.reload()
+	load_plugins()
+	render_check_buffer()
+end
+
+function M.check_all()
+	check_items(sorted_results())
+end
+
+function M.check_selected()
+	local items = selected_targets()
+	if #items == 0 then
+		vim.notify("No plugin selected", vim.log.levels.WARN)
+		return
+	end
+
+	selected = {}
+	check_items(items)
+end
+
+function M.log(name, opts)
+	opts = opts or {}
 	local cursor_item = not name and item_under_cursor() or nil
-	local item = cursor_item or name and results[name]
-	name = name or item and item.name
+	local item = cursor_item or (name and results[name])
+	name = name or (item and item.name)
 
 	local plugin = item and item.plugin or plugin_by_name(name)
 	if not plugin then
@@ -739,16 +1095,24 @@ function M.log(name)
 			table.insert(lines, 1, "")
 			table.insert(lines, 1, ("%s: HEAD..%s"):format(plugin_link(plugin), log_target_label(target, target_info)))
 
-			local buf = scratch_buffer(("vim.pack log: %s"):format(plugin_name(plugin)), "markdown")
-			vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
-			vim.bo[buf].modifiable = false
-			vim.keymap.set("n", "q", "<Cmd>close<CR>", { buffer = buf, nowait = true, desc = "Close pack log" })
-			map_open_url(buf)
+			show_log(plugin, lines, opts.split)
 		end)
 	end
 
 	if item and item.target then
 		open_log(item.target, item.target_info)
+		return
+	end
+
+	if item then
+		check_items({ item }, function(checked)
+			if checked and checked.target then
+				open_log(checked.target, checked.target_info)
+				return
+			end
+
+			vim.notify(checked and checked.error or "Could not resolve update target", vim.log.levels.ERROR)
+		end)
 		return
 	end
 
@@ -786,29 +1150,6 @@ function M.toggle_selected()
 	end
 end
 
-local function selected_targets()
-	if next(selected) then
-		local items = {}
-		for name in pairs(selected) do
-			if results[name] then
-				items[#items + 1] = results[name]
-			end
-		end
-		return items
-	end
-
-	local item = item_under_cursor()
-	return item and { item } or {}
-end
-
-local function target_names(items)
-	local names = {}
-	for _, item in ipairs(items) do
-		names[#names + 1] = item.name
-	end
-	return names
-end
-
 function M.update_selected()
 	local items = selected_targets()
 	if #items == 0 then
@@ -843,14 +1184,26 @@ function M.delete_selected()
 end
 
 function M.setup()
-	vim.api.nvim_create_user_command("PackCheck", function()
-		M.check()
-	end, {})
+	vim.api.nvim_create_autocmd("PackChanged", {
+		group = vim.api.nvim_create_augroup("pack_inspect", { clear = true }),
+		desc = "Reload the pack updates panel after vim.pack changes a plugin",
+		callback = function()
+			if check_buf and vim.api.nvim_buf_is_valid(check_buf) then
+				schedule_reload()
+			end
+		end,
+	})
+
+	vim.api.nvim_create_user_command("PackCheck", function(opts)
+		M.check({ fetch = opts.bang })
+	end, { bang = true, desc = "Show vim.pack plugins; ! also checks for updates" })
 
 	vim.api.nvim_create_user_command("PackLog", function(opts)
-		M.log(opts.args ~= "" and opts.args or nil)
+		M.log(opts.args ~= "" and opts.args or nil, { split = opts.bang })
 	end, {
 		nargs = "?",
+		bang = true,
+		desc = "Show a plugin's pending update log",
 		complete = function()
 			return M.names()
 		end,
