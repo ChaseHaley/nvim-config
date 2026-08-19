@@ -94,7 +94,6 @@ later("plugins/nvim-ts-autotag", {
 -- later("plugins/fyler")
 later("plugins/obsidian")
 later("plugins/pretty_hover")
-later("plugins/fff")
 
 if vim.g.neovide then
 	later("plugins/tabby")

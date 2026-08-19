@@ -37,14 +37,6 @@ vim.api.nvim_create_autocmd("PackChanged", {
 			vim.cmd("TSUpdate")
 			return
 		end
-
-		if name == "fff" then
-			if not ev.data.active then
-				vim.cmd.packadd("fff")
-			end
-			require("fff.download").download_or_build_binary()
-			return
-		end
 	end,
 })
 
