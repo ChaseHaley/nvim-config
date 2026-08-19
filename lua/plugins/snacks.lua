@@ -17,11 +17,11 @@ require("snacks").setup({
 		-- `$NVIM`. Since snacks always launches lazygit from within Neovim, $NVIM
 		-- is always set, so we drop the conditional and use cmd-compatible commands
 		-- with `%NVIM%`.
-		config = {
-			os = {
-				editPreset = "nvim",
-			},
-		},
+		-- config = {
+		-- 	os = {
+		-- 		editPreset = "nvim",
+		-- 	},
+		-- },
 	},
 	notifier = { enabled = true },
 	picker = {
@@ -167,6 +167,14 @@ vim.keymap.set("n", "<leader>sn", function()
 	require("snacks").picker.files({ cwd = vim.fn.stdpath("config") })
 end, { desc = "[S]earch [N]eovim files" })
 
+vim.keymap.set("n", "<leader>sc", function()
+	require("snacks").picker.files({ cwd = vim.fn.expand("~/.claude"), hidden = true, ignored = false })
+end, { desc = "[S]earch [C]laude files" })
+
+vim.keymap.set("n", "<leader>sa", function()
+	require("snacks").picker.files({ cwd = vim.fn.getcwd() .. "/.claude/mp", hidden = true, ignored = true })
+end, { desc = "[S]earch AI files" })
+
 vim.keymap.set("n", "<leader>sx", function()
 	require("snacks").picker.git_status()
 end, { desc = "[S]earch git status" })
@@ -178,7 +186,3 @@ end, { desc = "[S]earch spelling" })
 vim.keymap.set("n", "<leader>sb", function()
 	require("snacks").picker.git_branches()
 end, { desc = "[S]earch git branches" })
-
-vim.keymap.set("n", "<leader>sl", function()
-	require("snacks").lazygit.open()
-end, { desc = "Lazygit" })

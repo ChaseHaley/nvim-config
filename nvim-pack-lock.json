@@ -118,10 +118,6 @@
       "rev": "e58ad4b0c9e9376096b9704f98fc00d4c9448870",
       "src": "https://github.com/echasnovski/mini.nvim"
     },
-    "mssql.nvim": {
-      "rev": "d453ccc9db33cc577acb49c166438d82767c214c",
-      "src": "https://github.com/Kurren123/mssql.nvim"
-    },
     "neogit": {
       "rev": "37e0f22a2345bad1bffe01b31970885882f46275",
       "src": "https://github.com/NeogitOrg/neogit"
