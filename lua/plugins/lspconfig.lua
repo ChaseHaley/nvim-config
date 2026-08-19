@@ -28,6 +28,139 @@
 vim.pack.add({ "https://github.com/j-hui/fidget.nvim" })
 require("fidget").setup({})
 
+--- @param buf integer
+--- @return vim.lsp.Client?
+local function implementation_client(buf)
+	local client = vim.iter(vim.lsp.get_clients({ bufnr = buf, method = "textDocument/typeDefinition" }))
+		:find(function(c)
+			return c:supports_method("textDocument/implementation", buf)
+		end)
+
+	if not client then
+		vim.notify("No LSP client here answers both type definition and implementation", vim.log.levels.WARN)
+	end
+
+	return client
+end
+
+--- @param result lsp.Location|lsp.LocationLink|(lsp.Location|lsp.LocationLink)[]|nil
+--- @return (lsp.Location|lsp.LocationLink)[]
+local function as_list(result)
+	if not result or vim.tbl_isempty(result) then
+		return {}
+	end
+
+	return vim.islist(result) and result or { result }
+end
+
+local function loc_uri(loc)
+	return loc.uri or loc.targetUri
+end
+
+local function loc_range(loc)
+	return loc.range or loc.targetSelectionRange or loc.targetRange
+end
+
+local function loc_key(loc)
+	local range = loc_range(loc)
+	return ("%s:%d:%d"):format(loc_uri(loc), range.start.line, range.start.character)
+end
+
+local function show_locations(client, result, title)
+	-- A picker built from a ready item list runs its finder synchronously, so a single
+	-- auto-confirmed item closes the picker from inside snacks' own find(), which then
+	-- touches the timer that close() just tore down. Jump such results ourselves.
+	if #result == 1 then
+		vim.lsp.util.show_document(result[1], client.offset_encoding, { reuse_win = true, focus = true })
+		vim.cmd("normal! zz")
+		return
+	end
+
+	local items = {}
+	for _, loc in ipairs(vim.lsp.util.locations_to_items(result, client.offset_encoding)) do
+		items[#items + 1] = {
+			text = loc.filename .. " " .. loc.text,
+			file = loc.filename,
+			pos = { loc.lnum, loc.col - 1 },
+			line = loc.text,
+		}
+	end
+
+	require("snacks").picker.pick({
+		source = "lsp_concrete_implementations",
+		title = title,
+		items = items,
+		format = "file",
+		jump = { tagstack = true, reuse_win = true },
+	})
+end
+
+local function request_type_implementations(client, buf, params)
+	client:request("textDocument/typeDefinition", params, function(err, result)
+		-- A partial class declares itself in several places, so keep every location
+		-- for the fallback and ask about the first one.
+		local types = as_list(result)
+		if err or #types == 0 then
+			vim.notify("No type under the cursor", vim.log.levels.WARN)
+			return
+		end
+
+		-- The type location came from this client, so its range is already in the
+		-- client's offset encoding.
+		client:request("textDocument/implementation", {
+			textDocument = { uri = loc_uri(types[1]) },
+			position = loc_range(types[1]).start,
+		}, function(impl_err, impls)
+			impls = as_list(impls)
+			if impl_err or #impls == 0 then
+				show_locations(client, types, "Type Definition")
+				return
+			end
+
+			show_locations(client, impls, "Type Implementations")
+		end, buf)
+	end, buf)
+end
+
+local function goto_implementation_or_type()
+	local buf = vim.api.nvim_get_current_buf()
+	local win = vim.api.nvim_get_current_win()
+	local client = implementation_client(buf)
+	if not client then
+		return
+	end
+
+	local params = vim.lsp.util.make_position_params(win, client.offset_encoding)
+	client:request("textDocument/implementation", params, function(err, result)
+		local impls = as_list(result)
+		if err or #impls == 0 then
+			request_type_implementations(client, buf, params)
+			return
+		end
+
+		-- A variable has no implementations of its own, so servers answer with its
+		-- declaration. Those results carry no information that grd does not already
+		-- give, so treat them as a miss and ask about the variable's type instead.
+		client:request("textDocument/definition", params, function(_, definition)
+			local defs = {}
+			for _, loc in ipairs(as_list(definition)) do
+				defs[loc_key(loc)] = true
+			end
+
+			impls = vim.tbl_filter(function(loc)
+				return not defs[loc_key(loc)]
+			end, impls)
+
+			if #impls == 0 then
+				request_type_implementations(client, buf, params)
+				return
+			end
+
+			show_locations(client, impls, "Implementations")
+		end, buf)
+	end, buf)
+end
+
 --  This function gets run when an LSP attaches to a particular buffer.
 --    That is to say, every time a new file is opened that is associated with
 --    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
@@ -71,11 +204,10 @@ vim.api.nvim_create_autocmd("LspAttach", {
 			require("snacks").picker.lsp_references()
 		end, "[G]oto [R]eferences")
 
-		-- Jump to the implementation of the word under your cursor.
-		--  Useful when your language has ways of declaring types without an actual implementation.
-		map("gri", function()
-			require("snacks").picker.lsp_implementations()
-		end, "[G]oto [I]mplementation")
+		-- Jump to the concrete code behind the word under your cursor: its
+		--  implementations, else its type's implementations, else its type. Only a word
+		--  with no type at all goes nowhere.
+		map("gri", goto_implementation_or_type, "[G]oto [I]mplementation")
 
 		-- Jump to the definition of the word under your cursor.
 		--  This is where a variable was first declared, or where a function is defined, etc.
@@ -107,7 +239,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		-- Jump to the type of the word under your cursor.
 		--  Useful when you're not sure what type a variable is and you want to see
 		--  the definition of its *type*, not where it was *defined*.
-		map("grt", function()
+		map("grtt", function()
 			require("snacks").picker.lsp_type_definitions()
 		end, "[G]oto [T]ype Definition")
 
