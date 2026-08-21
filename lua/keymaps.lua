@@ -149,7 +149,9 @@ end
 
 vim.keymap.set("n", "<leader>zov", function()
 	local executable = "devenv"
-	validateExecutable(executable)
+	if not validateExecutable(executable) then
+		return
+	end
 	local file = getCurrentFile()
 
 	if file ~= nil then
@@ -163,7 +165,9 @@ end, { desc = "Open file in Visual Studio" })
 
 vim.keymap.set("n", "<leader>zoc", function()
 	local executable = "code"
-	validateExecutable(executable)
+	if not validateExecutable(executable) then
+		return
+	end
 	local file = getCurrentFile()
 
 	if file ~= nil then
@@ -176,7 +180,9 @@ end, { desc = "Open file in VSCode" })
 
 vim.keymap.set("n", "<leader>zoz", function()
 	local executable = "zed"
-	validateExecutable(executable)
+	if not validateExecutable(executable) then
+		return
+	end
 	local file = getCurrentFile()
 
 	if file ~= nil then

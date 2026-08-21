@@ -256,7 +256,12 @@ vim.list_extend(ensure_installed, {
 	-- You can add other tools here that you want Mason to install
 })
 
-require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
+-- mason-tool-installer triggers its start-up check from a VimEnter autocmd it
+-- registers in its own plugin/ file. This module is loaded through later(),
+-- so VimEnter has already fired by then and that autocmd never runs, leaving
+-- a fresh install with no tools. Run the check directly instead.
+require("mason-tool-installer").setup({ ensure_installed = {}, run_on_start = false })
+require("mason-tool-installer").check_install(false)
 
 for name, server in pairs(servers) do
 	vim.lsp.config(name, server)

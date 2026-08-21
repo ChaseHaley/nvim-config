@@ -6,7 +6,7 @@ require("tokyonight").setup(
 			comments = { italic = false },
 		},
 		on_highlights = function(hl, c)
-			if vim.fn.has("win32") then
+			if vim.fn.has("win32") == 1 then
 				hl.DiagnosticUnderlineError = { underline = true, sp = c.error }
 				hl.DiagnosticUnderlineWarn = { underline = true, sp = c.warning }
 			end

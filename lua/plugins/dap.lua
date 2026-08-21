@@ -36,10 +36,9 @@ for type, icon in pairs(breakpoint_icons) do
 	vim.fn.sign_define(tp, { text = icon, texthl = hl, numhl = hl })
 end
 
-require("dap").defaults.fallback.external_terminal = {
-	command = "wt",
-	args = { "-w", "0", "nt", "--" },
-}
+require("dap").defaults.fallback.external_terminal = vim.fn.has("win32") == 1
+		and { command = "wt", args = { "-w", "0", "nt", "--" } }
+	or { command = "xdg-terminal-exec", args = {} }
 
 vim.keymap.set("n", "<F5>", function()
 	require("dap").continue()

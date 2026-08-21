@@ -7,7 +7,11 @@ require("plugins/plenary")
 -- require("plugins/web-devicons")
 require("plugins/mini")
 require("plugins/snacks")
-require("plugins/tokyonight")
+-- Follows the Omarchy system theme when there is one, otherwise our own
+-- tokyonight setup.
+if not require("plugins/omarchy-theme").setup() then
+	require("plugins/tokyonight")
+end
 -- require("plugins/dev")
 require("plugins/oil")
 -- Guesses the indent from a BufRead autocmd its own plugin/ file registers, so
@@ -92,7 +96,10 @@ later("plugins/nvim-ts-autotag", {
 	},
 })
 -- later("plugins/fyler")
-later("plugins/obsidian")
+-- The vault lives on the Windows machine
+if vim.fn.has("win32") == 1 then
+	later("plugins/obsidian")
+end
 later("plugins/pretty_hover")
 
 if vim.g.neovide then

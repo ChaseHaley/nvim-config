@@ -56,7 +56,7 @@ require("snacks").setup({
 			},
 		},
 		db = {
-			sqlite3_path = vim.fn.getenv("LIBSQLITE"),
+			sqlite3_path = vim.env.LIBSQLITE,
 		},
 	},
 	quickfile = { enabled = false },

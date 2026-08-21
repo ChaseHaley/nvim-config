@@ -18,10 +18,9 @@ require("easy-dotnet").setup(
 			},
 		},
 		-- Optional configuration for external terminals (matches nvim-dap structure)
-		external_terminal = {
-			command = "wt",
-			args = { "-w", "0", "nt", "--" },
-		},
+		external_terminal = vim.fn.has("win32") == 1
+				and { command = "wt", args = { "-w", "0", "nt", "--" } }
+			or { command = "xdg-terminal-exec", args = {} },
 		projx_lsp = {
 			enabled = true,
 		},

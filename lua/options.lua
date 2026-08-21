@@ -132,15 +132,18 @@ vim.o.foldlevel = 99
 
 -- vim.opt.diffopt = vim.opt.diffopt + "algorithm:histogram"
 
--- Use PowerShell for :make, :! etc.
-vim.o.shell = "pwsh" -- or "powershell"
-vim.o.shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command"
-vim.o.shellquote = ""
-vim.o.shellxquote = ""
+-- Use PowerShell for :make, :! etc. On Linux the default shell already handles
+-- these, and overriding it breaks anything that shells out expecting POSIX sh.
+if vim.fn.has("win32") == 1 then
+	vim.o.shell = "pwsh" -- or "powershell"
+	vim.o.shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command"
+	vim.o.shellquote = ""
+	vim.o.shellxquote = ""
 
--- >>> The important part: write to the temp file path Neovim gives (%s)
-vim.o.shellpipe = '2>&1 | Tee-Object -FilePath "%s"'
-vim.o.shellredir = '2>&1 | Out-File -FilePath "%s" -Encoding UTF8'
+	-- >>> The important part: write to the temp file path Neovim gives (%s)
+	vim.o.shellpipe = '2>&1 | Tee-Object -FilePath "%s"'
+	vim.o.shellredir = '2>&1 | Out-File -FilePath "%s" -Encoding UTF8'
+end
 
 -- TypeScript project build
 vim.o.makeprg = "tsc -p tsconfig.json --noEmit --pretty false"
