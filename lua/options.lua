@@ -124,9 +124,9 @@ vim.o.spelllang = "en_us"
 vim.o.spelloptions = "camel"
 vim.o.spellsuggest = "best"
 
--- vim.o.foldmethod = 'indent'
-vim.o.foldmethod = "marker"
-vim.o.foldmarker = "#region,#endregion"
+vim.o.foldmethod = 'indent'
+-- vim.o.foldmethod = "marker"
+-- vim.o.foldmarker = "#region,#endregion"
 vim.o.conceallevel = 1
 vim.o.foldlevel = 99
 
@@ -140,7 +140,7 @@ if vim.fn.has("win32") == 1 then
 	vim.o.shellquote = ""
 	vim.o.shellxquote = ""
 
-	-- >>> The important part: write to the temp file path Neovim gives (%s)
+	-- write to the temp file path Neovim gives (%s)
 	vim.o.shellpipe = '2>&1 | Tee-Object -FilePath "%s"'
 	vim.o.shellredir = '2>&1 | Out-File -FilePath "%s" -Encoding UTF8'
 end

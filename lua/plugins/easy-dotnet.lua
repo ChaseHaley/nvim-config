@@ -37,6 +37,7 @@ require("easy-dotnet").setup(
 			auto_refresh_codelens = true,
 			suggest_updates = true, -- Periodically suggest roslyn-language-server updates
 			analyzer_assemblies = {}, -- Any additional roslyn analyzers you might use like SonarAnalyzer.CSharp
+			auto_load_projects = true,
 			razor = {
 				enabled = true,
 				html = {
@@ -125,7 +126,7 @@ require("easy-dotnet").setup(
 			},
 		},
 		server = {
-			use_visual_studio = false, -- Set true for .NET Framework support on Windows
+			use_visual_studio = true, -- Set true for .NET Framework support on Windows
 			---@type nil | "Off" | "Critical" | "Error" | "Warning" | "Information" | "Verbose" | "All"
 			log_level = nil,
 		},

@@ -44,6 +44,7 @@ later("plugins/comments")
 -- later("plugins/grapple")
 -- later("plugins/arrow")
 -- later("plugins/roslyn")
+later("plugins/easy-dotnet", { cond = require("dotnet_project").will_auto_load })
 later("plugins/easy-dotnet", { event = "FileType", opts = { pattern = { "cs", "vb", "fsharp", "razor" } } })
 later("plugins/easy-dotnet", {
 	event = { "BufReadPre", "BufNewFile" },

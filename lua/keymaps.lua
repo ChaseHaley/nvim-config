@@ -163,6 +163,39 @@ vim.keymap.set("n", "<leader>zov", function()
 	end
 end, { desc = "Open file in Visual Studio" })
 
+vim.keymap.set("n", "<leader>zoV", function()
+	local executable = "devenv"
+	if not validateExecutable(executable) then
+		return
+	end
+
+	local candidates = require("dotnet_project").candidates()
+	if #candidates == 0 then
+		vim.notify("No solution or project found in " .. vim.uv.cwd(), vim.log.levels.WARN)
+		return
+	end
+
+	local function open(path)
+		vim.system({ executable, path }, { detach = true })
+	end
+
+	if #candidates == 1 then
+		open(candidates[1])
+		return
+	end
+
+	vim.ui.select(candidates, {
+		prompt = "Open in Visual Studio",
+		format_item = function(path)
+			return vim.fn.fnamemodify(path, ":.")
+		end,
+	}, function(choice)
+		if choice then
+			open(choice)
+		end
+	end)
+end, { desc = "Open solution in Visual Studio" })
+
 vim.keymap.set("n", "<leader>zoc", function()
 	local executable = "code"
 	if not validateExecutable(executable) then

@@ -108,7 +108,8 @@ vim.keymap.set("n", "<leader>sk", function()
 end, { desc = "[S]earch [K]eymaps" })
 
 vim.keymap.set("n", "<leader>sf", function()
-	require("snacks").picker.smart({  show_delay = 0 })
+	-- require("snacks").picker.smart({  show_delay = 0 })
+	require("snacks").picker.files({  show_delay = 0 })
 end, { desc = "[S]earch [F]iles" })
 
 vim.keymap.set("n", "<leader>sp", function()

@@ -4,8 +4,10 @@
 --
 -- An optional autocmd trigger loads the file only once the autocmd fires, so
 -- plugins that are only useful in certain sessions can skip loading entirely.
--- A module may be registered with multiple triggers by calling later() again;
--- whichever fires first loads it (require makes repeat loads a no-op).
+-- A condition trigger keeps the file in the queue and loads it only when the
+-- predicate returns true. A module may be registered with multiple triggers by
+-- calling later() again; whichever fires first loads it (require makes repeat
+-- loads a no-op).
 
 local lazyload = require("lazyload")
 
@@ -19,24 +21,34 @@ local function load(module)
 end
 
 local function drain()
-	local module = table.remove(queue, 1)
-	if not module then
+	local entry = table.remove(queue, 1)
+	if not entry then
 		return
 	end
-	load(module)
+	if not entry.cond or entry.cond() then
+		load(entry.module)
+	end
 	vim.schedule(drain)
 end
 
 lazyload.on_vim_enter(drain)
 
 ---@param module string
----@param trigger? { event: vim.api.keyset.events|vim.api.keyset.events[], opts?: vim.api.keyset.create_autocmd }
---- Autocmd that loads the module. Without one, the module loads right after
---- startup. `once` defaults to true; `callback`/`command` are replaced by the
---- module load, everything else passes through.
+---@param trigger? { event?: vim.api.keyset.events|vim.api.keyset.events[], opts?: vim.api.keyset.create_autocmd, cond?: fun(): boolean }
+--- What loads the module. Without a trigger, the module loads right after
+--- startup. With `event`, an autocmd loads it; `once` defaults to true,
+--- `callback`/`command` are replaced by the module load, everything else passes
+--- through. With `cond`, the module loads right after startup only when the
+--- predicate returns true. The predicate runs on the main loop between frames,
+--- so keep it fast.
 return function(module, trigger)
 	if not trigger then
-		queue[#queue + 1] = module
+		queue[#queue + 1] = { module = module }
+		return
+	end
+
+	if trigger.cond then
+		queue[#queue + 1] = { module = module, cond = trigger.cond }
 		return
 	end
 
@@ -46,7 +58,7 @@ return function(module, trigger)
 		if vim.v.vim_did_enter == 0 then
 			-- Startup is still loading argv buffers; let the post-startup
 			-- queue handle it so load order stays predictable.
-			queue[#queue + 1] = module
+			queue[#queue + 1] = { module = module }
 		else
 			load(module)
 		end
