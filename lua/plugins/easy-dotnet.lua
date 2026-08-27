@@ -1,3 +1,4 @@
+require("plugins/dap")
 -- NOTE: depends on:
 -- nvim-lua/plenary.nvim
 -- mfussenegger/nvim-dap

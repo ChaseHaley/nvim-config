@@ -16,3 +16,11 @@ vim.api.nvim_create_user_command("DiffScratch", function(opts)
 	scratch()
 	vim.cmd("wincmd h")
 end, { nargs = "?", complete = "filetype" })
+
+vim.api.nvim_create_user_command("LspLog", function()
+	vim.cmd.edit(require("vim.lsp.log").get_filename())
+end, { desc = "Open the Neovim LSP log" })
+
+vim.api.nvim_create_user_command("LspDebug", function()
+	require('vim.lsp.log').set_level(vim.log.levels.DEBUG)
+end, { desc = "Open the Neovim LSP log" })

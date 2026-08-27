@@ -28,7 +28,6 @@ require("plugins/camelCaseMotion")
 -- Everything else loads right after startup finishes.
 later("plugins/lspconfig")
 -- Required by easy-dotnet, causes issues if C# file is accessed before this is loaded
-later("plugins/dap")
 later("plugins/treesitter-textobjects")
 later("plugins/treesitter-context")
 later("plugins/autocomplete")
