@@ -1,5 +1,8 @@
-vim.pack.add({ "https://github.com/jay-babu/mason-nvim-dap.nvim" })
-vim.pack.add({ "https://github.com/mfussenegger/nvim-dap" })
+vim.pack.add({
+	"https://github.com/mason-org/mason.nvim",
+	"https://github.com/jay-babu/mason-nvim-dap.nvim",
+	"https://github.com/mfussenegger/nvim-dap",
+})
 
 require("mason-nvim-dap").setup({
 	-- Makes a best effort to setup the various debuggers with

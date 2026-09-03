@@ -237,6 +237,11 @@ vim.keymap.set("n", "<leader>zof", function()
 	vim.ui.open(dir)
 end, { desc = "Open file directory in file manger"})
 
+vim.keymap.set("n", "<leader>zoy", function()
+	local file = getCurrentFile()
+	vim.fn.setreg('+', file)
+end, { desc = "Yank file name to clipboard" })
+
 -- Claude Code resolves "@" references against the cwd it was launched in, which is normally
 -- the repository root rather than Neovim's cwd. Absolute paths also resolve, but on Windows
 -- the drive colon makes Claude Code additionally parse the mention as an MCP resource

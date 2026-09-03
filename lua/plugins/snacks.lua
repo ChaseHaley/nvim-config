@@ -23,7 +23,7 @@ require("snacks").setup({
 		-- 	},
 		-- },
 	},
-	notifier = { enabled = true },
+	notifier = { enabled = false },
 	picker = {
 		enabled = true,
 		layout = {

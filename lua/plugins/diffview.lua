@@ -101,6 +101,48 @@ require("diffview").setup(
 	}
 )
 
+-- The `goto_file*` actions pick their target through
+-- `lib.get_prev_non_view_tabpage`, which accepts any tabpage Diffview does not
+-- own — including the Neogit tab the view was launched from. Require a real file
+-- window, so an editing tab wins and a plugin tab never does.
+local lib = require("diffview.lib")
+local diffview_utils = require("diffview.utils")
+
+local function has_file_window(tabpage)
+	for _, win in ipairs(vim.api.nvim_tabpage_list_wins(tabpage)) do
+		local buf = vim.api.nvim_win_get_buf(win)
+		if
+			vim.api.nvim_win_get_config(win).relative == ""
+			and vim.bo[buf].buftype == ""
+			and vim.bo[buf].buflisted
+			and not vim.startswith(vim.bo[buf].filetype, "Neogit")
+		then
+			return true
+		end
+	end
+
+	return false
+end
+
+lib.get_prev_non_view_tabpage = function()
+	local seen = {}
+	for _, view in ipairs(lib.views) do
+		seen[view.tabpage] = true
+	end
+
+	local tabs = vim.api.nvim_list_tabpages()
+	local prev = diffview_utils.tabnr_to_id(vim.fn.tabpagenr("#"))
+	if prev then
+		table.insert(tabs, 1, prev)
+	end
+
+	for _, id in ipairs(tabs) do
+		if not seen[id] and has_file_window(id) then
+			return id
+		end
+	end
+end
+
 local function diffview(cmd)
 	local root = vim.fn.getcwd(-1, vim.fn.tabpagenr()) -- tab-local slot
 	vim.cmd(cmd .. " -C" .. vim.fn.fnameescape(root))

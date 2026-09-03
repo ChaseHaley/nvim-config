@@ -318,7 +318,13 @@ local servers = {
 		filetypes = { "html", "cshtml", "razor" },
 	},
 	html = {},
-	htmx = {},
+	htmx = {
+		-- htmx-lsp advertises textDocument/hover but never replies to it, so any
+		-- buf_request_all() hover in a buffer it attached to never completes.
+		on_init = function(client)
+			client.server_capabilities.hoverProvider = nil
+		end,
+	},
 	rust_analyzer = {},
 	bacon_ls = {},
 	jinja_lsp = {},

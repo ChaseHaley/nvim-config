@@ -7,16 +7,16 @@ require("plugins/plenary")
 -- require("plugins/web-devicons")
 require("plugins/mini")
 require("plugins/snacks")
+require("plugins/lualine")
 -- Follows the Omarchy system theme when there is one, otherwise our own
 -- tokyonight setup.
 if not require("plugins/omarchy-theme").setup() then
 	require("plugins/tokyonight")
 end
--- require("plugins/dev")
 require("plugins/oil")
 -- Guesses the indent from a BufRead autocmd its own plugin/ file registers, so
 -- it must be on the runtimepath before the argv buffers load
-require("plugins/guess-indent")
+-- require("plugins/guess-indent")
 -- Enables itself from a VimEnter autocmd
 require("plugins/no-neck-pain")
 -- Attaches its LSP through a FileType autocmd, so it must exist before the
@@ -34,6 +34,7 @@ later("plugins/autocomplete")
 later("plugins/indent-line")
 later("plugins/lint")
 later("plugins/which-key")
+later("plugins/dev")
 later("plugins/autopairs")
 -- later("plugins/todo-comments")
 later("plugins/conform")
