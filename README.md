@@ -12,8 +12,8 @@ with [cbochs/grapple](https://github.com/cbochs/grapple.nvim).
 
 `lua/local.lua` is gitignored and holds what is true for one machine. `.nvim.lua` in a
 project root does the same for one project (`exrc` is on). Both run before `later()` loads
-anything, so both can turn plugins off with `require("lazyload").disable(name)`, where
-`name` is a module or a bundle from `lazyload.bundles`. Copy `lua/local.example.lua` and
+anything, so both can turn plugins off with `require("smartload").disable(name)`, where
+`name` is a module or a bundle from `smartload.bundles`. Copy `lua/local.example.lua` and
 `.nvim.example.lua` to start.
 
 A plugin that is off never loads. It is still installed, because `vim.pack` installs every

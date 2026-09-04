@@ -1,4 +1,5 @@
-vim.pack.add({ "https://github.com/brianhuster/unnest.nvim" })
+local now = require("../now")
+now("plugins/unnest")
 vim.pack.add({ "https://github.com/folke/snacks.nvim" })
 require("snacks").setup({
 	-- your configuration comes here

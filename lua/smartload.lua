@@ -1,4 +1,4 @@
--- Lazyload queues for phased plugin loading.
+-- Smartload queues for phased plugin loading.
 --
 -- on_vim_enter(fn):                    async fire-and-forget via vim.schedule() (default)
 -- on_vim_enter(fn, { sync = true }):   synchronous, must complete before next phase

@@ -1,29 +1,30 @@
 local later = require("later")
+local now = require("now")
 
 -- Loaded up front: anything that affects the first render or must see the
 -- first buffer/VimEnter (colorscheme, statusline, syntax, argv handling).
-require("plugins/treesitter")
-require("plugins/plenary")
+now("plugins/treesitter")
+now("plugins/plenary")
 -- require("plugins/web-devicons")
-require("plugins/mini")
-require("plugins/snacks")
-require("plugins/lualine")
+now("plugins/mini")
+now("plugins/snacks")
+now("plugins/lualine")
 -- Follows the Omarchy system theme when there is one, otherwise our own
 -- tokyonight setup.
 if not require("plugins/omarchy-theme").setup() then
-	require("plugins/tokyonight")
+	now("plugins/tokyonight")
 end
-require("plugins/oil")
+now("plugins/oil")
 -- Guesses the indent from a BufRead autocmd its own plugin/ file registers, so
 -- it must be on the runtimepath before the argv buffers load
 -- require("plugins/guess-indent")
 -- Enables itself from a VimEnter autocmd
-require("plugins/no-neck-pain")
+now("plugins/no-neck-pain")
 -- Attaches its LSP through a FileType autocmd, so it must exist before the
 -- first ps1 buffer loads
-require("plugins/powershell")
+now("plugins/powershell")
 -- Not sure why but lazy fails with this
-require("plugins/camelCaseMotion")
+now("plugins/camelCaseMotion")
 
 -- Everything else loads right after startup finishes.
 later("plugins/lspconfig")
