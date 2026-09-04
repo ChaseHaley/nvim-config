@@ -19,7 +19,7 @@ require("obsidian").setup(
 			end,
 		},
 		workspaces = {
-			{ name = "Main", path = "C:\\Users\\chaley\\Obsidian\\Main" },
+			{ name = "Main", path = vim.g.obsidian_vault },
 		},
 		checkbox = {
 			order = { " ", "x" }

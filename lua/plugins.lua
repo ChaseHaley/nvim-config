@@ -97,8 +97,7 @@ later("plugins/nvim-ts-autotag", {
 	},
 })
 -- later("plugins/fyler")
--- The vault lives on the Windows machine
-if vim.fn.has("win32") == 1 then
+if vim.g.obsidian_vault then
 	later("plugins/obsidian")
 end
 later("plugins/pretty_hover")

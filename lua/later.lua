@@ -14,6 +14,9 @@ local lazyload = require("lazyload")
 local queue = {}
 
 local function load(module)
+	if lazyload.off[module] then
+		return
+	end
 	local ok, err = pcall(require, module)
 	if not ok then
 		vim.notify(("Error loading %s:\n%s"):format(module, err), vim.log.levels.ERROR)

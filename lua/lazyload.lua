@@ -3,8 +3,25 @@
 -- on_vim_enter(fn):                    async fire-and-forget via vim.schedule() (default)
 -- on_vim_enter(fn, { sync = true }):   synchronous, must complete before next phase
 -- on_override(fn):                     runs after all on_vim_enter callbacks (for .nvim.lua overrides)
+-- disable(name):                       keeps later() from loading a module, or every module in a bundle
 
 local M = {}
+
+M.off = {}
+
+M.bundles = {
+	dotnet = { "plugins/easy-dotnet", "plugins/lazydotnet", "plugins/roslyn" },
+}
+
+--- Stops later() from loading `name`, or every module in the bundle `name`.
+--- Call before VimEnter: in lua/local.lua for a machine, or in a project's
+--- .nvim.lua.
+---@param name string a module such as "plugins/obsidian", or a key of bundles
+function M.disable(name)
+	for _, module in ipairs(M.bundles[name] or { name }) do
+		M.off[module] = true
+	end
+end
 
 local vim_enter_queue = {}
 local override_queue = {}
