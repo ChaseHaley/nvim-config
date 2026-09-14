@@ -47,7 +47,14 @@ require("easy-dotnet").setup(
 					request_timeout = 5000,
 				},
 			},
-			config = {},
+			config = {
+				settings = {
+					["csharp|background_analysis"] = {
+						dotnet_analyzer_diagnostics_scope = "fullSolution",
+						dotnet_compiler_diagnostics_scope = "fullSolution",
+					},
+				},
+			},
 		},
 		debugger = {
 			-- Path to custom coreclr DAP adapter
@@ -166,3 +173,56 @@ require("easy-dotnet").setup(
 require("dap").configurations.razor = require("dap").configurations.cs
 require("dap").configurations.css = require("dap").configurations.cs
 require("dap").configurations.js = require("dap").configurations.cs
+
+local function pull_sln_diagnostics(client_id)
+	local client = vim.lsp.get_client_by_id(client_id)
+	if not client or client.name ~= "easy_dotnet" then
+		return
+	end
+	for _, request in pairs(client.requests) do
+		if request.method == "workspace/diagnostic" and request.type == "pending" then
+			return
+		end
+	end
+	vim.lsp.buf.workspace_diagnostics({ client_id = client_id })
+end
+
+local group = vim.api.nvim_create_augroup("sln-diagnostics", { clear = true })
+
+vim.api.nvim_create_autocmd("LspAttach", {
+	group = group,
+	callback = function(ev)
+		pull_sln_diagnostics(ev.data.client_id)
+	end,
+})
+
+-- Roslyn holds a workspace/diagnostic request open until the solution changes and
+-- only then answers it, so re-opening it on completion is a long poll, not a hot loop.
+vim.api.nvim_create_autocmd("LspRequest", {
+	group = group,
+	callback = function(ev)
+		local request = ev.data.request
+		if request.method == "workspace/diagnostic" and request.type == "complete" then
+			vim.defer_fn(function()
+				pull_sln_diagnostics(ev.data.client_id)
+			end, 1000)
+		end
+	end,
+})
+
+vim.api.nvim_create_user_command("ShowSlnDiagnostics", function(opts)
+	local severity = nil
+	if opts.args ~= "" then
+		severity = vim.diagnostic.severity[opts.args:upper()]
+		if not severity then
+			vim.notify("Unknown severity: " .. opts.args, vim.log.levels.ERROR)
+			return
+		end
+	end
+	vim.diagnostic.setqflist({ severity = severity, title = "Solution diagnostics" })
+end, {
+	nargs = "?",
+	complete = function()
+		return { "error", "warn", "info", "hint" }
+	end,
+})

@@ -6,6 +6,8 @@ local check_buf
 local check_line_items = {}
 local log_win
 local selected = {}
+local acked = {}
+local acked_path = vim.fs.joinpath(vim.fn.stdpath("data"), "pack-inspect-acked.json")
 local inspect_ref = "refs/remotes/pack-inspect"
 local inspect_tag_ref = "refs/pack-inspect/tags"
 local check_name = "vim.pack updates"
@@ -42,6 +44,22 @@ local function git(cwd, args, cb)
 		spawn_running = true
 		vim.defer_fn(pump_spawns, 1)
 	end
+end
+
+local function load_acked()
+	local ok, decoded = pcall(function()
+		return vim.json.decode(table.concat(vim.fn.readfile(acked_path), "\n"))
+	end)
+
+	acked = (ok and type(decoded) == "table") and decoded or {}
+end
+
+local function save_acked()
+	pcall(vim.fn.writefile, { vim.json.encode(acked) }, acked_path)
+end
+
+local function is_acked(item)
+	return item.status == "behind" and item.latest ~= nil and acked[item.name] == item.latest
 end
 
 local function trim(value)
@@ -441,11 +459,15 @@ local function open_tab(buf)
 end
 
 local function sorted_results()
+	local order = { behind = 1, seen = 2, ["local"] = 3, checking = 4, current = 5, error = 6 }
+	local function rank(item)
+		return order[is_acked(item) and "seen" or item.status] or 99
+	end
+
 	local items = vim.tbl_values(results)
 	table.sort(items, function(a, b)
-		if a.status ~= b.status then
-			local order = { behind = 1, ["local"] = 2, checking = 3, current = 4, error = 5 }
-			return (order[a.status] or 99) < (order[b.status] or 99)
+		if rank(a) ~= rank(b) then
+			return rank(a) < rank(b)
 		end
 
 		if (a.count or 0) ~= (b.count or 0) then
@@ -509,7 +531,7 @@ local function line_for(item)
 	end
 
 	if item.status == "behind" then
-		return ("%s%3d %-7s  %s -> %s  %s"):format(
+		local line = ("%s%3d %-7s  %s -> %s  %s"):format(
 			plugin_label(item),
 			item.count,
 			commit_word(item.count),
@@ -517,6 +539,8 @@ local function line_for(item)
 			commit_link(item.plugin, item.latest),
 			summary(true)
 		)
+
+		return is_acked(item) and (line .. "  (seen)") or line
 	end
 
 	return ("%serror    %s"):format(plugin_label(item), item.error or "unknown error")
@@ -527,6 +551,9 @@ local function status_counts()
 	for _, item in pairs(results) do
 		counts.total = counts.total + 1
 		counts[item.status] = (counts[item.status] or 0) + 1
+		if is_acked(item) then
+			counts.seen = (counts.seen or 0) + 1
+		end
 	end
 
 	return counts
@@ -536,8 +563,13 @@ local function header_lines()
 	local counts = status_counts()
 	local title = ("vim.pack updates  %d plugins"):format(counts.total)
 
-	if (counts.behind or 0) > 0 then
-		title = title .. ("  %d behind"):format(counts.behind)
+	local behind = (counts.behind or 0) - (counts.seen or 0)
+	if behind > 0 then
+		title = title .. ("  %d behind"):format(behind)
+	end
+
+	if (counts.seen or 0) > 0 then
+		title = title .. ("  %d seen"):format(counts.seen)
 	end
 
 	if (counts.error or 0) > 0 then
@@ -552,7 +584,7 @@ local function header_lines()
 		title,
 		"",
 		"<CR> log   s log in split   <Tab> select   c check   C check all",
-		"u update   x delete   r reload   q close",
+		"u update   a mark seen   x delete   r reload   q close",
 		"",
 	}
 end
@@ -594,7 +626,8 @@ local function render_check_buffer()
 		if selected[item.name] then
 			highlights[#lines] = "Visual"
 		else
-			highlights[#lines] = item.status == "behind" and "WarningMsg"
+			highlights[#lines] = is_acked(item) and "DiagnosticInfo"
+				or item.status == "behind" and "WarningMsg"
 				or item.status == "error" and "ErrorMsg"
 				or item.status == "current" and "Comment"
 				or "Normal"
@@ -855,6 +888,12 @@ local function load_plugins()
 		end
 	end
 
+	for name in pairs(acked) do
+		if not items[name] then
+			acked[name] = nil
+		end
+	end
+
 	results = items
 end
 
@@ -946,6 +985,9 @@ local function map_check_keys(buf)
 	map("u", function()
 		M.update_selected()
 	end, "Update selected plugin")
+	map("a", function()
+		M.toggle_acked()
+	end, "Mark a pending update as seen")
 	map("x", function()
 		M.delete_selected()
 	end, "Delete selected plugin")
@@ -1150,6 +1192,33 @@ function M.toggle_selected()
 	end
 end
 
+function M.toggle_acked()
+	local items = vim.tbl_filter(function(item)
+		return item.status == "behind"
+	end, selected_targets())
+
+	if #items == 0 then
+		vim.notify("No pending update to mark", vim.log.levels.WARN)
+		return
+	end
+
+	local mark = false
+	for _, item in ipairs(items) do
+		if not is_acked(item) then
+			mark = true
+			break
+		end
+	end
+
+	for _, item in ipairs(items) do
+		acked[item.name] = mark and item.latest or nil
+	end
+
+	save_acked()
+	selected = {}
+	render_check_buffer()
+end
+
 function M.update_selected()
 	local items = selected_targets()
 	if #items == 0 then
@@ -1184,6 +1253,8 @@ function M.delete_selected()
 end
 
 function M.setup()
+	load_acked()
+
 	vim.api.nvim_create_autocmd("PackChanged", {
 		group = vim.api.nvim_create_augroup("pack_inspect", { clear = true }),
 		desc = "Reload the pack updates panel after vim.pack changes a plugin",

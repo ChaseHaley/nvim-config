@@ -58,6 +58,11 @@ end
 require("diffview").setup(
 	--- @type DiffviewConfig.user
 	{
+		file_panel = {
+			win_config = {
+				width = 60
+			}
+		},
 		hooks = {
 			diff_buf_win_enter = function(bufnr, winid, ctx)
 				-- Re-trigger treesitter-context's on_attach evaluation.

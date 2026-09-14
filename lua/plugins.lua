@@ -69,7 +69,7 @@ later("plugins/typescript-tools", {
 	event = "FileType",
 	opts = { pattern = { "typescript", "typescriptreact", "javascript", "javascriptreact" } },
 })
-later("plugins/copilot")
+-- later("plugins/copilot")
 -- later("plugins/sidekick")
 later("plugins/trouble")
 later("plugins/wezterm-types", {
@@ -97,7 +97,7 @@ later("plugins/nvim-ts-autotag", {
 		},
 	},
 })
--- later("plugins/fyler")
+later("plugins/fyler")
 if vim.g.obsidian_vault then
 	later("plugins/obsidian")
 end

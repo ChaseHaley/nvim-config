@@ -1,7 +1,9 @@
 local now = require("../now")
 now("plugins/unnest")
 vim.pack.add({ "https://github.com/folke/snacks.nvim" })
-require("snacks").setup({
+require("snacks").setup(
+	---@type snacks.Config
+	{
 	-- your configuration comes here
 	-- or leave it empty to use the default settings
 	-- refer to the configuration section below
@@ -10,6 +12,7 @@ require("snacks").setup({
 	explorer = { enabled = false },
 	indent = { enabled = false },
 	input = { enabled = false },
+	image = { enabled = true },
 	lazygit = {
 		enabled = false,
 		-- The default "nvim-remote" editPreset emits POSIX shell syntax
@@ -109,8 +112,7 @@ vim.keymap.set("n", "<leader>sk", function()
 end, { desc = "[S]earch [K]eymaps" })
 
 vim.keymap.set("n", "<leader>sf", function()
-	-- require("snacks").picker.smart({  show_delay = 0 })
-	require("snacks").picker.files({  show_delay = 0 })
+	require("snacks").picker.smart({  show_delay = 0 })
 end, { desc = "[S]earch [F]iles" })
 
 vim.keymap.set("n", "<leader>sp", function()

@@ -297,3 +297,5 @@ end, { desc = "Copy [A]gent mention: [L]ines" })
 vim.keymap.set({ "n", "x" }, "<leader>zaL", function()
 	copy_agent_mention(true, line_suffix())
 end, { desc = "Copy [A]gent mention: [L]ines, absolute" })
+
+vim.keymap.set("n", "<leader>sl", "<Cmd>e " .. vim.fn.stdpath("config") .. "/lua/local.lua" .. "<CR>", { desc = "Open local.lua" })
