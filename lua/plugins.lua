@@ -108,4 +108,5 @@ if vim.g.neovide then
 	later("plugins/scope")
 end
 later("plugins/resession")
+later("plugins/genghis")
 -- later("plugins/mssql")

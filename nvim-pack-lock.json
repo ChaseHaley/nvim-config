@@ -128,7 +128,12 @@
     },
     "nvim-dap-view": {
       "rev": "210b2c0e4acc08aad23fbd5a7989dd0169f716d0",
-      "src": "https://github.com/igorlfs/nvim-dap-view"
+      "src": "https://github.com/igorlfs/nvim-dap-view",
+      "version": "1.0.0 - 2.0.0"
+    },
+    "nvim-genghis": {
+      "rev": "401522898169644a5e9e3a20d06382cd56318a3b",
+      "src": "https://github.com/chrisgrieser/nvim-genghis"
     },
     "nvim-lint": {
       "rev": "3d55c8f67c6ae5c15e1042571e107c7a3d5c5f4e",

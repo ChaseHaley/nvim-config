@@ -11,7 +11,7 @@ require("snacks").setup(
 	dashboard = { enabled = false },
 	explorer = { enabled = false },
 	indent = { enabled = false },
-	input = { enabled = false },
+	input = { enabled = true },
 	image = { enabled = true },
 	lazygit = {
 		enabled = false,
