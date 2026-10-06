@@ -4,16 +4,18 @@ local now = require("now")
 -- Loaded up front: anything that affects the first render or must see the
 -- first buffer/VimEnter (colorscheme, statusline, syntax, argv handling).
 now("plugins/treesitter")
+
+-- Follows the Omarchy system theme when there is one, otherwise our own
+-- tokyonight setup.
+if not require("plugins/omarchy-theme").setup() then
+	now("plugins/colorschemes")
+end
+
 now("plugins/plenary")
 -- require("plugins/web-devicons")
 now("plugins/mini")
 now("plugins/snacks")
 now("plugins/lualine")
--- Follows the Omarchy system theme when there is one, otherwise our own
--- tokyonight setup.
-if not require("plugins/omarchy-theme").setup() then
-	now("plugins/tokyonight")
-end
 now("plugins/oil")
 -- Guesses the indent from a BufRead autocmd its own plugin/ file registers, so
 -- it must be on the runtimepath before the argv buffers load

@@ -103,6 +103,76 @@ M.new = function(opts)
 	return self
 end
 
+-- Formatters that call Snacks.picker.format.filename, so a path line has something to say.
+local path_line_formats = {
+	buffer = true,
+	diagnostic = true,
+	file = true,
+	git_status = true,
+}
+
+---@param opts snacks.picker.Config?
+local function has_path_line(opts)
+	return opts ~= nil and path_line_formats[opts.format] == true
+end
+
+-- snacks renders one buffer line per item and replaces newlines with spaces, so a
+-- second line is only reachable through a virt_lines extmark. Anything whose [1] is
+-- not a string is passed through to nvim_buf_set_extmark untouched. Every item of a
+-- two line picker gets one, empty when it has no file, so each takes the same rows.
+local picker_config = require("snacks.picker.config")
+local resolve_format = picker_config.format
+picker_config.format = function(opts)
+	local format = resolve_format(opts)
+	if not has_path_line(opts) then
+		return format
+	end
+	if opts.formatters and opts.formatters.file then
+		opts.formatters.file.filename_only = true
+	end
+	return function(item, picker)
+		local line = format(item, picker)
+		line[#line + 1] = {
+			col = 0,
+			virt_lines = { { { item.file and "   " .. vim.fn.fnamemodify(item.file, ":.") or "", "SnacksPickerDir" } } },
+		}
+		return line
+	end
+end
+
+-- snacks sets state.height to the window height in text lines, writes state.height + 1
+-- buffer lines (the last always blank) and pins topline to 1, so it never accounts for
+-- the screen row each virt_line adds. Fit half as many items, and keep the slots the
+-- items do not use, so the blank trailing line falls past the bottom of the window
+-- rather than under the list, which is where reverse puts it.
+local List = require("snacks.picker.core.list")
+local list_render = List.render
+local list_height = List.height
+
+---@param self snacks.picker.list
+local function is_two_line(self)
+	return self.win:win_valid() and has_path_line(self.picker and self.picker.opts)
+end
+
+function List:height()
+	if not is_two_line(self) then
+		return list_height(self)
+	end
+	local rows = vim.api.nvim_win_get_height(self.win.win)
+	return math.max(1, math.min(self:count(), math.floor(rows / 2)))
+end
+
+function List:render()
+	if is_two_line(self) then
+		local slots = math.max(1, vim.api.nvim_win_get_height(self.win.win) - self:height())
+		if self.state.height ~= slots then
+			self.state.height = slots
+			self.dirty = true
+		end
+	end
+	return list_render(self)
+end
+
 vim.keymap.set("n", "<leader>sh", function()
 	require("snacks").picker.help()
 end, { desc = "[S]earch [H]elp" })
@@ -112,7 +182,11 @@ vim.keymap.set("n", "<leader>sk", function()
 end, { desc = "[S]earch [K]eymaps" })
 
 vim.keymap.set("n", "<leader>sf", function()
-	require("snacks").picker.smart({  show_delay = 0 })
+	require("snacks").picker.smart()
+end, { desc = "[S]earch [F]iles" })
+
+vim.keymap.set("n", "<leader>sF", function()
+	require("snacks").picker.files()
 end, { desc = "[S]earch [F]iles" })
 
 vim.keymap.set("n", "<leader>sp", function()
@@ -176,7 +250,7 @@ vim.keymap.set("n", "<leader>sc", function()
 end, { desc = "[S]earch [C]laude files" })
 
 vim.keymap.set("n", "<leader>sa", function()
-	require("snacks").picker.files({ cwd = vim.fn.getcwd() .. "/.claude/mp", hidden = true, ignored = true })
+	require("snacks").picker.files({ cwd = vim.fn.getcwd() .. "/.claude/local", hidden = true, ignored = true })
 end, { desc = "[S]earch AI files" })
 
 vim.keymap.set("n", "<leader>sx", function()

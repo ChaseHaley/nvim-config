@@ -36,6 +36,10 @@ vim.keymap.set("n", "<leader>tl", function ()
 	vim.o.relativenumber = not vim.o.relativenumber
 end, { desc = "[T]oggle Relative [L]ine Numbers" })
 
+vim.keymap.set("n", "<leader>tw", function ()
+	vim.o.wrap = not vim.o.wrap
+end, { desc = "[T]oggle [W]rap" })
+
 -- Grab everything up to and including the ".razor" or ".cshtml" extension as the base name.
 local function razor_base(file)
 	return file:match("^(.*%.razor)") or file:match("^(.*%.cshtml)")

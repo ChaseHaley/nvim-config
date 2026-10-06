@@ -17,5 +17,20 @@ require("tokyonight").setup(
 		end,
 	}
 )
+--
+-- vim.pack.add({ "https://github.com/marko-cerovac/material.nvim" })
+-- require("material").setup({})
+--
+-- vim.pack.add({ "https://github.com/uhs-robert/oasis.nvim" })
+-- require("oasis").setup({})
+--
+-- vim.pack.add({ "https://github.com/datsfilipe/vesper.nvim" })
+-- require("vesper").setup({})
+--
+-- vim.pack.add({ "https://github.com/sontungexpt/witch" })
+-- require("witch").setup({})
+--
+-- vim.pack.add({ "https://github.com/wurli/cobalt.nvim" })
+-- require("cobalt").setup({})
 
 vim.cmd.colorscheme("tokyonight")

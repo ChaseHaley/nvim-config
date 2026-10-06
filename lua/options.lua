@@ -71,6 +71,8 @@ vim.o.list = false
 -- 	nbsp = '␣',
 -- }
 
+vim.opt.fillchars:append({ eob = " " })
+
 -- Preview substitutions live, as you type!
 vim.o.inccommand = "split"
 
