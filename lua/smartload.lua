@@ -4,6 +4,7 @@
 -- on_vim_enter(fn, { sync = true }):   synchronous, must complete before next phase
 -- on_override(fn):                     runs after all on_vim_enter callbacks (for .nvim.lua overrides)
 -- disable(name):                       keeps later() from loading a module, or every module in a bundle
+-- skips(module):                       whether now() and later() leave a module unloaded
 
 local M = {}
 
@@ -11,6 +12,18 @@ M.off = {}
 
 M.bundles = {
 	dotnet = { "plugins/easy-dotnet", "plugins/lazydotnet", "plugins/roslyn" },
+}
+
+--- The only modules that load when Neovim runs inside VS Code through the
+--- vscode-neovim extension.
+M.vscode = {
+	["plugins/treesitter"] = true,
+	["plugins/treesitter-textobjects"] = true,
+	["plugins/mini"] = true,
+	["plugins/camelCaseMotion"] = true,
+	["plugins/flash"] = true,
+	["plugins/treesj"] = true,
+	["plugins/vim-matchup"] = true,
 }
 
 --- Stops later() from loading `name`, or every module in the bundle `name`.
@@ -21,6 +34,12 @@ function M.disable(name)
 	for _, module in ipairs(M.bundles[name] or { name }) do
 		M.off[module] = true
 	end
+end
+
+---@param module string
+---@return boolean
+function M.skips(module)
+	return M.off[module] or (vim.g.vscode and not M.vscode[module]) or false
 end
 
 local vim_enter_queue = {}

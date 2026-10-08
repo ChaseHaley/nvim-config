@@ -17,17 +17,19 @@ vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" }
 --  Use CTRL+<hjkl> to switch between windows
 --
 --  See `:help wincmd` for a list of all window commands
-vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
-vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
-vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
-vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
+-- remap reaches vscode-neovim's <C-w>h maps, which move between VS Code editor groups.
+vim.keymap.set("n", "<C-h>", "<C-w>h", { remap = true, desc = "Move focus to the left window" })
+vim.keymap.set("n", "<C-l>", "<C-w>l", { remap = true, desc = "Move focus to the right window" })
+vim.keymap.set("n", "<C-j>", "<C-w>j", { remap = true, desc = "Move focus to the lower window" })
+vim.keymap.set("n", "<C-k>", "<C-w>k", { remap = true, desc = "Move focus to the upper window" })
 
 -- vim: ts=2 sts=2 sw=2 et
 vim.keymap.set("v", "<", "<gv")
 vim.keymap.set("v", ">", ">gv")
 
 vim.keymap.set({ "x", "n" }, "<leader>zp", '"_dP', { desc = "Put and keep registry" })
-vim.keymap.set("n", "gq", "<Cmd>tabc<CR>", { desc = "Close tab" })
+-- :Tabclose is vscode-neovim's command for closing the VS Code editor.
+vim.keymap.set("n", "gq", vim.g.vscode and "<Cmd>Tabclose<CR>" or "<Cmd>tabc<CR>", { desc = "Close tab" })
 
 vim.keymap.set("x", "<leader>z/", "<C-\\><C-n>`</\\%V", { desc = "Search forward within visual selection" })
 vim.keymap.set("x", "<leader>z?", "<C-\\><C-n>`>?\\%V", { desc = "Search backward within visual selection" })
@@ -36,9 +38,12 @@ vim.keymap.set("n", "<leader>tl", function ()
 	vim.o.relativenumber = not vim.o.relativenumber
 end, { desc = "[T]oggle Relative [L]ine Numbers" })
 
-vim.keymap.set("n", "<leader>tw", function ()
-	vim.o.wrap = not vim.o.wrap
-end, { desc = "[T]oggle [W]rap" })
+-- vscode-neovim forces 'nowrap'. VS Code's editor.wordWrap wraps lines there.
+if not vim.g.vscode then
+	vim.keymap.set("n", "<leader>tw", function ()
+		vim.o.wrap = not vim.o.wrap
+	end, { desc = "[T]oggle [W]rap" })
+end
 
 -- Grab everything up to and including the ".razor" or ".cshtml" extension as the base name.
 local function razor_base(file)

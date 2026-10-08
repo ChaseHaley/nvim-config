@@ -19,7 +19,7 @@ local MARKER = vim.fs.joinpath(state, "theme.name")
 -- Plugins this config already configures itself. Reusing our own module keeps
 -- personal tweaks (comment styles, LineNr colors) instead of bare theme defaults.
 local OWN_CONFIG = {
-	["folke/tokyonight.nvim"] = "plugins.tokyonight",
+	["folke/tokyonight.nvim"] = "plugins/colorschemes",
 }
 
 -- Highlight groups to strip backgrounds from, so the terminal shows through.

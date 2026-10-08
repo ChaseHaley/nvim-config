@@ -18,3 +18,12 @@ anything, so both can turn plugins off with `require("smartload").disable(name)`
 
 A plugin that is off never loads. It is still installed, because `vim.pack` installs every
 plugin in `nvim-pack-lock.json`.
+
+## VS Code
+
+The [vscode-neovim](https://github.com/vscode-neovim/vscode-neovim) extension sets
+`vim.g.vscode` before `init.lua` runs. Inside VS Code only the modules in `smartload.vscode`
+load: motions, text objects and edits. VS Code draws the editor and does LSP, completion, git
+and files itself. `now()` and `later()` both check the list, so a `later()` call in
+`lua/local.lua` or a project's `.nvim.lua` follows it too. A few options and keymaps also check
+`vim.g.vscode`.

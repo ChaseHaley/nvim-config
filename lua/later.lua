@@ -14,7 +14,7 @@ local smartload = require("smartload")
 local queue = {}
 
 local function load(module)
-	if smartload.off[module] then
+	if smartload.skips(module) then
 		return
 	end
 	local ok, err = pcall(require, module)

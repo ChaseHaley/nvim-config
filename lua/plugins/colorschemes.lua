@@ -14,6 +14,11 @@ require("tokyonight").setup(
 			hl.LineNr = { fg = c.comment }
 			hl.LineNrAbove = { fg = c.comment }
 			hl.LineNrBelow = { fg = c.comment }
+
+			local util = require("tokyonight.util")
+			hl.DiffAdd = { bg = util.blend_bg(c.green2, 0.45) }
+			hl.DiffChange = { bg = util.blend_bg(c.blue, 0.2) }
+			hl.DiffText = { bg = util.blend_bg(c.blue0, 0.7) }
 		end,
 	}
 )

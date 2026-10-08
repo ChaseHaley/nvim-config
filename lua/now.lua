@@ -1,7 +1,7 @@
 local smartload = require("smartload")
 ---@param module string
 return function (module)
-	if smartload.off[module] then
+	if smartload.skips(module) then
 		return
 	end
 

@@ -11,7 +11,9 @@ local function treesitter_try_attach(buf, language)
 		return
 	end
 	-- Enable syntax highlighting and other treesitter features
-	vim.treesitter.start(buf, language)
+	if not vim.g.vscode then
+		vim.treesitter.start(buf, language)
+	end
 
 	-- Enable treesitter based folds
 	-- For more info on folds see `:help folds`

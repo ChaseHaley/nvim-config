@@ -7,7 +7,7 @@ now("plugins/treesitter")
 
 -- Follows the Omarchy system theme when there is one, otherwise our own
 -- tokyonight setup.
-if not require("plugins/omarchy-theme").setup() then
+if not vim.g.vscode and not require("plugins/omarchy-theme").setup() then
 	now("plugins/colorschemes")
 end
 

@@ -80,8 +80,11 @@ vim.o.inccommand = "split"
 vim.o.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
-vim.o.scrolloff = 5
-vim.o.sidescrolloff = 20
+-- Inside VS Code the view is VS Code's, so editor.cursorSurroundingLines does this there.
+if not vim.g.vscode then
+	vim.o.scrolloff = 5
+	vim.o.sidescrolloff = 20
+end
 
 -- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
 -- instead raise a dialog asking if you wish to save the current file(s)
@@ -190,8 +193,10 @@ vim.diagnostic.config({
 	},
 })
 
+-- ui2 marks every message and cmdline event as handled, and Neovim then keeps those events
+-- from remote UIs, so VS Code would never see the cmdline.
 require("vim._core.ui2").enable({
-	enable = true, -- Whether to enable or disable the UI.
+	enable = not vim.g.vscode, -- Whether to enable or disable the UI.
 	msg = { -- Options related to the message module.
 		---@type string|table<string, 'cmd'|'msg'|'pager'> Default message target
 		---or table mapping |ui-messages| kinds, triggers and IDs to a target.

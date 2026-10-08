@@ -101,6 +101,9 @@ require("diffview").setup(
 		enhanced_diff_hl = true,
 		view = {
 			one_sided_layout = "raw",
+			cycle_layouts = {
+				default = { "diff2_horizontal", "diff1_inline" },
+			},
 		},
 		diffopt = { algorithm = "histogram" },
 	}
