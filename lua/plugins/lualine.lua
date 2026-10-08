@@ -1,4 +1,39 @@
 vim.pack.add({ "https://github.com/nvim-lualine/lualine.nvim" })
+
+local function is_file_window(win)
+	return vim.api.nvim_win_get_config(win).relative == ""
+		and vim.list_contains({ "", "acwrite" }, vim.bo[vim.api.nvim_win_get_buf(win)].buftype)
+end
+
+local function file_label(buf)
+	local name = vim.api.nvim_buf_get_name(buf)
+	if name == "" then
+		return "[No Name]"
+	end
+	return vim.fn.fnamemodify((name:gsub("[/\\]$", "")), ":t")
+end
+
+local function tab_label(name, tab)
+	if vim.t[tab.tabId].tabname then
+		return name
+	end
+	if package.loaded["diffview.lib"] then
+		for _, view in ipairs(require("diffview.lib").views) do
+			if view.tabpage == tab.tabId then
+				local history = require("diffview.scene.views.file_history.file_history_view").FileHistoryView
+				return view:instanceof(history) and "File history" or "Diffview"
+			end
+		end
+	end
+	for _, winnr in ipairs({ vim.fn.tabpagewinnr(tab.tabnr), vim.fn.tabpagewinnr(tab.tabnr, "#") }) do
+		local win = vim.fn.win_getid(winnr, tab.tabnr)
+		if win ~= 0 and is_file_window(win) then
+			return (file_label(vim.api.nvim_win_get_buf(win)):gsub("%%", "%%%%"))
+		end
+	end
+	return name
+end
+
 require("lualine").setup({
 	options = {
 		icons_enabled = true,
@@ -49,8 +84,17 @@ require("lualine").setup({
 		lualine_z = {},
 	},
 	tabline = {
-		lualine_a = { "tabs" },
-		lualine_b = { "filename" },
+		lualine_a = {
+			{
+				"tabs",
+				mode = 1,
+				max_length = function()
+					return vim.o.columns
+				end,
+				fmt = tab_label,
+			},
+		},
+		lualine_b = {},
 		lualine_c = {},
 		lualine_x = {},
 		lualine_y = {},
