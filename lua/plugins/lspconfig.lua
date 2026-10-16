@@ -308,7 +308,7 @@ local servers = {
 	-- 	},
 	-- },
 
-	stylua = {}, -- Used to format Lua code
+	stylua = {}, -- { cmd = { "/etc/profiles/per-user/chase/bin/stylua" } }, -- Used to format Lua code
 	tombi = {},
 	cssls = {},
 	jsonls = {
@@ -329,6 +329,28 @@ local servers = {
 	bacon_ls = {},
 	jinja_lsp = {},
 	zls = {},
+	ols = {},
+	-- nil_ls = { settings = { formatting = { command = { 'nixfmt' } } }},
+	nixd = {
+		settings = {
+			nixd = {
+				formatting = {
+					command = { 'nixfmt' },
+				},
+				options = {
+					nixos = {
+						expr = '(builtins.getFlake "/home/chase/.config/flakes").nixosConfigurations."nixos".options'
+					},
+					home_manager = {
+						expr = '(builtins.getFlake "/home/chase/.config/flake").nixosConfigurations.nixos.options.home-manager.users.type.getSubOptions []',
+					},
+				},
+			},
+		},
+	},
+	qmlls = {
+		cmd = { "/etc/profiles/per-user/chase/bin/qmlls" },
+	},
 
 	-- Special Lua Config, as recommended by neovim help docs
 	lua_ls = {
@@ -364,6 +386,7 @@ local servers = {
 				format = { enable = false }, -- Disable formatting (formatting is done by stylua)
 			},
 		},
+		cmd = { "/etc/profiles/per-user/chase/bin/lua-language-server" },
 	},
 }
 

@@ -2,6 +2,7 @@ vim.pack.add({ "https://github.com/folke/tokyonight.nvim" })
 require("tokyonight").setup(
 	--- @type tokyonight.Config
 	{
+		transparent = vim.g.transparent_theme,
 		styles = {
 			comments = { italic = false },
 		},

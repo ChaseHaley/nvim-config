@@ -1,5 +1,6 @@
 local later = require("later")
 local now = require("now")
+local smartload = require("smartload")
 
 -- Loaded up front: anything that affects the first render or must see the
 -- first buffer/VimEnter (colorscheme, statusline, syntax, argv handling).
@@ -112,3 +113,6 @@ end
 later("plugins/resession")
 later("plugins/genghis")
 -- later("plugins/mssql")
+
+smartload.disableByDefault("plugins/dms")
+later("plugins/dms")
