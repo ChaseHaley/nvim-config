@@ -284,6 +284,11 @@ vim.api.nvim_create_autocmd("LspAttach", {
 	end,
 })
 
+local function get_nix_cmd(name)
+	local path = "/etc/profiles/per-user/chase/bin/" .. name
+	return vim.fn.executable(path) == 1 and { path } or nil
+end
+
 -- Enable the following language servers
 --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
 --  See `:help lsp-config` for information about keys and how to configure
@@ -349,7 +354,7 @@ local servers = {
 		},
 	},
 	qmlls = {
-		cmd = { "/etc/profiles/per-user/chase/bin/qmlls" },
+		cmd = get_nix_cmd("qmlls"),
 	},
 
 	-- Special Lua Config, as recommended by neovim help docs
@@ -386,7 +391,7 @@ local servers = {
 				format = { enable = false }, -- Disable formatting (formatting is done by stylua)
 			},
 		},
-		cmd = { "/etc/profiles/per-user/chase/bin/lua-language-server" },
+		cmd = get_nix_cmd("lua-language-server"),
 	},
 }
 
