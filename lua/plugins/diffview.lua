@@ -2,58 +2,8 @@ vim.g.DiffCharDoMapping = 0
 vim.pack.add({ "https://github.com/rickhowe/diffchar.vim" })
 vim.pack.add({ "https://github.com/dlyongemallo/diffview-plus.nvim" })
 
--- Neovim renders code lens as virtual lines above the declaration
--- (`virt_lines_above`). Vim's diff alignment only pads with filler lines for
--- real buffer lines, so every lens in the working-tree buffer shifts that pane
--- one row out of step with the git-side buffer, which has no LSP attached.
-local codelens_group = vim.api.nvim_create_augroup("DiffviewCodelensGuard", { clear = true })
-local codelens_guarded = {}
-local codelens_was_enabled = {}
+local codelens_guard = require("codelens_guard")
 local open_views = 0
-
-local function suppress_codelens(bufnr)
-	-- easy-dotnet re-asserts `vim.lsp.codelens.enable(true, ...)` on BufEnter,
-	-- CursorHold and InsertLeave, and registers those handlers from LspAttach —
-	-- later than anything defined here, so they run after us and would always
-	-- win. Deferring with `vim.schedule` lands our call after the event's whole
-	-- autocmd chain has finished.
-	local function off()
-		vim.schedule(function()
-			if not vim.api.nvim_buf_is_valid(bufnr) then
-				return
-			end
-			if vim.lsp.codelens.is_enabled({ bufnr = bufnr }) then
-				codelens_was_enabled[bufnr] = true
-				vim.lsp.codelens.enable(false, { bufnr = bufnr })
-			end
-		end)
-	end
-
-	off()
-
-	if codelens_guarded[bufnr] then
-		return
-	end
-	codelens_guarded[bufnr] = true
-
-	vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
-		group = codelens_group,
-		buffer = bufnr,
-		callback = off,
-	})
-end
-
-local function restore_codelens()
-	vim.api.nvim_clear_autocmds({ group = codelens_group })
-
-	for bufnr in pairs(codelens_was_enabled) do
-		if vim.api.nvim_buf_is_valid(bufnr) then
-			vim.lsp.codelens.enable(true, { bufnr = bufnr })
-		end
-	end
-
-	codelens_guarded, codelens_was_enabled = {}, {}
-end
 
 require("diffview").setup(
 	--- @type DiffviewConfig.user
@@ -79,7 +29,7 @@ require("diffview").setup(
 					modeline = false,
 				})
 
-				suppress_codelens(bufnr)
+				codelens_guard.suppress(bufnr, "diffview")
 			end,
 			view_opened = function()
 				open_views = open_views + 1
@@ -92,7 +42,7 @@ require("diffview").setup(
 
 				open_views = math.max(open_views - 1, 0)
 				if open_views == 0 then
-					restore_codelens()
+					codelens_guard.restore("diffview")
 				end
 			end,
 		},

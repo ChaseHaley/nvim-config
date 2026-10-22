@@ -17,7 +17,7 @@ vim.o.swapfile = false
 -- Disable text wrapping
 -- Generally speaking, if text is wrapping then the line is too long
 -- or I'm working in too small of an editor and this can be manually enabled for that session
-vim.o.wrap = false
+vim.o.wrap = true -- Enabled as tryout
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.o.mouse = "a"

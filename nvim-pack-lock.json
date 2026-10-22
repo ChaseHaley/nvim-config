@@ -31,7 +31,7 @@
       "src": "https://github.com/stevearc/conform.nvim"
     },
     "csvview.nvim": {
-      "rev": "2466bdda54047f525d4faca53040fe657c9c33db",
+      "rev": "f190de76d2eca0380ddcb2425cd582d740699b55",
       "src": "https://github.com/hat0uma/csvview.nvim"
     },
     "diffchar.vim": {
@@ -39,11 +39,11 @@
       "src": "https://github.com/rickhowe/diffchar.vim"
     },
     "diffview-plus.nvim": {
-      "rev": "4e064c1830fc4165aa3f0374dea3a6006e221e81",
+      "rev": "2a2d89a07f5d5d3cef7f542b99c3e28050ca205c",
       "src": "https://github.com/dlyongemallo/diffview-plus.nvim"
     },
     "easy-dotnet.nvim": {
-      "rev": "df600029a54754d90ac35fe284b3921bb7bf1023",
+      "rev": "e698b942a0a91cd5b457b828d16a66b7cb94d732",
       "src": "https://github.com/GustavEikaas/easy-dotnet.nvim"
     },
     "fidget.nvim": {
@@ -63,7 +63,7 @@
       "src": "https://github.com/FylerOrg/fyler.nvim"
     },
     "gitsigns.nvim": {
-      "rev": "851a051e2bd2caba97e23314c68d69f1b1cf5d19",
+      "rev": "683137003522aebd6948358334164a6ba2ca7cd5",
       "src": "https://github.com/lewis6991/gitsigns.nvim"
     },
     "indent-blankline.nvim": {
@@ -87,7 +87,7 @@
       "src": "https://github.com/nvim-lualine/lualine.nvim"
     },
     "mason-lspconfig.nvim": {
-      "rev": "b3298993d55fa194279b5eb9dbfb3a43da65cadf",
+      "rev": "c4ef013d41f6db041b283eef55a63e579d76763f",
       "src": "https://github.com/mason-org/mason-lspconfig.nvim"
     },
     "mason-nvim-dap.nvim": {
@@ -107,19 +107,19 @@
       "src": "https://github.com/anuvyklack/middleclass"
     },
     "mini.nvim": {
-      "rev": "fa9037326e9996381e34a14b6350e18168618532",
+      "rev": "a6e23131010b800ecbab85fa6adc0ff38eae2c2d",
       "src": "https://github.com/echasnovski/mini.nvim"
     },
     "neogit": {
-      "rev": "70708be9664b7fcdd010eb07bdc3ebc9311c2027",
+      "rev": "832a2db084ac25c2801fd73a3fab58f3c82ed2ec",
       "src": "https://github.com/NeogitOrg/neogit"
     },
     "no-neck-pain.nvim": {
-      "rev": "55f69b7ff536303dcd37460d7cbced9691b3f0a2",
+      "rev": "ed63925a065cddc73afd51c5d486f7956385a21f",
       "src": "https://github.com/shortcuts/no-neck-pain.nvim"
     },
     "nvim-autopairs": {
-      "rev": "430522f95fe4fb7c511ec64f8c1a90cc6a66c05c",
+      "rev": "3172f40c16563db871a58f20d205c710ad782311",
       "src": "https://github.com/windwp/nvim-autopairs"
     },
     "nvim-dap": {
@@ -140,16 +140,16 @@
       "src": "https://github.com/mfussenegger/nvim-lint"
     },
     "nvim-lspconfig": {
-      "rev": "db68de3575fff9dd9bb78b34c8371759ed35fe34",
+      "rev": "77b7432d4770d23b277d37923e5a08a442d8bb07",
       "src": "https://github.com/neovim/nvim-lspconfig"
     },
     "nvim-treesitter": {
-      "rev": "5cb0114e6242625db56dd6440e945ed1ece10bc7",
+      "rev": "29212d826054bb2948fa9d3a99eca9bf6a050eb2",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter",
       "version": "'main'"
     },
     "nvim-treesitter-context": {
-      "rev": "f3061339b8eaf9fda873600bc425b8d2d8502533",
+      "rev": "8decd73460d26ef0a0befb745d022dd1fc2c38b8",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter-context"
     },
     "nvim-treesitter-textobjects": {
@@ -157,7 +157,7 @@
       "src": "https://github.com/nvim-treesitter/nvim-treesitter-textobjects"
     },
     "obsidian.nvim": {
-      "rev": "1212014bb22a1f44a655e8e706659892b8e43e59",
+      "rev": "a562bedd7b418a289b005cb4c62b1fe79066253b",
       "src": "https://github.com/obsidian-nvim/obsidian.nvim",
       "version": ">=0.0.0"
     },
@@ -170,7 +170,7 @@
       "src": "https://github.com/nvim-lua/plenary.nvim"
     },
     "powershell.nvim": {
-      "rev": "c503b823214ab8852fee899354004607577031ee",
+      "rev": "f6b7fbef6041c41bbaef10d66c092396519ef488",
       "src": "https://github.com/TheLeoP/powershell.nvim"
     },
     "pretty_hover": {
@@ -238,7 +238,7 @@
       "src": "https://github.com/andymass/vim-matchup"
     },
     "wezterm-types": {
-      "rev": "998639c5c5dd4513912966465772af80e7005f32",
+      "rev": "39511289aa040a7746a9e2d551b35ef330f15c77",
       "src": "https://github.com/DrKJeff16/wezterm-types"
     },
     "which-key.nvim": {

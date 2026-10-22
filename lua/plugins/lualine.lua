@@ -28,10 +28,20 @@ local function tab_label(name, tab)
 	for _, winnr in ipairs({ vim.fn.tabpagewinnr(tab.tabnr), vim.fn.tabpagewinnr(tab.tabnr, "#") }) do
 		local win = vim.fn.win_getid(winnr, tab.tabnr)
 		if win ~= 0 and is_file_window(win) then
-			return (file_label(vim.api.nvim_win_get_buf(win)):gsub("%%", "%%%%"))
+			return file_label(vim.api.nvim_win_get_buf(win))
 		end
 	end
 	return name
+end
+
+local MAX_TAB_LABEL = 50
+
+local function capped_tab_label(name, tab)
+	local label = tab_label((name:gsub("%%%%", "%%")), tab)
+	if vim.fn.strchars(label) > MAX_TAB_LABEL then
+		label = vim.fn.strcharpart(label, 0, MAX_TAB_LABEL - 1) .. "…"
+	end
+	return (label:gsub("%%", "%%%%"))
 end
 
 require("lualine").setup({
@@ -91,7 +101,7 @@ require("lualine").setup({
 				max_length = function()
 					return vim.o.columns
 				end,
-				fmt = tab_label,
+				fmt = capped_tab_label,
 			},
 		},
 		lualine_b = {},

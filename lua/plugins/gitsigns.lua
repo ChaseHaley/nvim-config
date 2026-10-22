@@ -49,3 +49,23 @@ require("gitsigns").setup(
 		end,
 	}
 )
+
+local codelens_guard = require("codelens_guard")
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "gitsigns-blame",
+	callback = function()
+		local blame_win = vim.api.nvim_get_current_win()
+		-- Gitsigns opens the blame panel with `:vsplit` from the blamed window.
+		local source_win = vim.fn.win_getid(vim.fn.winnr("#"))
+		codelens_guard.suppress(vim.api.nvim_win_get_buf(source_win), blame_win)
+
+		vim.api.nvim_create_autocmd("WinClosed", {
+			pattern = tostring(blame_win),
+			once = true,
+			callback = function()
+				codelens_guard.restore(blame_win)
+			end,
+		})
+	end,
+})
