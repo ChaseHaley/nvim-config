@@ -245,6 +245,10 @@ vim.keymap.set("n", "<leader>sn", function()
 	require("snacks").picker.files({ cwd = vim.fn.stdpath("config") })
 end, { desc = "[S]earch [N]eovim files" })
 
+vim.keymap.set("n", "<leader>sl", function()
+	vim.cmd("e " .. vim.fn.stdpath("config") .. "/lua/local.lua")
+end, { desc = "[S]earch [L]ocal Neovim file" })
+
 vim.keymap.set("n", "<leader>sc", function()
 	require("snacks").picker.files({ cwd = vim.fn.expand("~/.claude"), hidden = true, ignored = false })
 end, { desc = "[S]earch [C]laude files" })

@@ -9,6 +9,8 @@
 local M = {}
 
 M.off = {}
+M.optIn = {}
+M.on = {}
 
 M.bundles = {
 	dotnet = { "plugins/easy-dotnet", "plugins/lazydotnet", "plugins/roslyn" },
@@ -36,10 +38,25 @@ function M.disable(name)
 	end
 end
 
+function M.disableByDefault(name)
+	for _, module in ipairs(M.bundles[name] or { name }) do
+		M.optIn[module] = true
+	end
+end
+
+function M.enable(name)
+	for _, module in ipairs(M.bundles[name] or { name }) do
+		M.on[module] = true
+	end
+end
+
 ---@param module string
 ---@return boolean
 function M.skips(module)
-	return M.off[module] or (vim.g.vscode and not M.vscode[module]) or false
+	return M.off[module]
+		or (M.optIn[module] and not M.on[module])
+		or (vim.g.vscode and not M.vscode[module])
+		or false
 end
 
 local vim_enter_queue = {}
