@@ -140,16 +140,16 @@ local function unload(plugin)
 		package.loaded[own] = nil
 	end
 
-	local name = plugin.name or plugin.repo:match("([^/]+)$")
-	for _, info in ipairs(vim.pack.get({ name })) do
-		local lua = vim.fs.joinpath(info.path, "lua")
-		local ok, iter = pcall(vim.fs.dir, lua, { depth = 8 })
-		if ok then
-			for file, kind in iter do
-				if kind == "file" and file:match("%.lua$") then
-					local mod = file:gsub("%.lua$", ""):gsub("[/\\]", "."):gsub("%.init$", "")
-					package.loaded[mod] = nil
-				end
+	local path = require("loadout").get_path(plugin.name or plugin.repo:match("([^/]+)$"))
+	if not path then
+		return
+	end
+	local ok, iter = pcall(vim.fs.dir, vim.fs.joinpath(path, "lua"), { depth = 8 })
+	if ok then
+		for file, kind in iter do
+			if kind == "file" and file:match("%.lua$") then
+				local mod = file:gsub("%.lua$", ""):gsub("[/\\]", "."):gsub("%.init$", "")
+				package.loaded[mod] = nil
 			end
 		end
 	end
@@ -158,7 +158,7 @@ end
 local function configure(plugin)
 	local own = OWN_CONFIG[plugin.repo]
 	if own then
-		-- Our own module runs its own vim.pack.add/setup and picks a default
+		-- Our own module runs its own loadout.add/setup and picks a default
 		-- colorscheme; the Omarchy variant is applied over it below.
 		pcall(require, own)
 		return
@@ -192,17 +192,20 @@ local function apply(reload)
 
 	local specs = {}
 	for _, plugin in ipairs(plugins) do
-		specs[#specs + 1] = {
-			src = "https://github.com/" .. plugin.repo,
-			name = plugin.name,
-			version = plugin.version,
-		}
+		-- OWN_CONFIG modules install their plugin themselves, into the shared lockfile.
+		if not OWN_CONFIG[plugin.repo] then
+			specs[#specs + 1] = {
+				src = "https://github.com/" .. plugin.repo,
+				name = plugin.name,
+				version = plugin.version,
+			}
+		end
 	end
 
 	if #specs > 0 then
-		-- confirm = false: a theme switch must not drop a confirmation buffer
-		-- on the user just because the new theme's plugin isn't installed yet.
-		local ok, add_err = pcall(vim.pack.add, specs, { confirm = false })
+		-- Theme plugins exist only on Omarchy machines, so they stay out of the
+		-- shared lockfile.
+		local ok, add_err = pcall(require("loadout").add, specs, { shared = false })
 		if not ok then
 			return false, tostring(add_err)
 		end

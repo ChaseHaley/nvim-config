@@ -1,4 +1,4 @@
-vim.pack.add({ "https://github.com/folke/trouble.nvim" })
+require("loadout").add({ "https://github.com/folke/trouble.nvim" })
 local trouble = require("trouble")
 trouble.setup(
 	---@type trouble.Config

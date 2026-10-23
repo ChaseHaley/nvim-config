@@ -3,7 +3,7 @@
 -- vim.g.copilot_nes_debounce = 500
 -- vim.lsp.enable("copilot_ls")
 
-vim.pack.add({ "https://github.com/zbirenbaum/copilot.lua" })
+require("loadout").add({ "https://github.com/zbirenbaum/copilot.lua" })
 --- @type CopilotConfig
 local copilotOpts = {
 	panel = {

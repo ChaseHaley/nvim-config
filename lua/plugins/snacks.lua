@@ -1,6 +1,4 @@
-local now = require("../now")
-now("plugins/unnest")
-vim.pack.add({ "https://github.com/folke/snacks.nvim" })
+require("loadout").add({ "https://github.com/folke/snacks.nvim" })
 require("snacks").setup(
 	---@type snacks.Config
 	{

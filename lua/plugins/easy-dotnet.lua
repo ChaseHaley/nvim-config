@@ -1,9 +1,8 @@
-require("plugins/dap")
 -- NOTE: depends on:
 -- nvim-lua/plenary.nvim
 -- mfussenegger/nvim-dap
 -- folke/snacks.nvim (optional)
-vim.pack.add({ "https://github.com/GustavEikaas/easy-dotnet.nvim" })
+require("loadout").add({ "https://github.com/GustavEikaas/easy-dotnet.nvim" })
 require("easy-dotnet").setup(
 	---@type easy-dotnet.Options
 	{

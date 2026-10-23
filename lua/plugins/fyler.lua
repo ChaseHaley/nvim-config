@@ -1,4 +1,4 @@
-vim.pack.add({ "https://github.com/FylerOrg/fyler.nvim" })
+require("loadout").add({ "https://github.com/FylerOrg/fyler.nvim" })
 
 ---@type fyler.UserConfig
 require('fyler').setup({

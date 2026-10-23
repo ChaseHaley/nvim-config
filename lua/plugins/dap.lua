@@ -1,4 +1,4 @@
-vim.pack.add({
+require("loadout").add({
 	"https://github.com/mason-org/mason.nvim",
 	"https://github.com/jay-babu/mason-nvim-dap.nvim",
 	"https://github.com/mfussenegger/nvim-dap",
@@ -77,7 +77,7 @@ end, { desc = "See last session result." })
 
 local use_view = true
 if use_view == true then
-	vim.pack.add({ { src = "https://github.com/igorlfs/nvim-dap-view", version = vim.version.range("1.*") } })
+	require("loadout").add({ { src = "https://github.com/igorlfs/nvim-dap-view", version = vim.version.range("1.*") } })
 	require("dap-view").setup({
 		auto_toggle = true,
 	})
@@ -101,8 +101,8 @@ if use_view == true then
 
 	vim.keymap.set("n", "<leader>dv", focus_dap_view, { desc = "Focus nvim-dap-view" })
 else
-	vim.pack.add({ { src = "https://github.com/nvim-neotest/nvim-nio" } })
-	vim.pack.add({ { src = "https://github.com/rcarriga/nvim-dap-ui" } })
+	require("loadout").add({ { src = "https://github.com/nvim-neotest/nvim-nio" } })
+	require("loadout").add({ { src = "https://github.com/rcarriga/nvim-dap-ui" } })
 
 	local dapui = require("dapui")
 	-- Dap UI setup

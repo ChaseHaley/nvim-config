@@ -1,4 +1,4 @@
-vim.pack.add({ "https://github.com/hat0uma/csvview.nvim" })
+require("loadout").add({ "https://github.com/hat0uma/csvview.nvim" })
 
 ---@module "csvview"
 ---@type CsvView.Options

@@ -1,4 +1,4 @@
-vim.pack.add({ "https://github.com/stevearc/oil.nvim" })
+require("loadout").add({ "https://github.com/stevearc/oil.nvim" })
 
 require("oil").setup(
 	---@type oil.Config

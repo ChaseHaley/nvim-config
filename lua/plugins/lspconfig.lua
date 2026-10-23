@@ -25,7 +25,7 @@
 -- and elegantly composed help section, `:help lsp-vs-treesitter`
 
 -- Useful status updates for LSP.
-vim.pack.add({ "https://github.com/j-hui/fidget.nvim" })
+require("loadout").add({ "https://github.com/j-hui/fidget.nvim" })
 require("fidget").setup({})
 
 --- @param buf integer
@@ -395,7 +395,7 @@ local servers = {
 	},
 }
 
-vim.pack.add({
+require("loadout").add({
 	"https://github.com/neovim/nvim-lspconfig",
 	"https://github.com/mason-org/mason.nvim",
 	"https://github.com/mason-org/mason-lspconfig.nvim",
@@ -451,7 +451,7 @@ end
 -- vim.pack.add({ "https://github.com/j-hui/fidget.nvim" })
 -- require("fidget").setup({})
 
-vim.pack.add({ "https://github.com/folke/lazydev.nvim" })
+require("loadout").add({ "https://github.com/folke/lazydev.nvim" })
 require("lazydev").setup({
 	library = {
 		{ path = "${3rd}/luv/library", words = { "vim%.uv" } },

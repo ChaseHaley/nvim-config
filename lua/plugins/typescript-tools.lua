@@ -1,4 +1,4 @@
-vim.pack.add({ "https://github.com/pmizio/typescript-tools.nvim" })
+require("loadout").add({ "https://github.com/pmizio/typescript-tools.nvim" })
 
 local function read_major(package_json)
 	local ok, pkg = pcall(vim.json.decode, table.concat(vim.fn.readfile(package_json), "\n"))

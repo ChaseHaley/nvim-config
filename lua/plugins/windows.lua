@@ -1,6 +1,6 @@
-vim.pack.add({ "https://github.com/anuvyklack/middleclass" })
-vim.pack.add({ "https://github.com/anuvyklack/animation.nvim" })
-vim.pack.add({ "https://github.com/anuvyklack/windows.nvim" })
+require("loadout").add({ "https://github.com/anuvyklack/middleclass" })
+require("loadout").add({ "https://github.com/anuvyklack/animation.nvim" })
+require("loadout").add({ "https://github.com/anuvyklack/windows.nvim" })
 
 -- vim.o.winwidth = 5
 -- vim.o.winminwidth = 5

@@ -1,2 +1,2 @@
-vim.pack.add({ "https://github.com/kwkarlwang/bufjump.nvim" })
+require("loadout").add({ "https://github.com/kwkarlwang/bufjump.nvim" })
 require("bufjump").setup({ forward_key = "<M-i>", backward_key = "<M-o>", on_success = nil })

@@ -1,4 +1,4 @@
-vim.pack.add({
+require("loadout").add({
 	{
 		src = "https://github.com/obsidian-nvim/obsidian.nvim",
 		version = vim.version.range("*"),

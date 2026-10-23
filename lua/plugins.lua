@@ -1,118 +1,108 @@
-local later = require("later")
-local now = require("now")
-local smartload = require("smartload")
-
--- Loaded up front: anything that affects the first render or must see the
--- first buffer/VimEnter (colorscheme, statusline, syntax, argv handling).
-now("plugins/treesitter")
-
--- Follows the Omarchy system theme when there is one, otherwise our own
--- tokyonight setup.
-if not vim.g.vscode and not require("plugins/omarchy-theme").setup() then
-	now("plugins/colorschemes")
+local function is_neovide()
+	return vim.g.neovide == true
 end
 
-now("plugins/plenary")
--- require("plugins/web-devicons")
-now("plugins/mini")
-now("plugins/snacks")
-now("plugins/lualine")
-now("plugins/oil")
--- Guesses the indent from a BufRead autocmd its own plugin/ file registers, so
--- it must be on the runtimepath before the argv buffers load
--- require("plugins/guess-indent")
--- Enables itself from a VimEnter autocmd
-now("plugins/no-neck-pain")
--- Attaches its LSP through a FileType autocmd, so it must exist before the
--- first ps1 buffer loads
-now("plugins/powershell")
--- Not sure why but lazy fails with this
-now("plugins/camelCaseMotion")
+local dotnet_filetypes = { "cs", "vb", "fsharp", "razor" }
+local js_filetypes = { "typescript", "typescriptreact", "javascript", "javascriptreact" }
 
--- Everything else loads right after startup finishes.
-later("plugins/lspconfig")
--- Required by easy-dotnet, causes issues if C# file is accessed before this is loaded
-later("plugins/treesitter-textobjects")
-later("plugins/treesitter-context")
-later("plugins/autocomplete")
-later("plugins/indent-line")
-later("plugins/lint")
-later("plugins/which-key")
-later("plugins/dev")
-later("plugins/autopairs")
--- later("plugins/todo-comments")
-later("plugins/conform")
-later("plugins/bufjump")
-later("plugins/gitsigns")
-later("plugins/comments")
--- later("plugins/grapple")
--- later("plugins/arrow")
--- later("plugins/roslyn")
-later("plugins/easy-dotnet", { cond = require("dotnet_project").will_auto_load })
-later("plugins/easy-dotnet", { event = "FileType", opts = { pattern = { "cs", "vb", "fsharp", "razor" } } })
-later("plugins/easy-dotnet", {
-	event = { "BufReadPre", "BufNewFile" },
-	opts = { pattern = { "*.sln", "*.slnx", "*.csproj", "*.fsproj" } },
-})
-later("plugins/lazydotnet", { event = "FileType", opts = { pattern = { "cs", "vb", "fsharp", "razor" } } })
-later("plugins/csvview", { event = "FileType", opts = { pattern = { "csv", "tsv" } } })
-later("plugins/diffview")
-later("plugins/neogit")
-later("plugins/flash")
-later("plugins/render-markdown", { event = "FileType", opts = { pattern = "markdown" } })
-if not vim.g.neovide then
-	later("plugins/smear-cursor")
-end
-later("plugins/toggleterm")
-later("plugins/treesj")
-later("plugins/undo-glow")
-later("plugins/windows")
-later("plugins/winshift")
-later("plugins/typescript-tools", {
-	event = "FileType",
-	opts = { pattern = { "typescript", "typescriptreact", "javascript", "javascriptreact" } },
-})
--- later("plugins/copilot")
--- later("plugins/sidekick")
-later("plugins/trouble")
-later("plugins/wezterm-types", {
-	event = "FileType",
-	opts = {
-		pattern = {
-			"lua"
-		}
-	}
-})
-later("plugins/vim-matchup")
-later("plugins/nvim-ts-autotag", {
-	event = "FileType",
-	opts = {
-		pattern = {
-			"typescript",
-			"javascript",
-			"typescriptreact",
-			"javascriptreact",
-			"xml",
-			"html",
-			"templ",
-			"php",
-			"razor",
-		},
+require("loadout").load({
+	-- Loaded up front: anything that affects the first render or must see the
+	-- first buffer/VimEnter (colorscheme, statusline, syntax, argv handling).
+	{ "plugins/treesitter", now = true, vscode = true },
+	-- Follows the Omarchy system theme when there is one, otherwise our own
+	-- tokyonight setup.
+	{
+		"plugins/colorschemes",
+		now = true,
+		cond = function()
+			return not require("plugins/omarchy-theme").setup()
+		end,
 	},
+	{ "plugins/plenary", now = true },
+	-- { "plugins/web-devicons", now = true },
+	{ "plugins/mini", now = true, vscode = true },
+	{ "plugins/unnest", now = true },
+	{ "plugins/snacks", now = true },
+	{ "plugins/lualine", now = true },
+	{ "plugins/oil", now = true },
+	-- Guesses the indent from a BufRead autocmd its own plugin/ file registers, so
+	-- it must be on the runtimepath before the argv buffers load
+	-- { "plugins/guess-indent", now = true },
+	-- Enables itself from a VimEnter autocmd
+	{ "plugins/no-neck-pain", now = true },
+	-- Attaches its LSP through a FileType autocmd, so it must exist before the
+	-- first ps1 buffer loads
+	{ "plugins/powershell", now = true },
+	-- Not sure why but lazy fails with this
+	{ "plugins/camelCaseMotion", now = true, vscode = true },
+
+	-- Everything else loads right after startup finishes.
+	{ "plugins/lspconfig" },
+	-- Required by easy-dotnet, causes issues if C# file is accessed before this is loaded
+	{ "plugins/treesitter-textobjects", vscode = true },
+	{ "plugins/treesitter-context" },
+	{ "plugins/autocomplete" },
+	{ "plugins/indent-line" },
+	{ "plugins/lint" },
+	{ "plugins/which-key" },
+	{ "plugins/dev" },
+	{ "plugins/autopairs" },
+	-- { "plugins/todo-comments" },
+	{ "plugins/conform" },
+	{ "plugins/bufjump" },
+	{ "plugins/gitsigns" },
+	{ "plugins/comments" },
+	-- { "plugins/grapple" },
+	-- { "plugins/arrow" },
+	-- { "plugins/roslyn", group = "dotnet" },
+	{
+		"plugins/easy-dotnet",
+		group = "dotnet",
+		deps = { "plugins/dap" },
+		startup = require("dotnet_project").will_auto_load,
+		ft = dotnet_filetypes,
+		event = { "BufReadPre", "BufNewFile" },
+		pattern = { "*.sln", "*.slnx", "*.csproj", "*.fsproj" },
+	},
+	{ "plugins/lazydotnet", group = "dotnet", ft = dotnet_filetypes },
+	{ "plugins/csvview", ft = { "csv", "tsv" } },
+	{ "plugins/diffview" },
+	{ "plugins/neogit" },
+	{ "plugins/flash", vscode = true },
+	{ "plugins/render-markdown", ft = "markdown" },
+	{
+		"plugins/smear-cursor",
+		cond = function()
+			return not is_neovide()
+		end,
+	},
+	{ "plugins/toggleterm" },
+	{ "plugins/treesj", vscode = true },
+	{ "plugins/undo-glow" },
+	{ "plugins/windows" },
+	{ "plugins/winshift" },
+	{ "plugins/typescript-tools", ft = js_filetypes },
+	-- { "plugins/copilot" },
+	-- { "plugins/sidekick" },
+	{ "plugins/trouble" },
+	{ "plugins/wezterm-types", ft = "lua" },
+	{ "plugins/vim-matchup", vscode = true },
+	{
+		"plugins/nvim-ts-autotag",
+		ft = vim.list_extend({ "xml", "html", "templ", "php", "razor" }, js_filetypes),
+	},
+	{ "plugins/fyler" },
+	{
+		"plugins/obsidian",
+		cond = function()
+			return vim.g.obsidian_vault ~= nil
+		end,
+	},
+	{ "plugins/pretty_hover" },
+	{ "plugins/tabby", cond = is_neovide },
+	{ "plugins/scope", cond = is_neovide },
+	{ "plugins/resession" },
+	{ "plugins/genghis" },
+	-- { "plugins/mssql" },
+	{ "plugins/dms", opt_in = true },
 })
-later("plugins/fyler")
-if vim.g.obsidian_vault then
-	later("plugins/obsidian")
-end
-later("plugins/pretty_hover")
-
-if vim.g.neovide then
-	later("plugins/tabby")
-	later("plugins/scope")
-end
-later("plugins/resession")
-later("plugins/genghis")
--- later("plugins/mssql")
-
-smartload.disableByDefault("plugins/dms")
-later("plugins/dms")

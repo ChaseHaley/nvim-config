@@ -10,20 +10,26 @@ with [cbochs/grapple](https://github.com/cbochs/grapple.nvim).
 
 ## Per-machine and per-project plugins
 
-`lua/local.lua` is gitignored and holds what is true for one machine. `.nvim.lua` in a
-project root does the same for one project (`exrc` is on). Both run before `later()` loads
-anything, so both can turn plugins off with `require("smartload").disable(name)`, where
-`name` is a module or a bundle from `smartload.bundles`. Copy `lua/local.example.lua` and
-`.nvim.example.lua` to start.
+`lua/plugins.lua` is the manifest: one `loadout` entry per plugin config module, with when it
+loads (`now`, `ft`, `event`, `startup`), whether it loads (`cond`, `vscode`, `opt_in`), its
+`deps`, and its `group`. Plugin modules install with `require("loadout").add`, which takes the
+same arguments as `vim.pack.add`.
 
-A plugin that is off never loads. It is still installed, because `vim.pack` installs every
-plugin in `nvim-pack-lock.json`.
+`lua/local.lua` is gitignored and holds what is true for one machine. `.nvim.lua` in a
+project root does the same for one project (`exrc` is on). They call
+`require("loadout").machine()` and `require("loadout").project()` to turn entries or groups off
+with `disable` and opt-in entries on with `enable`. A project's toggles reach only entries that
+load after startup, because `now` entries load before `.nvim.lua` runs. Copy
+`lua/local.example.lua` and `.nvim.example.lua` to start.
+
+An entry that is off never loads, but `vim.pack` still installs every plugin in
+`nvim-pack-lock.json`. An `opt_in` entry installs its plugins outside `vim.pack`, into
+`site/pack/loadout/opt`, so only the machines that enable it download them.
 
 ## VS Code
 
 The [vscode-neovim](https://github.com/vscode-neovim/vscode-neovim) extension sets
-`vim.g.vscode` before `init.lua` runs. Inside VS Code only the modules in `smartload.vscode`
+`vim.g.vscode` before `init.lua` runs. Inside VS Code only the entries marked `vscode = true`
 load: motions, text objects and edits. VS Code draws the editor and does LSP, completion, git
-and files itself. `now()` and `later()` both check the list, so a `later()` call in
-`lua/local.lua` or a project's `.nvim.lua` follows it too. A few options and keymaps also check
-`vim.g.vscode`.
+and files itself. Entries that a project's `.nvim.lua` adds follow the same rule. A few options
+and keymaps also check `vim.g.vscode`.

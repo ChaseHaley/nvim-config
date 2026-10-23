@@ -1,4 +1,4 @@
-vim.pack.add({ "https://github.com/nvim-lualine/lualine.nvim" })
+require("loadout").add({ "https://github.com/nvim-lualine/lualine.nvim" })
 
 local function is_file_window(win)
 	return vim.api.nvim_win_get_config(win).relative == ""

@@ -1,4 +1,4 @@
-vim.pack.add({ "https://github.com/stevearc/resession.nvim" })
+require("loadout").add({ "https://github.com/stevearc/resession.nvim" })
 local resession = require("resession")
 
 local LAST_SUFFIX = "_last"

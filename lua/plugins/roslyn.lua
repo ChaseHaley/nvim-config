@@ -1,4 +1,4 @@
-vim.pack.add({ "https://github.com/seblyng/roslyn.nvim" })
+require("loadout").add({ "https://github.com/seblyng/roslyn.nvim" })
 
 --- @module "roslyn.config"
 --- @type RoslynNvimConfig

@@ -1,17 +1,17 @@
 -- NOTE: You can also specify plugin using a version range for its git tag.
 --  See `:help vim.version.range()` for more info
-vim.pack.add({ { src = "https://github.com/L3MON4D3/LuaSnip", version = vim.version.range("2.*") } })
+require("loadout").add({ { src = "https://github.com/L3MON4D3/LuaSnip", version = vim.version.range("2.*") } })
 require("luasnip").setup({})
 
 -- `friendly-snippets` contains a variety of premade snippets.
 --    See the README about individual language/framework/plugin snippets:
 --    https://github.com/rafamadriz/friendly-snippets
 --
-vim.pack.add({ "https://github.com/rafamadriz/friendly-snippets" })
+require("loadout").add({ "https://github.com/rafamadriz/friendly-snippets" })
 require("luasnip.loaders.from_vscode").lazy_load()
 
 -- [[ Autocomplete Engine ]]
-vim.pack.add({ { src = "https://github.com/saghen/blink.cmp", version = vim.version.range("1.*") } })
+require("loadout").add({ { src = "https://github.com/saghen/blink.cmp", version = vim.version.range("1.*") } })
 
 --- @module "blink.cmp"
 --- @type blink.cmp.Config
@@ -304,5 +304,5 @@ local opts = {
 }
 require("blink.cmp").setup(opts)
 
-vim.pack.add({ "https://github.com/saecki/live-rename.nvim" })
+require("loadout").add({ "https://github.com/saecki/live-rename.nvim" })
 require("live-rename").setup({})

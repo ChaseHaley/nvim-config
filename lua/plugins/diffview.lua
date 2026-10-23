@@ -1,6 +1,6 @@
 vim.g.DiffCharDoMapping = 0
-vim.pack.add({ "https://github.com/rickhowe/diffchar.vim" })
-vim.pack.add({ "https://github.com/dlyongemallo/diffview-plus.nvim" })
+require("loadout").add({ "https://github.com/rickhowe/diffchar.vim" })
+require("loadout").add({ "https://github.com/dlyongemallo/diffview-plus.nvim" })
 
 local codelens_guard = require("codelens_guard")
 local open_views = 0

@@ -1,4 +1,4 @@
-vim.pack.add({ "https://github.com/NeogitOrg/neogit" })
+require("loadout").add({ "https://github.com/NeogitOrg/neogit" })
 require("neogit").setup(
 	---@type NeogitConfig
 	{
