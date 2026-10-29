@@ -62,18 +62,20 @@ require("diffview").setup(
 -- The `goto_file*` actions pick their target through
 -- `lib.get_prev_non_view_tabpage`, which accepts any tabpage Diffview does not
 -- own — including the Neogit tab the view was launched from. Require a real file
--- window, so an editing tab wins and a plugin tab never does.
+-- window or an Oil window, so an editing or Oil tab wins and other plugin tabs
+-- never do.
 local lib = require("diffview.lib")
 local diffview_utils = require("diffview.utils")
 
 local function has_file_window(tabpage)
 	for _, win in ipairs(vim.api.nvim_tabpage_list_wins(tabpage)) do
-		local buf = vim.api.nvim_win_get_buf(win)
+		local bo = vim.bo[vim.api.nvim_win_get_buf(win)]
 		if
 			vim.api.nvim_win_get_config(win).relative == ""
-			and vim.bo[buf].buftype == ""
-			and vim.bo[buf].buflisted
-			and not vim.startswith(vim.bo[buf].filetype, "Neogit")
+			and (
+				bo.filetype == "oil"
+				or (bo.buftype == "" and bo.buflisted and not vim.startswith(bo.filetype, "Neogit"))
+			)
 		then
 			return true
 		end
