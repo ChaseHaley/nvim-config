@@ -1317,6 +1317,29 @@ local function reusable_log_win()
 	return log_win
 end
 
+local function map_log_key(buf, name, lhs, action, desc)
+	vim.keymap.set("n", lhs, function()
+		local win = window_for_buf(check_buf)
+		local row
+		for lnum, item in pairs(check_line_items) do
+			if item.name == name then
+				row = lnum
+				break
+			end
+		end
+
+		if not win or not row then
+			vim.notify(("PackCheck is not showing %s"):format(name), vim.log.levels.WARN)
+			return
+		end
+
+		vim.cmd("close")
+		vim.api.nvim_set_current_win(win)
+		vim.api.nvim_win_set_cursor(win, { row, vim.api.nvim_win_get_cursor(win)[2] })
+		action()
+	end, { buffer = buf, nowait = true, desc = desc })
+end
+
 local function show_log(plugin, lines, split)
 	local buf = scratch_buffer("packcheck")
 	keep_window_options(buf, list_window_options)
@@ -1333,6 +1356,8 @@ local function show_log(plugin, lines, split)
 
 	set_buf_name(buf, ("vim.pack log: %s"):format(plugin_name(plugin)))
 	vim.keymap.set("n", "q", "<Cmd>close<CR>", { buffer = buf, nowait = true, desc = "Close pack log" })
+	map_log_key(buf, plugin_name(plugin), "a", M.toggle_acked, "Close the log and mark the update as seen")
+	map_log_key(buf, plugin_name(plugin), "<Tab>", M.toggle_marked, "Close the log and mark the plugin for update")
 	map_open_url(buf)
 end
 
