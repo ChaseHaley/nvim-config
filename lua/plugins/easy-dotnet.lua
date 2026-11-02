@@ -169,6 +169,16 @@ require("easy-dotnet").setup(
 	}
 )
 
+-- easy-dotnet's preload_roslyn calls vim.lsp.start without attach = false, so
+-- Roslyn attaches to the current buffer even when that is an Oil directory.
+local preload_sln = require("easy-dotnet.current_solution").try_get_selected_solution()
+if preload_sln then
+	vim.lsp.start(
+		vim.tbl_deep_extend("force", vim.lsp.config.easy_dotnet, { root_dir = vim.fs.dirname(preload_sln) }),
+		{ attach = false }
+	)
+end
+
 require("dap").configurations.razor = require("dap").configurations.cs
 require("dap").configurations.css = require("dap").configurations.cs
 require("dap").configurations.js = require("dap").configurations.cs
