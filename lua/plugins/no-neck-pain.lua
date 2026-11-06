@@ -7,7 +7,7 @@ require("no-neck-pain").setup({
 		-- },
 	},
 	autocmds = {
-		enableOnVimEnter = true,
+		enableOnVimEnter = false,
 	},
 	mappings = {
 		enabled = true,

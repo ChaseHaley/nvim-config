@@ -39,7 +39,7 @@
       "src": "https://github.com/rickhowe/diffchar.vim"
     },
     "diffview-plus.nvim": {
-      "rev": "3aba39f4d1704cc7aa26af487ab5579b5c614437",
+      "rev": "fae72d6c981075dce2e0f946f002382ce0cb44e1",
       "src": "https://github.com/dlyongemallo/diffview-plus.nvim"
     },
     "easy-dotnet.nvim": {
@@ -63,7 +63,7 @@
       "src": "https://github.com/FylerOrg/fyler.nvim"
     },
     "gitsigns.nvim": {
-      "rev": "1e9d0fbfe7ff848bc402d2c2e2854fb4eff2dce7",
+      "rev": "ef707fb93301a9b856f36eae4c8f56f5b988a794",
       "src": "https://github.com/lewis6991/gitsigns.nvim"
     },
     "indent-blankline.nvim": {
@@ -111,11 +111,11 @@
       "src": "https://github.com/echasnovski/mini.nvim"
     },
     "neogit": {
-      "rev": "697ad3ee86a73cf6b6758b838d7a7d76cf3b9f86",
+      "rev": "ba2f33b64b996ff5530c4c45a3c432fb63aaa95b",
       "src": "https://github.com/NeogitOrg/neogit"
     },
     "no-neck-pain.nvim": {
-      "rev": "ed63925a065cddc73afd51c5d486f7956385a21f",
+      "rev": "83ed5249cfdfc5790ab2c05f96038eeca7dd9451",
       "src": "https://github.com/shortcuts/no-neck-pain.nvim"
     },
     "nvim-autopairs": {
@@ -144,7 +144,7 @@
       "src": "https://github.com/neovim/nvim-lspconfig"
     },
     "nvim-treesitter": {
-      "rev": "a2f694478be07f89c2d03cc17858a8745a400c4b",
+      "rev": "610734c5d3e59761d5f79318d120633374537fa5",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter",
       "version": "'main'"
     },
