@@ -86,6 +86,7 @@ require("loadout").load({
 	-- { "plugins/copilot" },
 	-- { "plugins/sidekick" },
 	{ "plugins/trouble" },
+	{ "plugins/quicker" },
 	{ "plugins/wezterm-types", ft = "lua" },
 	{ "plugins/vim-matchup", vscode = true },
 	{

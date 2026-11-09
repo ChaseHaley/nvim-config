@@ -177,6 +177,10 @@
       "rev": "934df974ef6158b100fe910e8556e6c4a66614c2",
       "src": "https://github.com/Fildo7525/pretty_hover"
     },
+    "quicker.nvim": {
+      "rev": "4a6883cb13fe097a20a046eb55f6dffd239276e3",
+      "src": "https://github.com/stevearc/quicker.nvim"
+    },
     "quickfiles.nvim": {
       "rev": "11d5586417b3b5f5c60ce063235ee3c3a18ca2e8",
       "src": "https://github.com/ChaseHaley/quickfiles.nvim"

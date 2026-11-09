@@ -34,6 +34,20 @@ vim.keymap.set("n", "gq", vim.g.vscode and "<Cmd>Tabclose<CR>" or "<Cmd>tabc<CR>
 vim.keymap.set("x", "<leader>z/", "<C-\\><C-n>`</\\%V", { desc = "Search forward within visual selection" })
 vim.keymap.set("x", "<leader>z?", "<C-\\><C-n>`>?\\%V", { desc = "Search backward within visual selection" })
 
+vim.keymap.set("n", "<leader>qa", function()
+	local pos = vim.api.nvim_win_get_cursor(0)
+	vim.fn.setqflist({}, "a", {
+		items = {
+			{
+				bufnr = vim.api.nvim_get_current_buf(),
+				lnum = pos[1],
+				col = pos[2] + 1,
+				text = vim.trim(vim.api.nvim_get_current_line()),
+			},
+		},
+	})
+end, { desc = "Add line to quickfix" })
+
 vim.keymap.set("n", "<leader>tl", function ()
 	vim.o.relativenumber = not vim.o.relativenumber
 end, { desc = "[T]oggle Relative [L]ine Numbers" })
