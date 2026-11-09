@@ -111,7 +111,56 @@ end
 vim.keymap.set("n", "<leader>gdf", "<cmd>DiffviewFileHistory --follow %<CR>")
 vim.keymap.set("n", "<leader>gdf", function ()
 	diffview("DiffviewFileHistory --follow %")
-end)
+end, { desc = "File History" })
 vim.keymap.set("n", "<leader>gda", function ()
 	diffview("DiffviewOpen")
-end)
+end, { desc = "Diff working tree" })
+
+local working_tree = "(working tree)"
+
+local function pick_diff_target(from, root)
+	require("snacks").picker.pick({
+		title = "Diff " .. from .. " to",
+		cwd = root,
+		multi = {
+			{
+				finder = function()
+					return { { text = working_tree, working_tree = true } }
+				end,
+				format = "text",
+				preview = function(ctx)
+					ctx.preview:reset()
+				end,
+			},
+			{
+				source = "git_branches",
+				all = true,
+				win = { input = { keys = { ["<C-A>"] = false, ["<C-X>"] = false } } },
+			},
+			{ source = "git_log", cmd_args = { "--all" } },
+		},
+		sort = { fields = { "score:desc", "idx" } },
+		confirm = function(picker, item)
+			picker:close()
+			if not item then
+				return
+			end
+			diffview("DiffviewOpen " .. (item.working_tree and from or from .. ".." .. (item.branch or item.commit)))
+		end,
+	})
+end
+
+vim.keymap.set("n", "<leader>gdc", function()
+	local root = vim.fn.getcwd(-1, vim.fn.tabpagenr())
+	require("snacks").picker.git_log({
+		title = "Diff from",
+		cwd = root,
+		cmd_args = { "--all" },
+		confirm = function(picker, item)
+			picker:close()
+			if item then
+				pick_diff_target(item.commit, root)
+			end
+		end,
+	})
+end, { desc = "Diff two commits" })
