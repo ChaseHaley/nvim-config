@@ -193,10 +193,6 @@
       "rev": "0983fbdd3fe938c80fb7dd33817f08f428426ac8",
       "src": "https://github.com/stevearc/resession.nvim"
     },
-    "smear-cursor.nvim": {
-      "rev": "f6cb57c342268177f719acc3968b9d8de3ecc969",
-      "src": "https://github.com/sphamba/smear-cursor.nvim"
-    },
     "snacks.nvim": {
       "rev": "882c996cf28183f4d63640de0b4c02ec886d01f2",
       "src": "https://github.com/folke/snacks.nvim"

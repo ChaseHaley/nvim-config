@@ -72,6 +72,7 @@ require("loadout").load({
 	{ "plugins/render-markdown", ft = "markdown" },
 	{
 		"plugins/smear-cursor",
+		opt_in = true,
 		cond = function()
 			return not is_neovide()
 		end,
