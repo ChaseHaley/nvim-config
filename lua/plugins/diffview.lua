@@ -5,6 +5,74 @@ require("loadout").add({ "https://github.com/dlyongemallo/diffview-plus.nvim" })
 local codelens_guard = require("codelens_guard")
 local open_views = 0
 
+local function get_effective_bg(name, fallback)
+	local hl = vim.api.nvim_get_hl(0, { name = name, link = false })
+	return (hl.reverse and hl.fg) or hl.bg or fallback
+end
+
+local function scale_color(color, factor)
+	local scaled = 0
+	for shift = 16, 0, -8 do
+		local channel = math.floor(color / 2 ^ shift) % 256
+		scaled = scaled * 256 + math.min(255, math.floor(channel * factor))
+	end
+	return scaled
+end
+
+local function set_codediff_highlights()
+	local insert = get_effective_bg("DiffAdd", 0x1d3042)
+	local delete = get_effective_bg("DiffDelete", 0x351d2b)
+	local factor = vim.o.background == "light" and 0.92 or 1.4
+
+	vim.api.nvim_set_hl(0, "DiffviewLineInsert", { bg = insert })
+	vim.api.nvim_set_hl(0, "DiffviewLineDelete", { bg = delete })
+	vim.api.nvim_set_hl(0, "DiffviewCharInsert", { bg = scale_color(insert, factor) })
+	vim.api.nvim_set_hl(0, "DiffviewCharDelete", { bg = scale_color(delete, factor) })
+	vim.api.nvim_set_hl(0, "DiffviewFiller", { fg = 0x444444 })
+end
+
+set_codediff_highlights()
+vim.api.nvim_create_autocmd("ColorScheme", {
+	group = vim.api.nvim_create_augroup("diffview-codediff-highlights", { clear = true }),
+	callback = set_codediff_highlights,
+})
+
+local function codediff_side(line, char)
+	return {
+		DiffAdd = line,
+		DiffChange = line,
+		DiffText = char,
+		DiffTextAdd = char,
+		DiffDelete = "DiffviewFiller",
+		dcDiffChange = line,
+		dcDiffText = char,
+		dcDiffAdd = char,
+	}
+end
+
+local codediff_winhl = {
+	diff2 = {
+		a = codediff_side("DiffviewLineDelete", "DiffviewCharDelete"),
+		b = codediff_side("DiffviewLineInsert", "DiffviewCharInsert"),
+	},
+	diff1_inline = {
+		b = {
+			DiffviewDiffAdd = "DiffviewLineInsert",
+			DiffviewDiffChange = "DiffviewLineInsert",
+			DiffviewDiffTextInline = "DiffviewCharInsert",
+			DiffviewDiffDelete = "DiffviewLineDelete",
+		},
+	},
+}
+
+local function apply_codediff_highlights(ctx)
+	local layout = ctx.layout_name:match("^diff2") and "diff2" or ctx.layout_name:match("^diff1_inline")
+	local winhl = layout and codediff_winhl[layout][ctx.symbol]
+	if winhl then
+		vim.opt_local.winhighlight:append(winhl)
+	end
+end
+
 require("diffview").setup(
 	--- @type DiffviewConfig.user
 	{
@@ -30,6 +98,7 @@ require("diffview").setup(
 				})
 
 				codelens_guard.suppress(bufnr, "diffview")
+				apply_codediff_highlights(ctx)
 			end,
 			view_opened = function()
 				open_views = open_views + 1
