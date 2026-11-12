@@ -29,7 +29,7 @@ require("snacks").setup(
 	picker = {
 		enabled = true,
 		layout = {
-			fullscreen = true,
+			fullscreen = false,
 			reverse = true,
 			layout = {
 				box = "horizontal",
