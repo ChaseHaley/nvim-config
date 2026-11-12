@@ -1,5 +1,3 @@
-vim.g.DiffCharDoMapping = 0
-require("loadout").add({ "https://github.com/rickhowe/diffchar.vim" })
 require("loadout").add({ "https://github.com/dlyongemallo/diffview-plus.nvim" })
 
 local codelens_guard = require("codelens_guard")
@@ -44,9 +42,6 @@ local function codediff_side(line, char)
 		DiffText = char,
 		DiffTextAdd = char,
 		DiffDelete = "DiffviewFiller",
-		dcDiffChange = line,
-		dcDiffText = char,
-		dcDiffAdd = char,
 	}
 end
 

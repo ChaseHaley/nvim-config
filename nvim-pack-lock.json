@@ -34,10 +34,6 @@
       "rev": "f190de76d2eca0380ddcb2425cd582d740699b55",
       "src": "https://github.com/hat0uma/csvview.nvim"
     },
-    "diffchar.vim": {
-      "rev": "a5bec389a88184fcf4a4c0cbf9fd5d3318a9c5ab",
-      "src": "https://github.com/rickhowe/diffchar.vim"
-    },
     "diffview-plus.nvim": {
       "rev": "fae72d6c981075dce2e0f946f002382ce0cb44e1",
       "src": "https://github.com/dlyongemallo/diffview-plus.nvim"
