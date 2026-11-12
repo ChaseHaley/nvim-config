@@ -67,7 +67,6 @@ require("loadout").load({
 	{ "plugins/lazydotnet", group = "dotnet", ft = dotnet_filetypes },
 	{ "plugins/csvview", ft = { "csv", "tsv" } },
 	{ "plugins/diffview" },
-	{ "plugins/codediff" },
 	{ "plugins/neogit" },
 	{ "plugins/flash", vscode = true },
 	{ "plugins/render-markdown", ft = "markdown" },
