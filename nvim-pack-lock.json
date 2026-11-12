@@ -43,7 +43,7 @@
       "src": "https://github.com/dlyongemallo/diffview-plus.nvim"
     },
     "easy-dotnet.nvim": {
-      "rev": "09b2101fe0ad3092799201259387774c6247839a",
+      "rev": "b44a8672706c14298876330bc405271220af6aa0",
       "src": "https://github.com/GustavEikaas/easy-dotnet.nvim"
     },
     "fidget.nvim": {
@@ -55,11 +55,11 @@
       "src": "https://github.com/folke/flash.nvim"
     },
     "friendly-snippets": {
-      "rev": "b4d01b0fdf3c9a549961c2f9ffe8dc09be166219",
+      "rev": "7a1c9f7897a4eb078b157a04c7af81e5869215b1",
       "src": "https://github.com/rafamadriz/friendly-snippets"
     },
     "fyler.nvim": {
-      "rev": "e1626ff3815a7ebd15698fd6c6d1188a079993d6",
+      "rev": "8fe34a34fdd307ee762a2099be90b259fce39d21",
       "src": "https://github.com/FylerOrg/fyler.nvim"
     },
     "gitsigns.nvim": {
@@ -87,7 +87,7 @@
       "src": "https://github.com/nvim-lualine/lualine.nvim"
     },
     "mason-lspconfig.nvim": {
-      "rev": "c4ef013d41f6db041b283eef55a63e579d76763f",
+      "rev": "97ccf96bb2e7adb5f82975068bd4c7307d2afa8a",
       "src": "https://github.com/mason-org/mason-lspconfig.nvim"
     },
     "mason-nvim-dap.nvim": {
@@ -140,11 +140,11 @@
       "src": "https://github.com/mfussenegger/nvim-lint"
     },
     "nvim-lspconfig": {
-      "rev": "adfbb74472f6c231b651b650a89f414c2680fb31",
+      "rev": "443d92c6bea761ab54cdde46fb197a2b4d614bdd",
       "src": "https://github.com/neovim/nvim-lspconfig"
     },
     "nvim-treesitter": {
-      "rev": "610734c5d3e59761d5f79318d120633374537fa5",
+      "rev": "19bdfc04f40ed2ccb3340591d125f759b0406875",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter",
       "version": "'main'"
     },
@@ -190,7 +190,7 @@
       "src": "https://gitlab.com/HiPhish/rainbow-delimiters.nvim"
     },
     "render-markdown.nvim": {
-      "rev": "245956d67572c137df375dbf256e96bdb07e0937",
+      "rev": "9c235bedc4f96145e63fcad5b78cd78bce8822c4",
       "src": "https://github.com/MeanderingProgrammer/render-markdown.nvim"
     },
     "resession.nvim": {
@@ -238,7 +238,7 @@
       "src": "https://github.com/andymass/vim-matchup"
     },
     "wezterm-types": {
-      "rev": "39511289aa040a7746a9e2d551b35ef330f15c77",
+      "rev": "1e6a0b7ac2206b197c741240743e981af37ce292",
       "src": "https://github.com/DrKJeff16/wezterm-types"
     },
     "which-key.nvim": {
