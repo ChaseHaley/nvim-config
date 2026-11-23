@@ -1379,7 +1379,25 @@ local function commit_line(plugin, commit, columns, hl)
 	return line
 end
 
-local function log_lines(plugin, output, head, target_sha, ref)
+local function seen_commits(plugin, cb)
+	local sha = acked[plugin_name(plugin)]
+	if not sha then
+		cb({})
+		return
+	end
+
+	git(plugin.path, { "rev-list", "HEAD.." .. sha }, function(result)
+		local revs = {}
+		if result.code == 0 then
+			for _, rev in ipairs(vim.split(trim(result.stdout), "\n", { plain = true })) do
+				revs[rev] = true
+			end
+		end
+		cb(revs)
+	end)
+end
+
+local function log_lines(plugin, output, head, target_sha, ref, seen_revs)
 	local incoming = {}
 	local dropped = {}
 	local age_width, subject_width = 0, 0
@@ -1421,8 +1439,23 @@ local function log_lines(plugin, output, head, target_sha, ref)
 		lines[#lines + 1] = put(new_line(), "No pending commits.", "PackCheckDim")
 	end
 
+	local seen = {}
 	for _, commit in ipairs(incoming) do
-		lines[#lines + 1] = commit_line(plugin, commit, columns)
+		if seen_revs[commit.rev] then
+			seen[#seen + 1] = commit
+		else
+			lines[#lines + 1] = commit_line(plugin, commit, columns)
+		end
+	end
+
+	if #seen > 0 then
+		if #seen < #incoming then
+			lines[#lines + 1] = new_line()
+		end
+		lines[#lines + 1] = put(new_line(), ("Seen  %d"):format(#seen), "PackCheckSeen")
+		for _, commit in ipairs(seen) do
+			lines[#lines + 1] = commit_line(plugin, commit, columns, "PackCheckSeen")
+		end
 	end
 
 	if #dropped > 0 then
@@ -1733,7 +1766,9 @@ function M.log(name, opts)
 				return
 			end
 
-			show_log(plugin, log_lines(plugin, result.stdout, head, target_sha, ref), opts.split)
+			seen_commits(plugin, function(seen_revs)
+				show_log(plugin, log_lines(plugin, result.stdout, head, target_sha, ref, seen_revs), opts.split)
+			end)
 		end)
 	end
 
