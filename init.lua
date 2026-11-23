@@ -13,3 +13,8 @@ if #vim.api.nvim_get_runtime_file("lua/local.lua", false) > 0 then
 	require("local")
 end
 require("plugins")
+
+if vim.env.AIODEV_CLI then
+	vim.opt.rtp:append(vim.fs.dirname(vim.env.AIODEV_CLI) .. "/nvim")
+	require("aiodev_theme").setup()
+end
