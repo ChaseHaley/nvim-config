@@ -111,11 +111,11 @@
       "src": "https://github.com/echasnovski/mini.nvim"
     },
     "neogit": {
-      "rev": "ba2f33b64b996ff5530c4c45a3c432fb63aaa95b",
+      "rev": "0288a0fe32bce35f4ea1195f9b546a71c5977a82",
       "src": "https://github.com/NeogitOrg/neogit"
     },
     "no-neck-pain.nvim": {
-      "rev": "83ed5249cfdfc5790ab2c05f96038eeca7dd9451",
+      "rev": "02a835c850a4059cc3c3b7b23ab78f286d56cef8",
       "src": "https://github.com/shortcuts/no-neck-pain.nvim"
     },
     "nvim-autopairs": {
