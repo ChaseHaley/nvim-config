@@ -1,4 +1,5 @@
 require("loadout").add({ "https://github.com/folke/snacks.nvim" })
+local confirm_colorscheme = require("snacks.picker.config.sources").colorschemes.confirm
 require("snacks").setup(
 	---@type snacks.Config
 	{
@@ -59,6 +60,16 @@ require("snacks").setup(
 		},
 		db = {
 			sqlite3_path = vim.env.LIBSQLITE,
+		},
+		sources = {
+			colorschemes = {
+				confirm = function(picker, item)
+					confirm_colorscheme(picker, item)
+					if item then
+						require("colorscheme_memory").remember(item.text)
+					end
+				end,
+			},
 		},
 	},
 	quickfile = { enabled = false },
