@@ -201,8 +201,13 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 		-- Find references for the word under your cursor.
 		map("grr", function()
-			require("snacks").picker.lsp_references()
+			require("snacks").picker.lsp_references({ pattern = "!tests" })
 		end, "[G]oto [R]eferences")
+
+		-- Find references for the word under your cursor.
+		map("grR", function()
+			require("snacks").picker.lsp_references()
+		end, "[G]oto [R]eferences (Unfiltered)")
 
 		-- Jump to the concrete code behind the word under your cursor: its
 		--  implementations, else its type's implementations, else its type. Only a word
